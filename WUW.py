@@ -17,6 +17,7 @@ import time
 import os
 import math
 import TouchlessLib
+import ystockquote
 from classes.Value import Value
 from classes.PointR import PointR
 from classes.GeometricRecognizer import GeometricRecognizer
@@ -135,6 +136,8 @@ class WuwPanel(wx.Panel):
                                        size=(8*self.Grid,2*self.Grid))
         self.buttonWeatherDemo=wx.Button(self.tabPageApps,label="Weather",pos=(1*self.Grid,7*self.Grid),
                                          size=(8*self.Grid,2*self.Grid))
+        self.buttonStockDemo=wx.Button(self.tabPageApps,label="Stock",pos=(1*self.Grid,10*self.Grid),
+                                         size=(8*self.Grid,2*self.Grid))
 
         #构建Label组
         self.labelM=wx.StaticText(self, label=" M", pos=(4*self.Grid,self.Grid),
@@ -160,6 +163,8 @@ class WuwPanel(wx.Panel):
         self.BoxClock.threadTime=None
         self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
                                      size=(20*self.Grid,40*self.Grid))
+        self.BoxStock=wx.StaticBox(self,pos=(5*self.Grid,25*self.Grid),
+                                     size=(60*self.Grid,50*self.Grid))
         self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
                                    size=(64*self.Grid,48*self.Grid))
 
@@ -188,12 +193,14 @@ class WuwPanel(wx.Panel):
         self.clockDemo = False
         self.photoDemo = False
         self.weatherDemo = False
+        self.StockDemo = False
+
 
         ###Load
         self.__touchlessMgr = TouchlessLib.TouchlessMgr()
         self.__touchlessMgr.RefreshCameraList()
-        # self.__touchlessMgr.CurrentCamera.ImageCaptured()
-        # self.__touchlessMgr.CurrentCamera.GetCurrentImage().show()
+        self.__touchlessMgr.CurrentCamera.ImageCaptured()
+        self.__touchlessMgr.CurrentCamera.GetCurrentImage().show()
         self.threadCapture = self.ThreadCapture("Capture", 0.03, self.pictureBoxDisplay, self.__touchlessMgr.CurrentCamera, self)
         self.threadCapture.setDaemon(True)
         self.threadCapture.start()
@@ -204,6 +211,7 @@ class WuwPanel(wx.Panel):
         time.clock()
         self.BoxClock.Hide()
         self.BoxWeather.Hide()
+        self.BoxStock.Hide()
         self.BoxPhoto.Hide()
         self.ResetEnvironment()
 
@@ -232,8 +240,10 @@ class WuwPanel(wx.Panel):
         self.buttonClockDemo.Bind(wx.EVT_BUTTON, self.buttonClockDemo_Click)
         self.buttonPhotoDemo.Bind(wx.EVT_BUTTON, self.buttonPhotoDemo_Click)
         self.buttonWeatherDemo.Bind(wx.EVT_BUTTON, self.buttonWeatherDemo_Click)
+        self.buttonStockDemo.Bind(wx.EVT_BUTTON, self.buttonStockDemo_Click)
         self.BoxClock.Bind(wx.EVT_PAINT, self.ShowTime)
         self.BoxPhoto.Bind(wx.EVT_PAINT, self.drawPhoto)
+        self.BoxStock.Bind(wx.EVT_PAINT, self.showStock)
 
         # print self.comboBoxCameras.GetCurrentSelection()
         # print self.threadCapture
@@ -620,7 +630,9 @@ class WuwPanel(wx.Panel):
                         "photo5":self.buttonPhotoDemo_Click,
                         "photo6":self.buttonPhotoDemo_Click,
                         "weather1":self.buttonWeatherDemo_Click,
-                        "weather2":self.buttonWeatherDemo_Click
+                        "weather2":self.buttonWeatherDemo_Click,
+                        "stock1":self.buttonStockDemo_Click,
+                        "stock2":self.buttonStockDemo_Click,
                         }
                     dic[result.Name](event)
 
@@ -686,10 +698,42 @@ class WuwPanel(wx.Panel):
         dc = wx.PaintDC(self.BoxPhoto)
         dc.DrawBitmap(bmp,0,0)
 
+    def showStock(self, event):
+        # TO FINISH
+        """ Function to show the values of the stocks in real time """
+        print(ystockquote.get_today_open(symbol))
+        print(ystockquote.get_last_trade_price(symbol))
+        print(ystockquote.get_change(symbol))
+        print(ystockquote.get_eps(symbol))
+
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
         if DEBUG: print "buttonWeatherDemo_Click"
         pass
+
+    """def  InternetConnectionExists(self):
+        try
+            System.Net.Sockets.TcpClient clnt = new System.Net.Sockets.TcpClient("www.google.com", 80)
+                clnt.Close()
+                return true
+            catch (System.Exception)
+                return false"""
+
+    ##Stock Demo
+    def buttonStockDemo_Click(self, event):
+        print "buttonStockDemo_Click"
+        if self.StockDemo:
+            self.StockDemo = False
+            self.labelDemoName.Label = "WUW"
+            self.buttonStockDemo.Label = "Stock"
+            self.BoxStock.Hide()
+            self.ResetEnvironment()
+        else:
+            self.StopOtherApps(event)
+            self.StockDemo = True
+            self.labelDemoName.Label = "Stock"
+            self.buttonStockDemo.Label = "Stop Stock"
+            self.BoxStock.Show()
 
 def main():
     app = wx.App(False)
