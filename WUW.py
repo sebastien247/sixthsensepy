@@ -711,14 +711,6 @@ class WuwPanel(wx.Panel):
         if DEBUG: print "buttonWeatherDemo_Click"
         pass
 
-    """def  InternetConnectionExists(self):
-        try
-            System.Net.Sockets.TcpClient clnt = new System.Net.Sockets.TcpClient("www.google.com", 80)
-                clnt.Close()
-                return true
-            catch (System.Exception)
-                return false"""
-
     ##Stock Demo
     def buttonStockDemo_Click(self, event):
         print "buttonStockDemo_Click"
