@@ -226,38 +226,10 @@ class Marker:
         return self.__name
 
     def SetMarkerAppearance(self, rawHsvFreq):
-        shape = rawHsvFreq.shape
-        self.binsHue = (int)(shape[0])
-        self.binsSat = (int)(shape[1])
-        self.binsVal = (int)(shape[2])
-        self.RepresentativeColor = wx.Colour(0,0,0)
-        num = 0
-        num2 = 0
-        num3 = 0
-        num4 = 0
-        num5 = 0
-        for i in range(self.binsHue):
-            for j in range(self.binsSat):
-                for k in range(self.binsVal):
-                    if rawHsvFreq[i,j,k] > 0:
-                        key = str.format("{0}", ColorKey(HSV(i,j,k)).key)
-                        self.hsvFreq[key] = rawHsvFreq[i,j,k]
-                        num += rawHsvFreq[i,j,k]
-                        num3 += rawHsvFreq[i,j,k] * i
-                        num4 += rawHsvFreq[i,j,k] * j
-                        num5 += rawHsvFreq[i,j,k] * k
-                        num2 += 1
-        print self.hsvFreq
-        if num2 == 0:
-            return False
-        self.Threshold = (int)((2 * num) / num2)
-        num3 /= num2
-        num3 %= 360
-        num4 /= num2
-        num4 %= 255
-        num5 /= num2
-        num5 %= 255
-        self.RepresentativeColor = HSV.ConvertToColor(HSV(num3,num4,num5))
+        self.binsHue = 40
+        self.binsSat = 20
+        self.binsVal = 10
+        self.RepresentativeColor = HSV.ConvertToColor(HSV(*rawHsvFreq))
         return True
 
     def FireMarkerEventData(self):
@@ -322,20 +294,22 @@ class TouchlessMgr:
     def GetMarkerAppearance(self, img, center, radius, binCounts=HSV(40,20,10)):
         height = img.size[1]
         width = img.size[0]
-        numArray = np.zeros((binCounts.Hue,binCounts.Sat,binCounts.Val))
-        flag = False
+        hue = sat = val = 0
+        n = 0
         for i in range(height):
             for j in range(width):
-                data = img.getpixel((j,i))
-                binnedHSV = HSV.GetBinnedHSV(RGB.ConvertToHSV(RGB(data[0],data[1],data[2])),binCounts)
                 num = j - center.x
                 num2 = i - center.y
                 flag = math.sqrt(num*num+num2*num2) < radius
                 if flag:
-                    numArray[binnedHSV.Hue,binnedHSV.Sat,binnedHSV.Val] += 2
-                else:
-                    numArray[binnedHSV.Hue,binnedHSV.Sat,binnedHSV.Val] -= 1
-        return numArray
+                    data = img.getpixel((j,i))
+                    hsv = RGB.ConvertToHSV(RGB(data[0],data[1],data[2]))
+                    hue += hsv.Hue
+                    sat += hsv.Sat
+                    val += hsv.Val
+                    n += 1
+        print (hue / n, sat / n, val / n)
+        return (hue / n, sat / n, val / n)
 
     def postProcessMarker(self, marker):
         marker.CurrData.Timestamp = time.time()
