@@ -44,6 +44,7 @@ class Camera:
     def ImageCaptured(self):
         self.__imgLock.acquire()
         img = cv.QueryFrame(self.__cam)
+        cv.CvtColor(img, img, cv.CV_BGR2RGB)
         self.__img = Image.fromstring("RGB", (self.CaptureWidth, self.CaptureHeight), img.tostring())
         self.__imgLock.release()
 
