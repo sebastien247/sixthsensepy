@@ -164,7 +164,7 @@ class WuwPanel(wx.Panel):
         self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
                                      size=(20*self.Grid,40*self.Grid))
         self.BoxStock=wx.StaticBox(self,pos=(5*self.Grid,25*self.Grid),
-                                     size=(60*self.Grid,50*self.Grid))
+                                     size=(90*self.Grid,50*self.Grid))
         self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
                                    size=(64*self.Grid,48*self.Grid))
 
@@ -701,10 +701,7 @@ class WuwPanel(wx.Panel):
     def showStock(self, event):
         # TO FINISH
         """ Function to show the values of the stocks in real time """
-        print(ystockquote.get_today_open(symbol))
-        print(ystockquote.get_last_trade_price(symbol))
-        print(ystockquote.get_change(symbol))
-        print(ystockquote.get_eps(symbol))
+        
 
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
@@ -725,6 +722,27 @@ class WuwPanel(wx.Panel):
             self.StockDemo = True
             self.labelDemoName.Label = "Stock"
             self.buttonStockDemo.Label = "Stop Stock"
+            #self.BoxStock.SetBackgroundColour('#ffffff')
+            stock1 = 'Stock value 1:'
+
+            # values to get from the actual stock exchange
+            stockLabel1 = 'Accor S.A.'
+            stockLabel2 = 'AIRBUS GROUP'
+            stockLabel3 = 'TOTAL S.A.' 
+            # set a box that will contain the first stock values
+            stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(290, 230))
+            #get the the stock value from ystockquote app
+            stockValue1 = ystockquote.get_last_trade_price('AC.PA')
+            self.labelStock = wx.StaticText(self.BoxStock,label=stockValue1,pos=(50,25))
+
+            stockBox2 = wx.StaticBox(self.BoxStock,-1,stockLabel2, (305, 5), size=(290, 230))
+            stockValue2 = ystockquote.get_last_trade_price('AIR.PA')
+            self.labelStock = wx.StaticText(self.BoxStock,label=stockValue2,pos=(350,25))
+
+            stockBox3 = wx.StaticBox(self.BoxStock,-1,stockLabel3, (605, 5), size=(290, 230))
+            stockValue3 = ystockquote.get_last_trade_price('FP.PA')
+            self.labelStock = wx.StaticText(self.BoxStock,label=stockValue3,pos=(650,25))
+
             self.BoxStock.Show()
 
 def main():
