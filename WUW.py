@@ -22,11 +22,14 @@ from classes.PointR import PointR
 from classes.GeometricRecognizer import GeometricRecognizer
 from classes.NBestList import NBestList
 
+
+DEBUG = False
+
 class WuwPanel(wx.Panel):
     Width = Value.WuwWidth
     Height = Value.WuwHeight
     def __init__(self, parent):
-        print "WuwPanel.__init__"
+        if DEBUG: print "WuwPanel.__init__"
         self.Grid = self.Width / 100
         wx.Panel.__init__(self, parent)
 
@@ -236,7 +239,7 @@ class WuwPanel(wx.Panel):
     #线程——捕获某帧图像 
     class ThreadCapture(threading.Thread):
         def __init__(self, threadname, times, box, cam, panel):
-            print "ThreadCapture.__init__"
+            if DEBUG: print "ThreadCapture.__init__"
             threading.Thread.__init__(self, name=threadname)
             self.__times = times
             self.__stop = False
@@ -244,7 +247,7 @@ class WuwPanel(wx.Panel):
             self.__cam = cam
             self.__panel = panel
         def run(self):
-            print "ThreadCapture.run"
+            if DEBUG: print "ThreadCapture.run"
             while not self.__stop:
                 self.__cam.ImageCaptured()
                 self.__panel.UpdateLatestFrame()
@@ -252,7 +255,7 @@ class WuwPanel(wx.Panel):
                     self.__box.Refresh()
                 time.sleep(self.__times)
         def stop(self):
-            print "ThreadCapture.stop"
+            if DEBUG: print "ThreadCapture.stop"
             self.__stop = True
 
     def refreshCam(self):
@@ -263,7 +266,7 @@ class WuwPanel(wx.Panel):
         dc.DrawBitmap(bmp,0,0)
 
     def UpdateLatestFrame(self):
-        # print "UpdateLatestFrame"
+        if DEBUG: print "UpdateLatestFrame"
         if not self.__fAddingMarker:
             self.__latestFrame = self.__touchlessMgr.CurrentCamera.GetCurrentImage()
             self.__latestFrameTime = time.time()
@@ -279,31 +282,31 @@ class WuwPanel(wx.Panel):
     #线程——追踪标记物
     class ThreadMarker(threading.Thread):
         def __init__(self, threadname, times, mgr):
-            print "ThreadMarker.__init__"
+            if DEBUG: print "ThreadMarker.__init__"
             threading.Thread.__init__(self, name=threadname)
             self.__times = times
             self.__mgr = mgr
             self.__stop = False
         def run(self):
-            print "ThreadMarker.run"
+            if DEBUG: print "ThreadMarker.run"
             while not self.__stop:
                 if self.__mgr.MarkersCount == 4:
                     self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
                 time.sleep(self.__times)
         def stop(self):
-            print "ThreadMarker.stop"
+            if DEBUG: print "ThreadMarker.stop"
             self.__stop = True
 
     #线程——时间显示
     class ThreadTime(threading.Thread):
         def __init__(self, threadname, times, box):
-            print "ThreadTime.__init__"
+            if DEBUG: print "ThreadTime.__init__"
             threading.Thread.__init__(self, name=threadname)
             self.__times = times
             self.__box = box
             self.__stop = False
         def run(self):
-            print "ThreadTime.run"
+            if DEBUG: print "ThreadTime.run"
             while not self.__stop:
                 self.__box.Refresh(True)
                 time.sleep(self.__times)
@@ -314,7 +317,7 @@ class WuwPanel(wx.Panel):
 
     ###Environmenmt
     def btnExit_Click(self, event):
-        print "btnExit_Click"
+        if DEBUG: print "btnExit_Click"
         if self.__touchlessMgr.MarkersCount >= 4:
             self.m = None
             self.n = None
@@ -323,7 +326,7 @@ class WuwPanel(wx.Panel):
         self.GetParent().Close()
 
     def btnShowHide_Click(self, event):
-        print "btnShowHide_Click"
+        if DEBUG: print "btnShowHide_Click"
         if self.__show_settings:
             self.tabSettings.Hide()
             self.pictureBoxDisplay.Hide()
@@ -337,19 +340,19 @@ class WuwPanel(wx.Panel):
             self.__show_settings = True
 
     def ResetEnvironment(self):
-        print "ResetEnvironment"
+        if DEBUG: print "ResetEnvironment"
         self.__show_settings = False
         self.tabSettings.Hide()
         self.pictureBoxDisplay.Hide()
         self.btnExit.Hide()
 
     def StopOtherApps(self, event):
-        print "StopOtherApps"
+        if DEBUG: print "StopOtherApps"
         pass
 
     ###WUW Management
     def WUW_Destroy(self, event):
-        print "WUW_Destroy"
+        if DEBUG: print "WUW_Destroy"
         self.threadCapture.stop()
         self.threadMarker.stop()
         self.__touchlessMgr.CleanupCameras()
@@ -357,7 +360,7 @@ class WuwPanel(wx.Panel):
             self.BoxClock.threadTime.stop()
 
     def WUW_Paint(self, event):
-        # print "WUW_Paint"
+        if DEBUG: print "WUW_Paint"
         if len(self.__points) > 0:
             dc = wx.PaintDC(self)
             if self.__recording:
@@ -373,7 +376,7 @@ class WuwPanel(wx.Panel):
 
     ###Touchless Event Handling
     def drawLatestImage(self, event):
-        print "drawLatestImage"
+        if DEBUG: print "drawLatestImage"
         if self.__touchlessMgr.CurrentCamera == None:
             return
         if not self.__latestFrame == None:
@@ -397,7 +400,7 @@ class WuwPanel(wx.Panel):
 
     ##Marker Buttons
     def buttonMarkerAdd_Click(self, event):
-        print "buttonMarkerAdd_Click"
+        if DEBUG: print "buttonMarkerAdd_Click"
         self.__fAddingMarker = not self.__fAddingMarker
         if self.__fAddingMarker:
             self.buttonMarkerAdd.SetLabel("Cancel Adding Marker")
@@ -405,41 +408,41 @@ class WuwPanel(wx.Panel):
             self.buttonMarkerAdd.SetLabel("Add A New Marker")
 
     def comboBoxMarkers_DropDown(self, event):
-        print "comboBoxMarkers_DropDown"
+        if DEBUG: print "comboBoxMarkers_DropDown"
         pass
 
     def comboBoxMarkers_SelectedIndexChanged(self, event):
-        print "comboBoxMarkers_SelectedIndexChanged"
+        if DEBUG: print "comboBoxMarkers_SelectedIndexChanged"
         pass
 
     ##UI Marker Editing
     def checkBoxMarkerHighlight_CheckedChanged(self, event):
-        print "checkBoxMarkerHighlight_CheckedChanged"
+        if DEBUG: print "checkBoxMarkerHighlight_CheckedChanged"
         pass
 
     def checkBoxMarkerSmoothing_CheckedChanged(self, event):
-        print "checkBoxMarkerSmoothing_CheckedChanged"
+        if DEBUG: print "checkBoxMarkerSmoothing_CheckedChanged"
         pass
 
     def MarkerThresh_ValueChanged(self, event):
-        print "MarkerThresh_ValueChanged"
+        if DEBUG: print "MarkerThresh_ValueChanged"
         pass
 
     def buttonMarkerRemove_Click(self, event):
-        print "buttonMarkerRemove_Click"
+        if DEBUG: print "buttonMarkerRemove_Click"
         pass
 
     def buttonMarkerSave_Click(self, event):
-        print "buttonMarkerSave_Click"
+        if DEBUG: print "buttonMarkerSave_Click"
         pass
 
     def buttonMarkerLoad_Click(self, event):
-        print "buttonMarkerLoad_Click"
+        if DEBUG: print "buttonMarkerLoad_Click"
         pass
 
     ##Display Interaction
     def pictureBoxDisplay_MouseDown(self, event):
-        print "pictureBoxDisplay_MouseDown"
+        if DEBUG: print "pictureBoxDisplay_MouseDown"
         if not self.__fAddingMarker:
             return
         if not self.__touchlessMgr.CurrentCamera.isOn():
@@ -449,7 +452,7 @@ class WuwPanel(wx.Panel):
         self.__drawSelectionAdornment = True
 
     def pictureBoxDisplay_MouseMove(self, event):
-        print "pictureBoxDisplay_MouseMove"
+        if DEBUG: print "pictureBoxDisplay_MouseMove"
         if not self.__fAddingMarker:
             return
         if not self.__markerCenter == None:
@@ -460,7 +463,7 @@ class WuwPanel(wx.Panel):
             self.pictureBoxDisplay.Refresh()
 
     def pictureBoxDisplay_MouseUp(self, event):
-        print "pictureBoxDisplay_MouseUp"
+        if DEBUG: print "pictureBoxDisplay_MouseUp"
         if not self.__fAddingMarker:
             self.__inBoxArea = False
             return
@@ -493,7 +496,7 @@ class WuwPanel(wx.Panel):
 
     ##Marker Initial Functions
     def nameMarkers(self):
-        print "nameMarkers"
+        if DEBUG: print "nameMarkers"
         if self.__touchlessMgr.MarkersCount == 4:
             self.m = self.__touchlessMgr.Markers[0]
             self.n = self.__touchlessMgr.Markers[1]
@@ -510,19 +513,19 @@ class WuwPanel(wx.Panel):
 
     ##Marker_OnChange
     def m_OnChange(self, event):
-        print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
+        if DEBUG: print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
         self.labelM.SetPosition(wx.Point((int)(event.X * self.__ratioScreenCameraWidth), (int)(event.Y * self.__ratioScreenCameraHeight)))
 
     def n_OnChange(self, event):
-        print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
+        if DEBUG: print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
         self.labelN.SetPosition(wx.Point((int)(event.X * self.__ratioScreenCameraWidth), (int)(event.Y * self.__ratioScreenCameraHeight)))
 
     def o_OnChange(self, event):
-        print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
+        if DEBUG: print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
         self.labelO.SetPosition(wx.Point((int)(event.X * self.__ratioScreenCameraWidth), (int)(event.Y * self.__ratioScreenCameraHeight)))
 
     def p_OnChange(self, event):
-        print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
+        if DEBUG: print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
         self.labelP.SetPosition(wx.Point((int)(event.X * self.__ratioScreenCameraWidth), (int)(event.Y * self.__ratioScreenCameraHeight)))
 
     ##Marker Helper Functions
@@ -534,7 +537,7 @@ class WuwPanel(wx.Panel):
 
     ###Gesture Functions
     def gestureLoad(self):
-        print "gestureLoad"
+        if DEBUG: print "gestureLoad"
         folderName = "Gestures"
         filePath = os.listdir(folderName)
         for fileName in filePath:
@@ -546,7 +549,7 @@ class WuwPanel(wx.Panel):
 
     ###Gesture Mouse Events
     def WUW_MouseDown(self, event):
-        print "WUW_MouseDown"
+        if DEBUG: print "WUW_MouseDown"
         if self.__show_settings:
             point = event.GetPosition()
             rect = self.pictureBoxDisplay.GetRect()
@@ -561,7 +564,7 @@ class WuwPanel(wx.Panel):
         self.Refresh()
 
     def WUW_MouseMove(self, event):
-        print "WUW_MouseMove"
+        if DEBUG: print "WUW_MouseMove"
         if self.__inBoxArea:
             self.pictureBoxDisplay_MouseMove(event)
             return
@@ -570,7 +573,7 @@ class WuwPanel(wx.Panel):
             self.Refresh(True, wx.Rect(event.GetX()-2,event.GetY()-2,4,4))
 
     def WUW_MouseUp(self, event):
-        print "WUW_MouseUp"
+        if DEBUG: print "WUW_MouseUp"
         if self.__inBoxArea:
             self.pictureBoxDisplay_MouseUp(event)
             return
@@ -605,7 +608,7 @@ class WuwPanel(wx.Panel):
     ###Demo Mode
     ##Clock Demo
     def buttonClockDemo_Click(self, event):
-        print "buttonClockDemo_Click"
+        if DEBUG: print "buttonClockDemo_Click"
         if self.clockDemo:
             self.clockDemo = False
             self.labelDemoName.Label = "WUW"
@@ -624,7 +627,7 @@ class WuwPanel(wx.Panel):
             self.BoxClock.Show()
 
     def ShowTime(self, event):
-        print "ShowTime"
+        if DEBUG: print "ShowTime"
         dc = wx.PaintDC(self.BoxClock)
         dc.Clear()
         dc.DrawText(time.strftime("%H:%M:%S", time.localtime(time.time())),
@@ -632,7 +635,7 @@ class WuwPanel(wx.Panel):
 
     ##Photo Demo
     def buttonPhotoDemo_Click(self, event):
-        print "buttonPhotoDemo_Click"
+        if DEBUG: print "buttonPhotoDemo_Click"
         if self.photoDemo:
             self.photoDemo = False
             self.labelDemoName.Label = "WUW"
@@ -654,7 +657,7 @@ class WuwPanel(wx.Panel):
 
 
     def drawPhoto(self, event):
-        print "drawPhoto"
+        if DEBUG: print "drawPhoto"
         if self.__latestFrame == None:
             return
         if self.__isDown:
@@ -665,7 +668,7 @@ class WuwPanel(wx.Panel):
 
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
-        print "buttonWeatherDemo_Click"
+        if DEBUG: print "buttonWeatherDemo_Click"
         pass
 
 def main():
