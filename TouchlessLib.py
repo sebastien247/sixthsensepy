@@ -28,11 +28,11 @@ class Camera:
 
     def Start(self):
         if not self.isOn():
-            self.__cam = cv.CaptureFromCAM(1)
+            self.__cam = cv.CaptureFromCAM(0)
 
     def Stop(self):
         if self.isOn():
-            self.__cam = cv.CaptureFromCAM(1)
+            self.__cam = cv.CaptureFromCAM(0)
             self.__cam = None
 
     def isOn(self):
