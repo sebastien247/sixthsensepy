@@ -172,7 +172,7 @@ class GeometricRecognizer:
                     del self.__gesture[i]
                     break
             self.__gestures.append(p)
-        except Exception:
+        except Exception as e:
             success = False
         return success
     

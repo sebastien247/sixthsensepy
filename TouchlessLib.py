@@ -311,36 +311,20 @@ class TouchlessMgr:
         print (hue / n, sat / n, val / n)
         return (hue / n, sat / n, val / n)
 
-    def postProcessMarker(self, marker):
-        marker.CurrData.Timestamp = time.time()
-        if marker.CurrData.Area > 0:
-            marker.CurrData.Present = True
-            marker.CurrData.ColorAvg = marker.RepresentativeColor
-            marker.CurrData.X /= marker.CurrData.Area
-            marker.CurrData.Y /= marker.CurrData.Area
-            marker.CurrData.Bounds = wx.Rect(marker.CurrData.left,marker.CurrData.top,marker.CurrData.right-marker.CurrData.left,marker.CurrData.bottom-marker.CurrData.top)
-            if marker.PreviousData.Present:
-                marker.CurrData.DX = marker.CurrData.X-marker.PreviousData.X
-                marker.CurrData.DY = marker.CurrData.Y-marker.PreviousData.Y
-            if marker.SmoothingEnabled:
-                marker.CurrData.X = (marker.CurrData.X+((marker.CurrData.Bounds.left+marker.CurrData.Bounds.right)/2))/2
-                marker.CurrData.Y = (marker.CurrData.Y+((marker.CurrData.Bounds.top+marker.CurrData.Bounds.bottom)/2))/2
-                if marker.PreviousData.Present:
-                    smoothingFactor = marker.smoothingFactor
-                    num2 = 1.00-smoothingFactor
-                    marker.CurrData.Area = (int)((smoothingFactor*marker.CurrData.Area)+(num2*marker.PreviousData.Area))
-                    marker.CurrData.X=(int)((smoothingFactor*marker.CurrData.X)+(num2*marker.PreviousData.X))
-                    marker.CurrData.Y=(int)((smoothingFactor*marker.CurrData.Y)+(num2*marker.PreviousData.Y))
-                    marker.CurrData.DX = marker.CurrData.X - marker.PreviousData.X
-                    marker.CurrData.DY = marker.CurrData.Y - marker.PreviousData.Y
-                    marker.CurrData.top = (int)((smoothingFactor*marker.CurrData.top)+(num2*marker.PreviousData.top))
-                    marker.CurrData.bottom = (int)((smoothingFactor*marker.CurrData.bottom)+(num2*marker.PreviousData.bottom))
-                    marker.CurrData.left = (int)((smoothingFactor*marker.CurrData.left)+(num2*marker.PreviousData.left))
-                    marker.CurrData.right = (int)((smoothingFactor*marker.CurrData.right)+(num2*marker.PreviousData.right))
-                    marker.CurrData.Bounds = wx.Rect(marker.CurrData.left,marker.CurrData.top,marker.CurrData.right-marker.CurrData.left,marker.CurrData.bottom-marker.CurrData.top)
-                marker.FireMarkerEventData()
-            else:
-                marker.CurrData.Present = False
+    def RefreshCameraList(self):
+        self.CleanupCameras()
+        self.__cameras = []
+        self.CurrentCamera = Camera()
+        self.__camHeight = self.CurrentCamera.CaptureHeight
+        self.__camWidth = self.CurrentCamera.CaptureWidth
+        self.__cameras.append(self.CurrentCamera)
+        self.CurrentCamera.Start()
+
+    def RemoveMarker(self, index):
+        count = len(self.__markers)
+        if index < 0 or index >= count:
+            raise IndexError("index")
+        self.__markers.pop(index)
                             
     def preProcessMarker(self, marker, imgWidth, imgHeight):
         if marker.PreviousData.Present:
@@ -379,21 +363,37 @@ class TouchlessMgr:
         marker.CurrData.left = imgWidth
         marker.CurrData.right = 0
 
-    def RefreshCameraList(self):
-        self.CleanupCameras()
-        self.__cameras = []
-        self.CurrentCamera = Camera()
-        self.__camHeight = self.CurrentCamera.CaptureHeight
-        self.__camWidth = self.CurrentCamera.CaptureWidth
-        self.__cameras.append(self.CurrentCamera)
-        self.CurrentCamera.Start()
-
-    def RemoveMarker(self, index):
-        count = len(self.__markers)
-        if index < 0 or index >= count:
-            raise IndexError("index")
-        self.__markers.pop(index)
-
+    def postProcessMarker(self, marker):
+        marker.CurrData.Timestamp = time.time()
+        if marker.CurrData.Area > 0:
+            marker.CurrData.Present = True
+            marker.CurrData.ColorAvg = marker.RepresentativeColor
+            marker.CurrData.X /= marker.CurrData.Area
+            marker.CurrData.Y /= marker.CurrData.Area
+            marker.CurrData.Bounds = wx.Rect(marker.CurrData.left,marker.CurrData.top,marker.CurrData.right-marker.CurrData.left,marker.CurrData.bottom-marker.CurrData.top)
+            if marker.PreviousData.Present:
+                marker.CurrData.DX = marker.CurrData.X-marker.PreviousData.X
+                marker.CurrData.DY = marker.CurrData.Y-marker.PreviousData.Y
+            if marker.SmoothingEnabled:
+                marker.CurrData.X = (marker.CurrData.X+((marker.CurrData.Bounds.left+marker.CurrData.Bounds.right)/2))/2
+                marker.CurrData.Y = (marker.CurrData.Y+((marker.CurrData.Bounds.top+marker.CurrData.Bounds.bottom)/2))/2
+                if marker.PreviousData.Present:
+                    smoothingFactor = marker.smoothingFactor
+                    num2 = 1.00-smoothingFactor
+                    marker.CurrData.Area = (int)((smoothingFactor*marker.CurrData.Area)+(num2*marker.PreviousData.Area))
+                    marker.CurrData.X=(int)((smoothingFactor*marker.CurrData.X)+(num2*marker.PreviousData.X))
+                    marker.CurrData.Y=(int)((smoothingFactor*marker.CurrData.Y)+(num2*marker.PreviousData.Y))
+                    marker.CurrData.DX = marker.CurrData.X - marker.PreviousData.X
+                    marker.CurrData.DY = marker.CurrData.Y - marker.PreviousData.Y
+                    marker.CurrData.top = (int)((smoothingFactor*marker.CurrData.top)+(num2*marker.PreviousData.top))
+                    marker.CurrData.bottom = (int)((smoothingFactor*marker.CurrData.bottom)+(num2*marker.PreviousData.bottom))
+                    marker.CurrData.left = (int)((smoothingFactor*marker.CurrData.left)+(num2*marker.PreviousData.left))
+                    marker.CurrData.right = (int)((smoothingFactor*marker.CurrData.right)+(num2*marker.PreviousData.right))
+                    marker.CurrData.Bounds = wx.Rect(marker.CurrData.left,marker.CurrData.top,marker.CurrData.right-marker.CurrData.left,marker.CurrData.bottom-marker.CurrData.top)
+                marker.FireMarkerEventData()
+            else:
+                marker.CurrData.Present = False
+                
     def UpdateMarkers(self, img):
         if self.MarkersCount == 4:
             self.lock.acquire()

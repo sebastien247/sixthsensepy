@@ -293,6 +293,7 @@ class WuwPanel(wx.Panel):
                 if self.__mgr.MarkersCount == 4:
                     self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
                 time.sleep(self.__times)
+                print(len(self.Markers))
         def stop(self):
             if DEBUG: print "ThreadMarker.stop"
             self.__stop = True
@@ -386,7 +387,7 @@ class WuwPanel(wx.Panel):
 
             if self.__drawSelectionAdornment:
                 dc.SetPen(wx.Pen("red", 1))
-                dc.SetBrush(wx.Brush("",wx.TRANSPARENT))
+                dc.SetBrush(wx.Brush("white", 1 ))
                 dc.DrawEllipse(self.__markerCenter.x-self.__markerRadius,self.__markerCenter.y-self.__markerRadius,2*self.__markerRadius,2*self.__markerRadius)
 
             if self.__latestFrameTimeSegment:
@@ -544,7 +545,7 @@ class WuwPanel(wx.Panel):
             counts = len(fileName)
             if counts > 4:
                 if fileName[counts-1]=='l' and fileName[counts-2]=='m' and fileName[counts-3]=='x' and fileName[counts-4]=='.':
-                    self.__rec.LoadGesture(folderName + "\\" + fileName)
+                    self.__rec.LoadGesture(folderName + "/" + fileName)
 
 
     ###Gesture Mouse Events
@@ -580,10 +581,14 @@ class WuwPanel(wx.Panel):
         if self.__isDown:
             self.__isDown = False
             if len(self.__points) >= 5: # require 5 points for a valid gesture
+                print self.__recording
+                print self.__rec.NumGestures
                 if self.__recording:
                     pass
+
                 elif self.__rec.NumGestures > 0:
                     result = self.__rec.Recognize(self.__points)
+                    print result
                     self.lblResult.Label = str.format("{0}: {1} ({2}px, {3}",
                                                  result.Name,
                                                  round(result.Score,2),
