@@ -10,6 +10,8 @@ import wx
 import numpy as np
 import math
 import time
+import cv2
+
 
 #摄像头类定义
 class Camera:
@@ -28,11 +30,13 @@ class Camera:
 
     def Start(self):
         if not self.isOn():
-            self.__cam = cv.CaptureFromCAM(0)
+            #self.__cam = cv.CaptureFromCAM(0)
+            self.__cam = cv2.VideoCapture(0)
 
     def Stop(self):
         if self.isOn():
-            self.__cam = cv.CaptureFromCAM(0)
+            #self.__cam = cv.CaptureFromCAM(0)
+            self.__cam = cv2.VideoCapture(0)
             self.__cam = None
 
     def isOn(self):
@@ -43,9 +47,11 @@ class Camera:
 
     def ImageCaptured(self):
         self.__imgLock.acquire()
-        img = cv.QueryFrame(self.__cam)
-        cv.CvtColor(img, img, cv.CV_BGR2RGB)
-        self.__img = Image.fromstring("RGB", (self.CaptureWidth, self.CaptureHeight), img.tostring())
+        #img = cv.QueryFrame(self.__cam)
+        _, img = self.__cam.read()
+        #cv.CvtColor(img, img, cv.CV_BGR2RGB)
+        #self.__img = Image.fromstring("RGB", (self.CaptureWidth, self.CaptureHeight), img.tostring())
+        self.__img = img
         self.__imgLock.release()
 
     def GetCurrentImage(self):
@@ -54,7 +60,8 @@ class Camera:
             img = None
         else:
           #  img = self.__img.copy()
-            img = self.__img.transpose(Image.FLIP_LEFT_RIGHT)
+            img = self.__img
+          #  img = self.__img.transpose(Image.FLIP_LEFT_RIGHT)
         self.__imgLock.release()
         return img
 
@@ -65,10 +72,13 @@ class Camera:
 
 #Image To Bitmap
 def ImageToBitmap(img):
-    img2 = wx.EmptyImage(img.size[0], img.size[1])
-    img2.SetData(img.tostring())
-    bitmap = wx.BitmapFromImage(img2)
-    return bitmap
+    # img2 = wx.EmptyImage(np.size(img, 0), np.size(img, 1))
+    # img2.SetData(img.tostring())
+    # bitmap = wx.BitmapFromImage(img2)
+    img2 = cv2.cvtColor(np.uint8(img), cv2.cv.CV_BGR2RGB) 
+    h, w = img.shape[:2]
+    wxbmp = wx.BitmapFromBuffer(w, h, img2)
+    return wxbmp
 
 
 #HSV类定义
