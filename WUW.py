@@ -387,7 +387,7 @@ class WuwPanel(wx.Panel):
 
             if self.__drawSelectionAdornment:
                 dc.SetPen(wx.Pen("red", 1))
-                dc.SetBrush(wx.Brush("white", 1 ))
+                #dc.SetBrush(wx.Brush("",wx.TRANSPARENT))
                 dc.DrawEllipse(self.__markerCenter.x-self.__markerRadius,self.__markerCenter.y-self.__markerRadius,2*self.__markerRadius,2*self.__markerRadius)
 
             if self.__latestFrameTimeSegment:
