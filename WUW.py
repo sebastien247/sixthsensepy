@@ -177,8 +177,7 @@ class WuwPanel(wx.Panel):
         self.BoxStock.threadTime=None
         self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
                                      size=(20*self.Grid,40*self.Grid))
-        self.BoxStock=wx.StaticBox(self,pos=(5*self.Grid,25*self.Grid),
-                                     size=(90*self.Grid,50*self.Grid))
+
         self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
                                    size=(64*self.Grid,48*self.Grid))
 
@@ -718,7 +717,6 @@ class WuwPanel(wx.Panel):
     def showStock(self, event):
         # TO FINISH
         """ Function to show the values of the stocks in real time """
-        
 
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
