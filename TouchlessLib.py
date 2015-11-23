@@ -279,7 +279,6 @@ class Marker:
         return True
 
     def FireMarkerEventData(self):
-        print self.OnChange
         if not self.OnChange == None:
             self.OnChange(self.CurrData)
 
@@ -651,29 +650,32 @@ class TouchlessMgr:
             keypoints.append(k)
             array[0].CurrData.X = k.pt[0]
             array[0].CurrData.Y = k.pt[1]
+            array[0].CurrData.Present = True
         if keypoints_g:
             k = max(keypoints_g, key=self.keypoints_size)
             keypoints.append(k)
             array[1].CurrData.X = k.pt[0]
             array[1].CurrData.Y = k.pt[1]
+            array[1].CurrData.Present = True
         if keypoints_b:
             k = max(keypoints_b, key=self.keypoints_size)
             keypoints.append(k)
             array[2].CurrData.X = k.pt[0]
             array[2].CurrData.Y = k.pt[1]
+            array[2].CurrData.Present = True
         if keypoints_y:
             k = max(keypoints_y, key=self.keypoints_size)
             keypoints.append(k)
             array[3].CurrData.X = k.pt[0]
             array[3].CurrData.Y = k.pt[1]
-
+            array[3].CurrData.Present = True
 
         for marker in array:
-            marker.CurrData.Present = True
             marker.FireMarkerEventData()
+            marker.CurrData.Present = False
 
-        for keypoint in keypoints:
-            print keypoint.pt
+        # for keypoint in keypoints:
+        #     print keypoint.pt
 
 
 
