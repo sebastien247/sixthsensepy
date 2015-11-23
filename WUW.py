@@ -36,6 +36,17 @@ class WuwPanel(wx.Panel):
 
         self.SetBackgroundColour(wx.Colour(0, 0, 0))
         self.SetForegroundColour(wx.Colour(255, 255, 255))
+        #Stock app
+        panel = wx.Panel(self)
+        self.trying=[]
+        style = wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE
+        self.text = wx.StaticText(panel, style=style)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.AddStretchSpacer(1)
+        sizer.Add(self.text, 0, wx.EXPAND)
+        sizer.AddStretchSpacer(1)
+        panel.SetSizer(sizer)
+
 
         ###构建界面
         #构建TabPage构件组
@@ -160,11 +171,13 @@ class WuwPanel(wx.Panel):
         #构建DemoBox
         self.BoxClock=wx.StaticBox(self,pos=(40*self.Grid,30*self.Grid),
                                    size=(20*self.Grid,20*self.Grid))
-        self.BoxClock.threadTime=None
-        self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
-                                     size=(20*self.Grid,40*self.Grid))
         self.BoxStock=wx.StaticBox(self,pos=(5*self.Grid,25*self.Grid),
                                      size=(90*self.Grid,50*self.Grid))
+        self.BoxClock.threadTime=None
+        self.BoxStock.threadTime=None
+        self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
+                                     size=(20*self.Grid,40*self.Grid))
+
         self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
                                    size=(64*self.Grid,48*self.Grid))
 
@@ -194,6 +207,7 @@ class WuwPanel(wx.Panel):
         self.photoDemo = False
         self.weatherDemo = False
         self.StockDemo = False
+        self.trying = []
 
 
         ###Load
@@ -384,6 +398,8 @@ class WuwPanel(wx.Panel):
         self.__touchlessMgr.CleanupCameras()
         if not self.BoxClock.threadTime == None:
             self.BoxClock.threadTime.stop()
+        if not self.BoxStock.threadTime == None:
+            self.BoxStock.threadTime.stop()
 
     def WUW_Paint(self, event):
         if DEBUG: print "WUW_Paint"
@@ -701,7 +717,6 @@ class WuwPanel(wx.Panel):
     def showStock(self, event):
         # TO FINISH
         """ Function to show the values of the stocks in real time """
-        
 
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
@@ -709,12 +724,25 @@ class WuwPanel(wx.Panel):
         pass
 
     ##Stock Demo
+    def stock(self):
+        for i in self.trying:
+            i.Destroy()
+        self.trying = []
+        stockValue2 = self.trying.append(wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('AC.PA')),pos=(50,50)))
+        stockValue3 = self.trying.append(wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('AIR.PA')),pos=(350,50)))
+        stockValue4 = self.trying.append(wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('LR.PA')),pos=(650,50)))
+        #labelStock = wx.StaticText(self.BoxStock,label=stockValue2,pos=(30,30))
+        #self.text.SetLabel(str(stockValue2))
+        wx.CallLater(5000, self.stock)
+
     def buttonStockDemo_Click(self, event):
         print "buttonStockDemo_Click"
         if self.StockDemo:
             self.StockDemo = False
             self.labelDemoName.Label = "WUW"
             self.buttonStockDemo.Label = "Stock"
+            self.BoxStock.threadTime.stop()
+            self.BoxStock.threadTime=None
             self.BoxStock.Hide()
             self.ResetEnvironment()
         else:
@@ -722,35 +750,33 @@ class WuwPanel(wx.Panel):
             self.StockDemo = True
             self.labelDemoName.Label = "Stock"
             self.buttonStockDemo.Label = "Stop Stock"
+            self.BoxStock.threadTime = self.ThreadTime("time", 1, self.BoxStock)
+            self.BoxStock.threadTime.start()
             #self.BoxStock.SetBackgroundColour('#ffffff')
             stock1 = 'Stock value 1:'
-
             # values to get from the actual stock exchange
             stockLabel1 = 'Accor S.A.'
             stockLabel2 = 'AIRBUS GROUP'
-            stockLabel3 = 'TOTAL S.A.' 
+            stockLabel3 = 'Legrand SA'
             # set a box that will contain the first stock values
             stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(290, 230))
             #get the the stock value from ystockquote app
-            stockValue1 = ystockquote.get_last_trade_price('AC.PA')
-            self.labelStock = wx.StaticText(self.BoxStock,label=stockValue1,pos=(50,25))
+            #stockValue1 = ystockquote.get_last_trade_price('AC.PA')
+            #self.labelStock = wx.StaticText(self.BoxStock,label=stockValue1,pos=(50,25))
 
             stockBox2 = wx.StaticBox(self.BoxStock,-1,stockLabel2, (305, 5), size=(290, 230))
-            stockValue2 = ystockquote.get_last_trade_price('AIR.PA')
-            self.labelStock = wx.StaticText(self.BoxStock,label=stockValue2,pos=(350,25))
 
             stockBox3 = wx.StaticBox(self.BoxStock,-1,stockLabel3, (605, 5), size=(290, 230))
-            stockValue3 = ystockquote.get_last_trade_price('FP.PA')
-            self.labelStock = wx.StaticText(self.BoxStock,label=stockValue3,pos=(650,25))
 
             self.BoxStock.Show()
+            self.stock()
 
 def main():
     app = wx.App(False)
     frame = wx.Frame(None, wx.ID_ANY, "WUW", size=(WuwPanel.Width,WuwPanel.Height))
     frame.SetTitle("SixthSense Python")
     panel = WuwPanel(frame)
-    frame.Show(True)
+    frame.Show()
     app.MainLoop()
 
 if __name__ == "__main__":
