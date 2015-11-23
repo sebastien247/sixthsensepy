@@ -300,10 +300,9 @@ class WuwPanel(wx.Panel):
         def run(self):
             if DEBUG: print "ThreadMarker.run"
             while not self.__stop:
-                if self.__mgr.MarkersCount == 4:
-                    self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
-                time.sleep(self.__times)
-                print(len(self.Markers))
+                #if self.__mgr.MarkersCount == 4:
+                self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
+                #time.sleep(self.__times)
         def stop(self):
             if DEBUG: print "ThreadMarker.stop"
             self.__stop = True
@@ -485,9 +484,9 @@ class WuwPanel(wx.Panel):
 
             img = self.__latestFrame
             size = self.pictureBoxDisplay.GetSize()
-            self.__markerCenter.x = (self.__markerCenter.x * img.size[0]) / size.width
-            self.__markerCenter.y = (self.__markerCenter.y * img.size[1]) / size.height
-            self.__markerRadius = (self.__markerRadius * img.size[1]) / size.height
+            self.__markerCenter.x = (self.__markerCenter.x * img.shape[0]) / size.width
+            self.__markerCenter.y = (self.__markerCenter.y * img.shape[1]) / size.height
+            self.__markerRadius = (self.__markerRadius * img.shape[1]) / size.height
             newMarker = self.__touchlessMgr.AddMarker(str.format("Marker #{0}", self.__addedMarkerCount), img, self.__markerCenter, self.__markerRadius)
             self.__addedMarkerCount += 1
 

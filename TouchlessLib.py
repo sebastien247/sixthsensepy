@@ -232,17 +232,54 @@ class Marker:
         self.hsvFreq = {}
         self.OnChange = None
 
+
     def ToString(self):
         return self.__name
 
+    # def SetMarkerAppearance(self, rawHsvFreq):
+    #     self.binsHue = 40
+    #     self.binsSat = 20
+    #     self.binsVal = 10
+    #     self.RepresentativeColor = HSV.ConvertToColor(HSV(*rawHsvFreq))
+    #     return True
+
     def SetMarkerAppearance(self, rawHsvFreq):
-        self.binsHue = 40
-        self.binsSat = 20
-        self.binsVal = 10
-        self.RepresentativeColor = HSV.ConvertToColor(HSV(*rawHsvFreq))
+        shape = rawHsvFreq.shape
+        self.binsHue = (int)(shape[0])
+        self.binsSat = (int)(shape[1])
+        self.binsVal = (int)(shape[2])
+        self.RepresentativeColor = wx.Colour(0,0,0)
+        num = 0
+        num2 = 0
+        num3 = 0
+        num4 = 0
+        num5 = 0
+        for i in range(self.binsHue):
+            for j in range(self.binsSat):
+                for k in range(self.binsVal):
+                    if rawHsvFreq[i,j,k] > 0:
+                        key = str.format("{0}", ColorKey(HSV(i,j,k)).key)
+                        self.hsvFreq[key] = rawHsvFreq[i,j,k]
+                        num += rawHsvFreq[i,j,k]
+                        num3 += rawHsvFreq[i,j,k] * i
+                        num4 += rawHsvFreq[i,j,k] * j
+                        num5 += rawHsvFreq[i,j,k] * k
+                        num2 += 1
+        print self.hsvFreq
+        if num2 == 0:
+            return False
+        self.Threshold = (int)((2 * num) / num2)
+        num3 /= num2
+        num3 %= 360
+        num4 /= num2
+        num4 %= 255
+        num5 /= num2
+        num5 %= 255
+        self.RepresentativeColor = HSV.ConvertToColor(HSV(num3,num4,num5))
         return True
 
     def FireMarkerEventData(self):
+        print self.OnChange
         if not self.OnChange == None:
             self.OnChange(self.CurrData)
 
@@ -259,6 +296,81 @@ class TouchlessMgr:
         self.__camWidth = 0
         self.CurrentCamera = None
         self.lock = threading.RLock()
+
+
+        ############################################
+
+        # Setup SimpleBlobDetector parameters.
+        self.params = cv2.SimpleBlobDetector_Params()
+
+        # Change thresholds
+        self.params.minThreshold = 10
+        self.params.maxThreshold = 200
+
+        # Filter by Area.
+        self.params.filterByArea = True
+        self.params.minArea = 1000
+        self.params.maxArea = 8000
+
+        # Filter by Circularity
+        self.params.filterByCircularity = True
+        self.params.minCircularity = 0.1
+
+        # Filter by Convexity
+        self.params.filterByConvexity = True
+        self.params.minConvexity = 0.40
+
+        # Filter by Inertia
+        self.params.filterByInertia = True
+        self.params.minInertiaRatio = 0.01
+
+        # Create a detector with the parameters
+        self.ver = (cv2.__version__).split('.')
+        if int(self.ver[0]) < 3 :
+            self.detector = cv2.SimpleBlobDetector(self.params)
+        else : 
+            self.detector = cv2.SimpleBlobDetector_create(self.params)
+
+        ############################################
+
+        # ---------- Red Mask ---------- #
+        #- lower mask (0-10)
+        self.l_lower_red = np.array([0,125,125])
+        self.l_upper_red = np.array([10,255,255])
+        #- upper mask (170-180)
+        self.u_lower_red = np.array([170,125,125])
+        self.u_upper_red = np.array([180,255,255])
+        # -------- End Red Mask -------- #
+
+        # ---------- Green Mask ---------- #
+        #- lower mask
+        self.l_lower_green = np.array([30,125,125])
+        self.l_upper_green = np.array([120,255,255])
+        #- upper mask
+        self.u_lower_green = np.array([120,125,125])
+        self.u_upper_green = np.array([150,255,255])
+        # -------- End Green Mask -------- #
+
+        # ---------- Blue Mask ---------- #
+        #- lower mask
+        self.l_lower_blue = np.array([100,130,130])
+        self.l_upper_blue = np.array([110,255,255])
+        #- upper mask (170-180)
+        self.u_lower_blue = np.array([110,130,130])
+        self.u_upper_blue = np.array([120,255,255])
+        # -------- End Blue Mask -------- #
+
+        # ---------- Yellow Mask ---------- #
+        #- lower mask
+        self.l_lower_yellow = np.array([22,130,130])
+        self.l_upper_yellow = np.array([26,255,255])
+        #- upper mask
+        self.u_lower_yellow = np.array([26,130,130])
+        self.u_upper_yellow = np.array([30,255,255])
+        # -------- End Yellow Mask -------- #
+
+    def keypoints_size(self, p):
+        return p.size
 
     def MarkerScanCommandComparison(self, obj1, obj2):
         if obj1.coordinate > obj2.coordinate:
@@ -282,7 +394,7 @@ class TouchlessMgr:
 
     def AddMarker(self, name, img, center, radius):
         item = Marker(name)
-        item.SetMarkerAppearance(self.GetMarkerAppearance(img, center, radius))
+        # item.SetMarkerAppearance(self.GetMarkerAppearance(img, center, radius))
         self.__markers.append(item)
         return item
 
@@ -301,25 +413,44 @@ class TouchlessMgr:
             self.CurrentCamera.ImageCaptured()
             self.UpdateMarkers(self.CurrentCamera.GetCurrentImage())
 
+    # def GetMarkerAppearance(self, img, center, radius, binCounts=HSV(40,20,10)):
+    #     height = img.size[1]
+    #     width = img.size[0]
+    #     hue = sat = val = 0
+    #     n = 0
+    #     for i in range(height):
+    #         for j in range(width):
+    #             num = j - center.x
+    #             num2 = i - center.y
+    #             flag = math.sqrt(num*num+num2*num2) < radius
+    #             if flag:
+    #                 data = img.getpixel((j,i))
+    #                 hsv = RGB.ConvertToHSV(RGB(data[0],data[1],data[2]))
+    #                 hue += hsv.Hue
+    #                 sat += hsv.Sat
+    #                 val += hsv.Val
+    #                 n += 1
+    #     print (hue / n, sat / n, val / n)
+    #     return (hue / n, sat / n, val / n)
+
+
     def GetMarkerAppearance(self, img, center, radius, binCounts=HSV(40,20,10)):
         height = img.size[1]
         width = img.size[0]
-        hue = sat = val = 0
-        n = 0
+        numArray = np.zeros((binCounts.Hue,binCounts.Sat,binCounts.Val))
+        flag = False
         for i in range(height):
             for j in range(width):
+                data = img.getpixel((j,i))
+                binnedHSV = HSV.GetBinnedHSV(RGB.ConvertToHSV(RGB(data[0],data[1],data[2])),binCounts)
                 num = j - center.x
                 num2 = i - center.y
                 flag = math.sqrt(num*num+num2*num2) < radius
                 if flag:
-                    data = img.getpixel((j,i))
-                    hsv = RGB.ConvertToHSV(RGB(data[0],data[1],data[2]))
-                    hue += hsv.Hue
-                    sat += hsv.Sat
-                    val += hsv.Val
-                    n += 1
-        print (hue / n, sat / n, val / n)
-        return (hue / n, sat / n, val / n)
+                    numArray[binnedHSV.Hue,binnedHSV.Sat,binnedHSV.Val] += 2
+                else:
+                    numArray[binnedHSV.Hue,binnedHSV.Sat,binnedHSV.Val] -= 1
+        return numArray
 
     def RefreshCameraList(self):
         self.CleanupCameras()
@@ -404,76 +535,150 @@ class TouchlessMgr:
             else:
                 marker.CurrData.Present = False
                 
-    def UpdateMarkers(self, img):
-        if self.MarkersCount == 4:
-            self.lock.acquire()
-            t1 = time.time()
-            hsv = HSV()
-            flag = True
-            key = ColorKey()
-            array = self.__markers[:]
-            self.__markerScanCommandsY = []
-            for marker in self.__markers:
-                self.preProcessMarker(marker,img.size[0],img.size[1])
-                self.__markerScanCommandsY.append(marker.searchMinY)
-                self.__markerScanCommandsY.append(marker.searchMaxY)
-            self.__markerScanCommandsY.sort(cmp=self.MarkerScanCommandComparison)
-            counts = len(self.__markerScanCommandsY)
-            for i in range(counts):
-                if self.__markerScanCommandsY[i].command:
-                    self.__scanMarkersY.append(self.__markerScanCommandsY[i].marker)
-                else:
-                    self.__scanMarkersY.remove(self.__markerScanCommandsY[i].marker)
-                if not len(self.__scanMarkersY) == 0:
-                    self.__markerScanCommandsX = []
-                    for marker in self.__scanMarkersY:
-                        self.__markerScanCommandsX.append(marker.searchMinX)
-                        self.__markerScanCommandsX.append(marker.searchMaxX)
-                    self.__markerScanCommandsX.sort(cmp = self.MarkerScanCommandComparison)
-                    count = len(self.__markerScanCommandsX)
-                    for j in range(count):
-                        if self.__markerScanCommandsX[j].command:
-                            self.__scanMarkersX.append(self.__markerScanCommandsX[j].marker)
-                        else:
-                            self.__scanMarkersX.remove(self.__markerScanCommandsX[j].marker)
-                        if not len(self.__scanMarkersX) == 0:
-                            if (counts < (i+1)) or (count <(j+1)):
-                                raise AssertionError("This state should never be reached, this means that we are processing in an area after an add command, but not before a remove command, check search bounds for inversion")
-                            for k in range(self.__markerScanCommandsY[i].coordinate,self.__markerScanCommandsY[i+1].coordinate+1):
-                                xy = (self.__markerScanCommandsX[j].coordinate,k)
-                                coordinate = self.__markerScanCommandsX[j].coordinate
-                                while coordinate <= self.__markerScanCommandsX[j+1].coordinate:
-                                    flag = True
-                                    for marker in self.__scanMarkersX:
-                                        if flag:
-                                            rgb = img.getpixel(xy)
-                                            hsv = RGB.ConvertToHSV(RGB(rgb[0],rgb[1],rgb[2]))
-                                            flag = False
-                                        if (marker.Highlight and marker.PreviousData.Present) and (((coordinate == marker.searchMinX.coordinate)or(coordinate == marker.searchMaxX.coordinate))or((k == marker.searchMinY.coordinate)or(k == marker.searchMaxY.coordinate))):
-                                            color = marker.RepresentativeColor
-                                            img.putpixel(xy,(color.red,color.green,color.blue))
-                                        key.SetHsv(HSV.GetBinnedHSV(hsv,HSV(marker.binsHue,marker.binsSat,marker.binsVal)))
-                                        key_ = str.format("{0}", key.key)
-                                        if marker.hsvFreq.has_key(key_) and ((int)(marker.hsvFreq[key_]) > marker.Threshold):
-                                            marker.CurrData.Area += 1
-                                            marker.CurrData.X += coordinate
-                                            marker.CurrData.Y += k
-                                            if k < marker.CurrData.top:
-                                                marker.CurrData.top = k
-                                            if k > marker.CurrData.bottom:
-                                                marker.CurrData.bottom = k
-                                            if coordinate < marker.CurrData.left:
-                                                marker.CurrData.left = coordinate
-                                            if coordinate > marker.CurrData.right:
-                                                marker.CurrData.right = coordinate
-                                            if marker.Highlight:
-                                                color = marker.RepresentativeColor
-                                                img.putpixel(xy,(color.red,color.green,color.blue))
-                                    coordinate += 1
-                                    xy = (coordinate, k)
-            for marker in array:
-                self.postProcessMarker(marker)
-            print time.time() - t1
-            self.lock.release()
+    # def UpdateMarkers(self, img):
+    #     if self.MarkersCount == 4:
+    #         self.lock.acquire()
+    #         t1 = time.time()
+    #         hsv = HSV()
+    #         flag = True
+    #         key = ColorKey()
+    #         array = self.__markers[:]
+    #         self.__markerScanCommandsY = []
+    #         for marker in self.__markers:
+    #             self.preProcessMarker(marker,img.size[0],img.size[1])
+    #             self.__markerScanCommandsY.append(marker.searchMinY)
+    #             self.__markerScanCommandsY.append(marker.searchMaxY)
+    #         self.__markerScanCommandsY.sort(cmp=self.MarkerScanCommandComparison)
+    #         counts = len(self.__markerScanCommandsY)
+    #         for i in range(counts):
+    #             if self.__markerScanCommandsY[i].command:
+    #                 self.__scanMarkersY.append(self.__markerScanCommandsY[i].marker)
+    #             else:
+    #                 self.__scanMarkersY.remove(self.__markerScanCommandsY[i].marker)
+    #             if not len(self.__scanMarkersY) == 0:
+    #                 self.__markerScanCommandsX = []
+    #                 for marker in self.__scanMarkersY:
+    #                     self.__markerScanCommandsX.append(marker.searchMinX)
+    #                     self.__markerScanCommandsX.append(marker.searchMaxX)
+    #                 self.__markerScanCommandsX.sort(cmp = self.MarkerScanCommandComparison)
+    #                 count = len(self.__markerScanCommandsX)
+    #                 for j in range(count):
+    #                     if self.__markerScanCommandsX[j].command:
+    #                         self.__scanMarkersX.append(self.__markerScanCommandsX[j].marker)
+    #                     else:
+    #                         self.__scanMarkersX.remove(self.__markerScanCommandsX[j].marker)
+    #                     if not len(self.__scanMarkersX) == 0:
+    #                         if (counts < (i+1)) or (count <(j+1)):
+    #                             raise AssertionError("This state should never be reached, this means that we are processing in an area after an add command, but not before a remove command, check search bounds for inversion")
+    #                         for k in range(self.__markerScanCommandsY[i].coordinate,self.__markerScanCommandsY[i+1].coordinate+1):
+    #                             xy = (self.__markerScanCommandsX[j].coordinate,k)
+    #                             coordinate = self.__markerScanCommandsX[j].coordinate
+    #                             while coordinate <= self.__markerScanCommandsX[j+1].coordinate:
+    #                                 flag = True
+    #                                 for marker in self.__scanMarkersX:
+    #                                     if flag:
+    #                                         rgb = img.getpixel(xy)
+    #                                         hsv = RGB.ConvertToHSV(RGB(rgb[0],rgb[1],rgb[2]))
+    #                                         flag = False
+    #                                     if (marker.Highlight and marker.PreviousData.Present) and (((coordinate == marker.searchMinX.coordinate)or(coordinate == marker.searchMaxX.coordinate))or((k == marker.searchMinY.coordinate)or(k == marker.searchMaxY.coordinate))):
+    #                                         color = marker.RepresentativeColor
+    #                                         print color
+    #                                         img.putpixel(xy,(color.red,color.green,color.blue))
+    #                                     key.SetHsv(HSV.GetBinnedHSV(hsv,HSV(marker.binsHue,marker.binsSat,marker.binsVal)))
+    #                                     key_ = str.format("{0}", key.key)
+    #                                     if marker.hsvFreq.has_key(key_) and ((int)(marker.hsvFreq[key_]) > marker.Threshold):
+    #                                         marker.CurrData.Area += 1
+    #                                         marker.CurrData.X += coordinate
+    #                                         marker.CurrData.Y += k
+    #                                         if k < marker.CurrData.top:
+    #                                             marker.CurrData.top = k
+    #                                         if k > marker.CurrData.bottom:
+    #                                             marker.CurrData.bottom = k
+    #                                         if coordinate < marker.CurrData.left:
+    #                                             marker.CurrData.left = coordinate
+    #                                         if coordinate > marker.CurrData.right:
+    #                                             marker.CurrData.right = coordinate
+    #                                         if marker.Highlight:
+    #                                             color = marker.RepresentativeColor
+    #                                             img.putpixel(xy,(color.red,color.green,color.blue))
+    #                                 coordinate += 1
+    #                                 xy = (coordinate, k)
+    #         for marker in array:
+    #             print marker.CurrData.__dict__
+    #             self.postProcessMarker(marker)
+    #         print time.time() - t1
+    #         self.lock.release()
 
             
+    def UpdateMarkers(self, img):
+        self.lock.acquire()
+
+        array = self.__markers[:]
+        #print array
+
+        keypoints = []
+        im = img
+
+        # # Convert to HSV
+        im_hsv=cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+
+        #- Masks
+        red_mask_lower = cv2.inRange(im_hsv, self.l_lower_red, self.l_upper_red)
+        red_mask_upper = cv2.inRange(im_hsv, self.u_lower_red, self.u_upper_red)
+        red_mask = 255 - (red_mask_lower + red_mask_upper)
+
+        green_mask_lower = cv2.inRange(im_hsv, self.l_lower_green, self.l_upper_green)
+        green_mask_upper = cv2.inRange(im_hsv, self.u_lower_green, self.u_upper_green)
+        green_mask = 255 - (green_mask_lower + green_mask_upper)
+
+        blue_mask_lower = cv2.inRange(im_hsv, self.l_lower_blue, self.l_upper_blue)
+        blue_mask_upper = cv2.inRange(im_hsv, self.u_lower_blue, self.u_upper_blue)
+        blue_mask = 255 - (blue_mask_lower + blue_mask_upper)
+
+        yellow_mask_lower = cv2.inRange(im_hsv, self.l_lower_yellow, self.l_upper_yellow)
+        yellow_mask_upper = cv2.inRange(im_hsv, self.u_lower_yellow, self.u_upper_yellow)
+        yellow_mask = 255 - (yellow_mask_lower + yellow_mask_upper)
+
+        # Detect blobs.
+        keypoints_r = self.detector.detect(red_mask)
+        keypoints_g = self.detector.detect(green_mask)
+        keypoints_b = self.detector.detect(blue_mask)
+        keypoints_y = self.detector.detect(yellow_mask)
+
+        # Get upper size of keypoints
+        if keypoints_r:
+            k = max(keypoints_r, key=self.keypoints_size)
+            keypoints.append(k)
+            array[0].CurrData.X = k.pt[0]
+            array[0].CurrData.Y = k.pt[1]
+        if keypoints_g:
+            k = max(keypoints_g, key=self.keypoints_size)
+            keypoints.append(k)
+            array[1].CurrData.X = k.pt[0]
+            array[1].CurrData.Y = k.pt[1]
+        if keypoints_b:
+            k = max(keypoints_b, key=self.keypoints_size)
+            keypoints.append(k)
+            array[2].CurrData.X = k.pt[0]
+            array[2].CurrData.Y = k.pt[1]
+        if keypoints_y:
+            k = max(keypoints_y, key=self.keypoints_size)
+            keypoints.append(k)
+            array[3].CurrData.X = k.pt[0]
+            array[3].CurrData.Y = k.pt[1]
+
+
+        for marker in array:
+            marker.CurrData.Present = True
+            marker.FireMarkerEventData()
+
+        for keypoint in keypoints:
+            print keypoint.pt
+
+
+
+
+        # Draw detected blobs as red circles. cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
+        im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,255,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+        self.lock.release()
