@@ -387,7 +387,7 @@ class WuwPanel(wx.Panel):
     ###Touchless Event Handling
     def drawLatestImage(self, event):
         if DEBUG: print "drawLatestImage"
-        if self.__touchlessMgr.CurrentCamera == None:
+        if self.__touchlessMgr.CurrentCamera == None or not self.__show_settings:
             return
         if not self.__latestFrame == None:
             bmp = TouchlessLib.ImageToBitmap(self.__latestFrame)
