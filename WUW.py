@@ -18,6 +18,7 @@ import os
 import math
 import TouchlessLib
 import ystockquote
+import wx.lib.plot as plot
 from classes.Value import Value
 from classes.PointR import PointR
 from classes.GeometricRecognizer import GeometricRecognizer
@@ -46,7 +47,6 @@ class WuwPanel(wx.Panel):
         sizer.Add(self.text, 0, wx.EXPAND)
         sizer.AddStretchSpacer(1)
         panel.SetSizer(sizer)
-
 
         ###构建界面
         #构建TabPage构件组
@@ -760,6 +760,24 @@ class WuwPanel(wx.Panel):
             stockLabel3 = 'Legrand SA'
             # set a box that will contain the first stock values
             stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(290, 230))
+            # mild difference between wxPython26 and wxPython28
+            if wx.VERSION[1] < 7:
+                plotter = plot.PlotCanvas(stockBox1, pos=(15,10) ,size=(250, 190))
+            else:    
+                plotter = plot.PlotCanvas(stockBox1)
+                plotter.SetInitialSize(size=(400, 300))
+            # list of (x,y) data point tuples
+            data = [(1,2), (2,3), (3,5), (4,6), (5,8), (6,8), (12,10), (13,4)]
+            # draw points as a line
+            line = plot.PolyLine(data, colour='black', width=1)
+            # also draw markers, default colour is black and size is 2
+            # other shapes 'circle', 'cross', 'square', 'dot', 'plus'
+            marker = plot.PolyMarker(data, marker='dot')
+            # set up text, axis and draw
+            gc = plot.PlotGraphics([line, marker], 'Evolution of Accor SA', 'Time', 'Stock value')
+            plotter.Draw(gc, xAxis=(0,15), yAxis=(0,15))
+
+
             #get the the stock value from ystockquote app
             #stockValue1 = ystockquote.get_last_trade_price('AC.PA')
             #self.labelStock = wx.StaticText(self.BoxStock,label=stockValue1,pos=(50,25))
