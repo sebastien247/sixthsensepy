@@ -342,30 +342,21 @@ class TouchlessMgr:
         # -------- End Red Mask -------- #
 
         # ---------- Green Mask ---------- #
-        #- lower mask
-        self.l_lower_green = np.array([30,125,125])
-        self.l_upper_green = np.array([120,255,255])
-        #- upper mask
-        self.u_lower_green = np.array([120,125,125])
-        self.u_upper_green = np.array([150,255,255])
+        #- mask
+        self.l_lower_green = np.array([55,125,125])
+        self.l_upper_green = np.array([70,255,255])
         # -------- End Green Mask -------- #
 
         # ---------- Blue Mask ---------- #
-        #- lower mask
+        #- mask
         self.l_lower_blue = np.array([100,130,130])
-        self.l_upper_blue = np.array([110,255,255])
-        #- upper mask (170-180)
-        self.u_lower_blue = np.array([110,130,130])
-        self.u_upper_blue = np.array([120,255,255])
+        self.l_upper_blue = np.array([120,255,255])
         # -------- End Blue Mask -------- #
 
         # ---------- Yellow Mask ---------- #
-        #- lower mask
+        #- mask
         self.l_lower_yellow = np.array([22,130,130])
-        self.l_upper_yellow = np.array([26,255,255])
-        #- upper mask
-        self.u_lower_yellow = np.array([26,130,130])
-        self.u_upper_yellow = np.array([30,255,255])
+        self.l_upper_yellow = np.array([30,255,255])
         # -------- End Yellow Mask -------- #
 
     def keypoints_size(self, p):
@@ -627,16 +618,13 @@ class TouchlessMgr:
         red_mask = 255 - (red_mask_lower + red_mask_upper)
 
         green_mask_lower = cv2.inRange(im_hsv, self.l_lower_green, self.l_upper_green)
-        green_mask_upper = cv2.inRange(im_hsv, self.u_lower_green, self.u_upper_green)
-        green_mask = 255 - (green_mask_lower + green_mask_upper)
+        green_mask = 255 - green_mask_lower
 
         blue_mask_lower = cv2.inRange(im_hsv, self.l_lower_blue, self.l_upper_blue)
-        blue_mask_upper = cv2.inRange(im_hsv, self.u_lower_blue, self.u_upper_blue)
-        blue_mask = 255 - (blue_mask_lower + blue_mask_upper)
+        blue_mask = 255 - blue_mask_lower
 
         yellow_mask_lower = cv2.inRange(im_hsv, self.l_lower_yellow, self.l_upper_yellow)
-        yellow_mask_upper = cv2.inRange(im_hsv, self.u_lower_yellow, self.u_upper_yellow)
-        yellow_mask = 255 - (yellow_mask_lower + yellow_mask_upper)
+        yellow_mask = 255 - yellow_mask_lower
 
         # Detect blobs.
         keypoints_r = self.detector.detect(red_mask)
