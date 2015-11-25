@@ -33,6 +33,9 @@ class WuwPanel(wx.Panel):
         self.Grid = self.Width / 100
         wx.Panel.__init__(self, parent)
 
+        self.SetBackgroundColour(wx.Colour(0, 0, 0))
+        self.SetForegroundColour(wx.Colour(255, 255, 255))
+
         ###构建界面
         #构建TabPage构件组
         self.btnShowHide=wx.Button(self,pos=(self.Width-self.Grid*5,self.Grid),
@@ -688,6 +691,7 @@ class WuwPanel(wx.Panel):
 def main():
     app = wx.App(False)
     frame = wx.Frame(None, wx.ID_ANY, "WUW", size=(WuwPanel.Width,WuwPanel.Height))
+    frame.SetTitle("SixthSense Python")
     panel = WuwPanel(frame)
     frame.Show(True)
     app.MainLoop()
