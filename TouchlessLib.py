@@ -343,8 +343,8 @@ class TouchlessMgr:
 
         # ---------- Green Mask ---------- #
         #- mask
-        self.l_lower_green = np.array([55,125,125])
-        self.l_upper_green = np.array([70,255,255])
+        l_lower_green = np.array([60,125,125])
+        l_upper_green = np.array([90,255,255])
         # -------- End Green Mask -------- #
 
         # ---------- Blue Mask ---------- #
