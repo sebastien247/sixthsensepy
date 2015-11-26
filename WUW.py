@@ -238,13 +238,13 @@ class WuwPanel(wx.Panel):
         # self.comboBoxCameras.SetSelection(0)
         # print self.comboBoxCameras.GetCurrentSelection()
 
-        self.__touchlessMgr.AddMarker(str.format("Marker Red#{0}", self.__addedMarkerCount), None, self.__markerCenter, self.__markerRadius)
+        self.__touchlessMgr.AddMarker(str.format("Marker Red #{0}", self.__addedMarkerCount), None, self.__markerCenter, self.__markerRadius)
         self.__addedMarkerCount += 1
-        self.__touchlessMgr.AddMarker(str.format("Marker Green#{0}", self.__addedMarkerCount), None, self.__markerCenter, self.__markerRadius)
+        self.__touchlessMgr.AddMarker(str.format("Marker Green #{0}", self.__addedMarkerCount), None, self.__markerCenter, self.__markerRadius)
         self.__addedMarkerCount += 1
-        self.__touchlessMgr.AddMarker(str.format("Marker Blue#{0}", self.__addedMarkerCount), None, self.__markerCenter, self.__markerRadius)
+        self.__touchlessMgr.AddMarker(str.format("Marker Blue #{0}", self.__addedMarkerCount), None, self.__markerCenter, self.__markerRadius)
         self.__addedMarkerCount += 1
-        self.__touchlessMgr.AddMarker(str.format("Marker Yellow#{0}", self.__addedMarkerCount), None, self.__markerCenter, self.__markerRadius)
+        self.__touchlessMgr.AddMarker(str.format("Marker Yellow #{0}", self.__addedMarkerCount), None, self.__markerCenter, self.__markerRadius)
         self.__addedMarkerCount += 1
 
         self.nameMarkers()
