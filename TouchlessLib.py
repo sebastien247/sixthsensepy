@@ -607,10 +607,9 @@ class TouchlessMgr:
         #print array
 
         keypoints = []
-        im = img
 
         # # Convert to HSV
-        im_hsv=cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+        im_hsv=cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
         #- Masks
         red_mask_lower = cv2.inRange(im_hsv, self.l_lower_red, self.l_upper_red)
@@ -670,6 +669,6 @@ class TouchlessMgr:
 
 
         # Draw detected blobs as red circles. cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-        im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,255,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        im_with_keypoints = cv2.drawKeypoints(img, keypoints, np.array([]), (0,255,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
         self.lock.release()
