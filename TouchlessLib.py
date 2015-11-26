@@ -227,6 +227,7 @@ class Marker:
         self.Threshold = 0
         self.LastGoodData = None
         self.PreviousData = MarkerEventData()
+        self.PreviousDatas = []
         self.ProvideCalculatedProperties = False
         self.RepresentativeColor = None
         self.hsvFreq = {}
@@ -606,6 +607,8 @@ class TouchlessMgr:
         array = self.__markers[:]
         #print array
 
+        for marker in array:
+            self.preProcessMarker(marker, img.shape[0], img.shape[1])
         keypoints = []
 
         # # Convert to HSV
@@ -660,6 +663,7 @@ class TouchlessMgr:
         for marker in array:
             if marker.CurrData.Present:
                 marker.FireMarkerEventData()
+                marker.PreviousDatas.append(marker.CurrData)
             marker.CurrData.Present = False
 
         # for keypoint in keypoints:
@@ -669,6 +673,6 @@ class TouchlessMgr:
 
 
         # Draw detected blobs as red circles. cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-        im_with_keypoints = cv2.drawKeypoints(img, keypoints, np.array([]), (0,255,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        # im_with_keypoints = cv2.drawKeypoints(img, keypoints, np.array([]), (0,255,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
         self.lock.release()
