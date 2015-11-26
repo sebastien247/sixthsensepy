@@ -659,7 +659,8 @@ class TouchlessMgr:
             array[3].CurrData.Present = True
 
         for marker in array:
-            marker.FireMarkerEventData()
+            if marker.CurrData.Present:
+                marker.FireMarkerEventData()
             marker.CurrData.Present = False
 
         # for keypoint in keypoints:
