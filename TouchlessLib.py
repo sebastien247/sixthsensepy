@@ -232,6 +232,7 @@ class Marker:
         self.RepresentativeColor = None
         self.hsvFreq = {}
         self.OnChange = None
+        self.ranges = []
 
 
     def ToString(self):
@@ -331,34 +332,7 @@ class TouchlessMgr:
         else : 
             self.detector = cv2.SimpleBlobDetector_create(self.params)
 
-        ############################################
 
-        # ---------- Red Mask ---------- #
-        #- lower mask (0-10)
-        self.l_lower_red = np.array([0,125,125])
-        self.l_upper_red = np.array([10,255,255])
-        #- upper mask (170-180)
-        self.u_lower_red = np.array([170,125,125])
-        self.u_upper_red = np.array([180,255,255])
-        # -------- End Red Mask -------- #
-
-        # ---------- Green Mask ---------- #
-        #- mask
-        self.l_lower_green = np.array([60,125,125])
-        self.l_upper_green = np.array([90,255,255])
-        # -------- End Green Mask -------- #
-
-        # ---------- Blue Mask ---------- #
-        #- mask
-        self.l_lower_blue = np.array([100,130,130])
-        self.l_upper_blue = np.array([120,255,255])
-        # -------- End Blue Mask -------- #
-
-        # ---------- Yellow Mask ---------- #
-        #- mask
-        self.l_lower_yellow = np.array([22,130,130])
-        self.l_upper_yellow = np.array([30,255,255])
-        # -------- End Yellow Mask -------- #
 
     def keypoints_size(self, p):
         return p.size
@@ -424,6 +398,46 @@ class TouchlessMgr:
     #     print (hue / n, sat / n, val / n)
     #     return (hue / n, sat / n, val / n)
 
+
+    def SetDefaultMarkers(self):
+        red = self.AddMarker(str.format("Red", 0), None, None, 0)
+        green = self.AddMarker(str.format("Green", 1), None, None, 0)
+        blue = self.AddMarker(str.format("Blue", 2), None, None, 0)
+        yellow = self.AddMarker(str.format("Yellow ", 3), None, None, 0)
+        
+        ############################################
+
+        # ---------- Red Mask ---------- #
+        #- lower mask (0-10)
+        red_lower = np.array([0,125,125])
+        red_upper = np.array([10,255,255])
+        red.ranges.append([red_lower, red_upper])
+        #- upper mask (170-180)
+        red_lower_2 = np.array([170,125,125])
+        red_upper_2 = np.array([180,255,255])
+        red.ranges.append([red_lower_2, red_upper_2])
+        # -------- End Red Mask -------- #
+
+        # ---------- Green Mask ---------- #
+        #- mask
+        green_lower = np.array([60,125,125])
+        green_upper = np.array([90,255,255])
+        green.ranges.append([green_lower, green_upper])
+        # -------- End Green Mask -------- #
+
+        # ---------- Blue Mask ---------- #
+        #- mask
+        blue_lower = np.array([100,130,130])
+        blue_upper = np.array([120,255,255])
+        blue.ranges.append([blue_lower, blue_upper])
+        # -------- End Blue Mask -------- #
+
+        # ---------- Yellow Mask ---------- #
+        #- mask
+        yellow_lower = np.array([22,130,130])
+        yellow_upper = np.array([30,255,255])
+        yellow.ranges.append([yellow_lower, yellow_upper])
+        # -------- End Yellow Mask -------- #
 
     def GetMarkerAppearance(self, img, center, radius, binCounts=HSV(40,20,10)):
         height = img.size[1]
@@ -604,75 +618,37 @@ class TouchlessMgr:
     def UpdateMarkers(self, img):
         self.lock.acquire()
 
-        array = self.__markers[:]
+        array = self.__markers
+
         #print array
 
+        im_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+        width, height, _ = img.shape
         for marker in array:
-            self.preProcessMarker(marker, img.shape[0], img.shape[1])
-        keypoints = []
+            self.preProcessMarker(marker, width, height)
 
-        # # Convert to HSV
-        im_hsv=cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+            searchMinX = marker.searchMinX.coordinate
+            searchMaxX = marker.searchMaxX.coordinate
+            searchMinY = marker.searchMinY.coordinate
+            searchMaxY = marker.searchMaxY.coordinate
 
-        #- Masks
-        red_mask_lower = cv2.inRange(im_hsv, self.l_lower_red, self.l_upper_red)
-        red_mask_upper = cv2.inRange(im_hsv, self.u_lower_red, self.u_upper_red)
-        red_mask = 255 - (red_mask_lower + red_mask_upper)
+            print searchMinX, searchMaxX, searchMinY, searchMaxY
+            masks = [cv2.inRange(im_hsv[searchMinY:searchMaxY, searchMinX:searchMaxX], lower, upper) for lower, upper in marker.ranges]
+            mask = 255 - sum(masks)
 
-        green_mask_lower = cv2.inRange(im_hsv, self.l_lower_green, self.l_upper_green)
-        green_mask = 255 - green_mask_lower
+            keypoints = self.detector.detect(mask)
 
-        blue_mask_lower = cv2.inRange(im_hsv, self.l_lower_blue, self.l_upper_blue)
-        blue_mask = 255 - blue_mask_lower
-
-        yellow_mask_lower = cv2.inRange(im_hsv, self.l_lower_yellow, self.l_upper_yellow)
-        yellow_mask = 255 - yellow_mask_lower
-
-        # Detect blobs.
-        keypoints_r = self.detector.detect(red_mask)
-        keypoints_g = self.detector.detect(green_mask)
-        keypoints_b = self.detector.detect(blue_mask)
-        keypoints_y = self.detector.detect(yellow_mask)
-
-        # Get upper size of keypoints
-        if keypoints_r:
-            k = max(keypoints_r, key=self.keypoints_size)
-            keypoints.append(k)
-            array[0].CurrData.X = k.pt[0]
-            array[0].CurrData.Y = k.pt[1]
-            array[0].CurrData.Present = True
-        if keypoints_g:
-            k = max(keypoints_g, key=self.keypoints_size)
-            keypoints.append(k)
-            array[1].CurrData.X = k.pt[0]
-            array[1].CurrData.Y = k.pt[1]
-            array[1].CurrData.Present = True
-        if keypoints_b:
-            k = max(keypoints_b, key=self.keypoints_size)
-            keypoints.append(k)
-            array[2].CurrData.X = k.pt[0]
-            array[2].CurrData.Y = k.pt[1]
-            array[2].CurrData.Present = True
-        if keypoints_y:
-            k = max(keypoints_y, key=self.keypoints_size)
-            keypoints.append(k)
-            array[3].CurrData.X = k.pt[0]
-            array[3].CurrData.Y = k.pt[1]
-            array[3].CurrData.Present = True
+            if keypoints:
+                k = max(keypoints, key=self.keypoints_size)
+                marker.CurrData.X = searchMinX + k.pt[0]
+                marker.CurrData.Y = searchMinY + k.pt[1]
+                marker.CurrData.Present = True
 
         for marker in array:
             if marker.CurrData.Present:
                 marker.FireMarkerEventData()
                 marker.PreviousDatas.append(marker.CurrData)
             marker.CurrData.Present = False
-
-        # for keypoint in keypoints:
-        #     print keypoint.pt
-
-
-
-
-        # Draw detected blobs as red circles. cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-        # im_with_keypoints = cv2.drawKeypoints(img, keypoints, np.array([]), (0,255,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
         self.lock.release()
