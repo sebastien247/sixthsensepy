@@ -210,8 +210,11 @@ class WuwPanel(wx.Panel):
         ###事件响应
         self.Bind(wx.EVT_WINDOW_DESTROY, self.WUW_Destroy)
         self.Bind(wx.EVT_PAINT, self.WUW_Paint)
-        self.Bind(wx.EVT_PAINT, self.drawLatestImage)
+
+        #self.Bind(wx.EVT_PAINT, self.drawLatestImage)
+        #self.Bind(wx.EVT_PAINT, self.drawLatestImage, self)
         #self.pictureBoxDisplay.Bind(wx.EVT_PAINT, self.drawLatestImage)
+
         self.buttonMarkerAdd.Bind(wx.EVT_BUTTON, self.buttonMarkerAdd_Click)
         self.comboBoxMarkers.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.comboBoxMarkers_DropDown)
         self.comboBoxMarkers.Bind(wx.EVT_COMBOBOX,self.comboBoxMarkers_SelectedIndexChanged)
@@ -265,11 +268,15 @@ class WuwPanel(wx.Panel):
                 self.__cam.ImageCaptured()
                 self.__panel.UpdateLatestFrame()
                 if self.__box.Shown:
-                    self.__box.Refresh()
+                    wx.CallAfter(self.draw)
                 time.sleep(self.__times)
         def stop(self):
             if DEBUG: print "ThreadCapture.stop"
             self.__stop = True
+
+        def draw(self):
+            #self.__box.Refresh()
+            self.__panel.drawLatestImage()
 
     def refreshCam(self):
         if self.__latestFrame == None:
@@ -388,7 +395,7 @@ class WuwPanel(wx.Panel):
 
 
     ###Touchless Event Handling
-    def drawLatestImage(self, event):
+    def drawLatestImage(self, event=None):
         if DEBUG: print "drawLatestImage"
         if self.__touchlessMgr.CurrentCamera == None or not self.__show_settings:
             return
