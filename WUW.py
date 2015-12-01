@@ -197,7 +197,7 @@ class WuwPanel(wx.Panel):
         self.threadCapture = self.ThreadCapture("Capture", 0.03, self.pictureBoxDisplay, self.__touchlessMgr.CurrentCamera, self)
         self.threadCapture.setDaemon(True)
         self.threadCapture.start()
-        self.threadMarker = self.ThreadMarker("Marker", 5, self.__touchlessMgr)
+        self.threadMarker = self.ThreadMarker("Marker", 0.2, self.__touchlessMgr)
         self.threadMarker.setDaemon(True)
         self.threadMarker.start()
         self.gestureLoad()
@@ -305,11 +305,13 @@ class WuwPanel(wx.Panel):
             if DEBUG: print "ThreadMarker.run"
             while not self.__stop:
                 #if self.__mgr.MarkersCount == 4:
-                self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
-                #time.sleep(self.__times)
+                wx.CallAfter(self.draw)
+                time.sleep(self.__times)
         def stop(self):
             if DEBUG: print "ThreadMarker.stop"
             self.__stop = True
+        def draw(self):
+            self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
 
     #线程——时间显示
     class ThreadTime(threading.Thread):
