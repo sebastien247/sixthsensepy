@@ -733,6 +733,35 @@ class WuwPanel(wx.Panel):
         stockValue4 = self.trying.append(wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('LR.PA')),pos=(650,50)))
         #labelStock = wx.StaticText(self.BoxStock,label=stockValue2,pos=(30,30))
         #self.text.SetLabel(str(stockValue2))
+        # set a box that will contain the first stock values
+        stock1 = 'Stock value 1:'
+        # values to get from the actual stock exchange
+        stockLabel1 = 'Accor S.A.'
+        stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(290, 230))
+        #Appending stock values on an array for the plot
+        self.kept_array = []
+        stockValue_kept = self.kept_array.append(wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('AC.PA')),pos=(450,50)))
+        if len(self.kept_array) > 3:
+            i = 1
+            while i <= 10:
+                self.kept_array[i-1] = self.kept_array[i]
+        #del self.kept_array[3]     
+
+        # mild difference between wxPython26 and wxPython28
+        if wx.VERSION[1] < 7:
+            plotter = plot.PlotCanvas(stockBox1, pos=(15,10) ,size=(250, 190))
+        else:    
+            plotter = plot.PlotCanvas(stockBox1)
+            plotter.SetInitialSize(size=(400, 300))
+        # list of (x,y) data point tuples
+        data = [(1,2), (2,3), (3,5), (4,6), (5,8), (6,8), (12,10), (13,4)]
+        # draw points as a line
+        line = plot.PolyLine(data, colour='black', width=1)
+        marker = plot.PolyMarker(data, marker='dot')
+        # set up text, axis and draw
+        gc = plot.PlotGraphics([line, marker], 'Evolution of Accor SA', 'Time', 'Stock value')
+        plotter.Draw(gc, xAxis=(0,15), yAxis=(0,15))
+
         wx.CallLater(5000, self.stock)
 
     def buttonStockDemo_Click(self, event):
@@ -753,30 +782,9 @@ class WuwPanel(wx.Panel):
             self.BoxStock.threadTime = self.ThreadTime("time", 1, self.BoxStock)
             self.BoxStock.threadTime.start()
             #self.BoxStock.SetBackgroundColour('#ffffff')
-            stock1 = 'Stock value 1:'
-            # values to get from the actual stock exchange
-            stockLabel1 = 'Accor S.A.'
+
             stockLabel2 = 'AIRBUS GROUP'
             stockLabel3 = 'Legrand SA'
-            # set a box that will contain the first stock values
-            stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(290, 230))
-            # mild difference between wxPython26 and wxPython28
-            if wx.VERSION[1] < 7:
-                plotter = plot.PlotCanvas(stockBox1, pos=(15,10) ,size=(250, 190))
-            else:    
-                plotter = plot.PlotCanvas(stockBox1)
-                plotter.SetInitialSize(size=(400, 300))
-            # list of (x,y) data point tuples
-            data = [(1,2), (2,3), (3,5), (4,6), (5,8), (6,8), (12,10), (13,4)]
-            # draw points as a line
-            line = plot.PolyLine(data, colour='black', width=1)
-            # also draw markers, default colour is black and size is 2
-            # other shapes 'circle', 'cross', 'square', 'dot', 'plus'
-            marker = plot.PolyMarker(data, marker='dot')
-            # set up text, axis and draw
-            gc = plot.PlotGraphics([line, marker], 'Evolution of Accor SA', 'Time', 'Stock value')
-            plotter.Draw(gc, xAxis=(0,15), yAxis=(0,15))
-
 
             #get the the stock value from ystockquote app
             #stockValue1 = ystockquote.get_last_trade_price('AC.PA')
