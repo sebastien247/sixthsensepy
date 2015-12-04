@@ -213,8 +213,8 @@ class WuwPanel(wx.Panel):
         ###Load
         self.__touchlessMgr = TouchlessLib.TouchlessMgr()
         self.__touchlessMgr.RefreshCameraList()
-        self.__touchlessMgr.CurrentCamera.ImageCaptured()
-        self.__touchlessMgr.CurrentCamera.GetCurrentImage().show()
+        #self.__touchlessMgr.CurrentCamera.ImageCaptured()
+        #self.__touchlessMgr.CurrentCamera.GetCurrentImage().show()
         self.threadCapture = self.ThreadCapture("Capture", 0.03, self.pictureBoxDisplay, self.__touchlessMgr.CurrentCamera, self)
         self.threadCapture.setDaemon(True)
         self.threadCapture.start()
