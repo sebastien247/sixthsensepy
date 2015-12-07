@@ -693,7 +693,7 @@ class WuwPanel(wx.Panel):
 
 def main():
     app = wx.App(False)
-    frame = wx.Frame(None, wx.ID_ANY, "WUW", size=(WuwPanel.Width,WuwPanel.Height), style= wx.NO_BORDER)
+    frame = wx.Frame(None, wx.ID_ANY, "WUW", size=(WuwPanel.Width,WuwPanel.Height))
     frame.SetTitle("SixthSense Python")
     panel = WuwPanel(frame)
     frame.Show(True)
