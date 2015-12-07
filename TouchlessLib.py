@@ -633,7 +633,7 @@ class TouchlessMgr:
             searchMinY = marker.searchMinY.coordinate
             searchMaxY = marker.searchMaxY.coordinate
 
-            print searchMinX, searchMaxX, searchMinY, searchMaxY
+            #print searchMinX, searchMaxX, searchMinY, searchMaxY
             masks = [cv2.inRange(im_hsv[searchMinY:searchMaxY, searchMinX:searchMaxX], lower, upper) for lower, upper in marker.ranges]
             mask = 255 - sum(masks)
 
