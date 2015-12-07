@@ -477,8 +477,10 @@ class TouchlessMgr:
             marker.lastGoodData = marker.PreviousData
         if marker.CurrData.Present:
             marker.lastGoodData = marker.CurrData
+
         marker.PreviousData = marker.CurrData
         marker.CurrData = MarkerEventData()
+
         if marker.PreviousData.Present:
             num = imgWidth / 20
             num2 = imgHeight / 20
@@ -490,10 +492,11 @@ class TouchlessMgr:
                 num4 = 0.25
             else:
                 num4 = 4.00
-            marker.searchMinX.coordinate = ((marker.PreviousData.left+((int)(((float)(marker.PreviousData.DX))/num3)))-(marker.PreviousData.Bounds.Width / 3)) - num
-            marker.searchMaxX.coordinate = ((marker.PreviousData.right+((int)(marker.PreviousData.DX*num3)))+(marker.PreviousData.Bounds.Width / 3)) + num
-            marker.searchMinY.coordinate = ((marker.PreviousData.top+((int)(((float)(marker.PreviousData.DY))/num4)))-(marker.PreviousData.Bounds.Height / 3)) - num2
-            marker.searchMaxY.coordinate = ((marker.PreviousData.bottom+((int)(marker.PreviousData.DY*num4)))+(marker.PreviousData.Bounds.Height / 3)) + num2
+
+            marker.searchMinX.coordinate = marker.PreviousData.X - imgWidth / 3
+            marker.searchMaxX.coordinate = marker.PreviousData.X + imgWidth / 3
+            marker.searchMinY.coordinate = marker.PreviousData.Y - imgHeight / 3
+            marker.searchMaxY.coordinate = marker.PreviousData.Y + imgHeight / 3
             marker.searchMinX.coordinate = max(marker.searchMinX.coordinate,0)
             marker.searchMaxX.coordinate = min(marker.searchMaxX.coordinate,imgWidth-1)
             marker.searchMinY.coordinate = max(marker.searchMinY.coordinate,0)
@@ -620,8 +623,6 @@ class TouchlessMgr:
 
         array = self.__markers
 
-        #print array
-
         im_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
         width, height, _ = img.shape
@@ -633,8 +634,8 @@ class TouchlessMgr:
             searchMinY = marker.searchMinY.coordinate
             searchMaxY = marker.searchMaxY.coordinate
 
-            #print searchMinX, searchMaxX, searchMinY, searchMaxY
             masks = [cv2.inRange(im_hsv[searchMinY:searchMaxY, searchMinX:searchMaxX], lower, upper) for lower, upper in marker.ranges]
+
             mask = 255 - sum(masks)
 
             keypoints = self.detector.detect(mask)
@@ -645,10 +646,12 @@ class TouchlessMgr:
                 marker.CurrData.Y = searchMinY + k.pt[1]
                 marker.CurrData.Present = True
 
+            # TODO: self.postProcessMarker()
+
+
         for marker in array:
             if marker.CurrData.Present:
                 marker.FireMarkerEventData()
                 marker.PreviousDatas.append(marker.CurrData)
-            marker.CurrData.Present = False
 
         self.lock.release()
