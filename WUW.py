@@ -774,9 +774,7 @@ class WuwPanel(wx.Panel):
             self.BoxStock.threadTime=None
             self.BoxStock.Hide()
             self.ResetEnvironment()
-        else: gc = plot.PlotGraphics([line, marker], 'Evolution of Accor SA', 'Time', 'Stock value')
-            plotter.Draw(gc, xAxis=(0,15), yAxis=(0,15))
-
+        else: 
             self.StopOtherApps(event)
             self.StockDemo = True
             self.labelDemoName.Label = "Stock"
