@@ -19,6 +19,8 @@ import math
 import TouchlessLib
 import ystockquote
 import wx.lib.plot as plot
+import  pywapi
+import string
 from classes.Value import Value
 from classes.PointR import PointR
 from classes.GeometricRecognizer import GeometricRecognizer
@@ -831,7 +833,47 @@ class WuwPanel(wx.Panel):
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
         if DEBUG: print "buttonWeatherDemo_Click"
-        pass
+        if self.weatherDemo:
+            self.weatherDemo = False
+            self.labelDemoName.Label = "WUW"
+            self.buttonWeatherDemo.Label = "weather"
+            self.BoxWeather.Hide()
+            self.ResetEnvironment()
+        else:
+            self.StopOtherApps(event)
+            self.weatherDemo = True
+            self.labelDemoName.Label = "weather"
+            self.buttonWeatherDemo.Label = "Stop weather"
+            self.BoxWeather.Show()
+            panel = wx.Panel(self,-1)
+            self.trying=[]
+            style = wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE
+            self.text = wx.StaticText(panel, style=style)
+            sizer = wx.BoxSizer(wx.VERTICAL)
+            sizer.AddStretchSpacer(1)
+            sizer.Add(self.text, 0, wx.EXPAND)
+            self.BoxStock=wx.StaticBox(self,pos=(30,35),
+                                     size=(300,300))
+            sizer.AddStretchSpacer(1)
+            panel.SetSizer(sizer)
+            self.Weather()
+            #self.BoxPhoto.Refresh()
+
+    def Weather(self):
+        for i in self.trying:
+            i.Destroy()
+        self.trying = []
+        sizer = wx.GridBagSizer()
+        weather_com_result = pywapi.get_weather_from_weather_com('10001')
+        yahoo_result = pywapi.get_weather_from_yahoo('10001')
+        weather1 = self.trying.append(wx.StaticText(self.BoxStock,-1,str("Yahoo says: It is " + string.lower(yahoo_result['condition']['text']) + " and " +
+        yahoo_result['condition']['temp'] + " C now "),pos=(50,50)))
+        # labelStock = wx.StaticText(self.BoxStock,-1,label=weather1,pos=(30,30))
+        #self.text.SetLabel(str(labelStock))
+        #weather2 = "Weather.com says: It is " + string.lower(weather_com_result['current_conditions']['text']) + " and " + weather_com_result['current_conditions']['temperature'] + " C now "
+        #labelStock = wx.StaticText(self.BoxStock,label=weather2,pos=(30,80))
+        #self.text.SetLabel(str(labelStock))
+        wx.CallLater(10000,self.Weather)
 
     def buttonLearnDemo_Click(self, event):
         if self.learnDemo: # Fermeture de l'app
