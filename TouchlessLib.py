@@ -420,8 +420,8 @@ class TouchlessMgr:
 
         # ---------- Green Mask ---------- #
         #- mask
-        green_lower = np.array([60,125,125])
-        green_upper = np.array([90,255,255])
+        green_lower = np.array([60,90,30])
+        green_upper = np.array([100,255,255])
         green.ranges.append([green_lower, green_upper])
         # -------- End Green Mask -------- #
 
