@@ -664,3 +664,29 @@ class TouchlessMgr:
                 marker.PreviousDatas.append(marker.CurrData)
 
         self.lock.release()
+
+    def StartDrawing(self):
+        self.__drawingGesture = True
+        self.__drawingStart = time.time()
+        print("START DRAWING")
+
+    def EndDrawing(self):
+        self.__drawingGesture = False
+        print("END DRAWING")
+
+
+
+    def AnalyzeMarkers(self):
+        red = self.__markers_dict["Red"]
+        green = self.__markers_dict["Green"]
+
+        if red.CurrData.Present and green.CurrData.Present:
+            dist = math.sqrt((red.CurrData.X - green.CurrData.X)**2 + (red.CurrData.Y - green.CurrData.Y)**2)
+            isTouching = dist < 100
+            if isTouching and not self.__drawingGesture: 
+                self.StartDrawing()
+            elif not isTouching and self.__drawingGesture:
+                self.EndDrawing()
+        elif not red.CurrData.Present and not green.CurrData.Present:
+            if self.__drawingGesture:
+                self.EndDrawing()
