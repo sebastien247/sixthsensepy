@@ -634,8 +634,7 @@ class TouchlessMgr:
         array = self.__markers
         im_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
-        width, height, _ = img.shape
-
+        height, width, _ = img.shape
         for marker in array:
             self.preProcessMarker(marker, width, height)
             searchMinX = marker.searchMinX.coordinate
