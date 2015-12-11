@@ -49,7 +49,6 @@ class WuwPanel(wx.Panel):
         sizer.Add(self.text, 0, wx.EXPAND)
         sizer.AddStretchSpacer(1)
         panel.SetSizer(sizer)
-        self.imageFile = "test.png"
 
         ###构建界面
         #构建TabPage构件组
