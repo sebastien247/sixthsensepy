@@ -37,9 +37,11 @@ class WuwPanel(wx.Panel):
 
         self.SetBackgroundColour(wx.Colour(0, 0, 0))
         self.SetForegroundColour(wx.Colour(255, 255, 255))
+
         #Stock app
         panel = wx.Panel(self)
         self.trying=[]
+        self.getChange=[]
         style = wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE
         self.text = wx.StaticText(panel, style=style)
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -47,6 +49,7 @@ class WuwPanel(wx.Panel):
         sizer.Add(self.text, 0, wx.EXPAND)
         sizer.AddStretchSpacer(1)
         panel.SetSizer(sizer)
+        self.imageFile = "test.png"
 
         ###构建界面
         #构建TabPage构件组
@@ -725,16 +728,89 @@ class WuwPanel(wx.Panel):
 
     ##Stock Demo
     def stock(self):
+        """Function that display different stocke's values """
         for i in self.trying:
             i.Destroy()
         self.trying = []
-        stockValue2 = self.trying.append(wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('AC.PA')),pos=(50,50)))
-        stockValue3 = self.trying.append(wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('AIR.PA')),pos=(350,50)))
-        stockValue4 = self.trying.append(wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('LR.PA')),pos=(650,50)))
-        # set a box that will contain the first stock values
         # values to get from the actual stock exchange
-        stockLabel1 = 'Accor S.A.'
-        stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(290, 230))
+        text2 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('AC.PA')),pos=(50,50))
+        text3 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('AIR.PA')),pos=(350,50))
+        text4 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('EN.PA')),pos=(650,50))
+        text5 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('CAP.PA')),pos=(50,290))
+        text6 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('UG.PA')),pos=(350,290))
+        text7 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_last_trade_price('ORA.PA')),pos=(650,290))
+        text2.SetForegroundColour(wx.Colour(0,0,0))
+        text3.SetForegroundColour(wx.Colour(0,0,0))
+        text4.SetForegroundColour(wx.Colour(0,0,0))
+        text5.SetForegroundColour(wx.Colour(0,0,0))
+        text6.SetForegroundColour(wx.Colour(0,0,0))
+        text7.SetForegroundColour(wx.Colour(0,0,0))
+        font = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
+        text2.SetFont(font)
+        text3.SetFont(font)
+        text4.SetFont(font)
+        text5.SetFont(font)
+        text6.SetFont(font)
+        text7.SetFont(font)
+        stockValue2 = self.trying.append(text2)
+        stockValue3 = self.trying.append(text3)
+        stockValue4 = self.trying.append(text4)        
+        stockValue5 = self.trying.append(text5)
+        stockValue6 = self.trying.append(text6)
+        stockValue7 = self.trying.append(text7)
+        #getting the change figure of each value to display the right evolution
+        for j in self.getChange:
+            j.Destroy()
+        self.getChange = []
+        test2 = ystockquote.get_change('AC.PA')
+        value2 = wx.StaticText(self.BoxStock,-1,test2,pos=(150,50))
+        changeValue2 = self.getChange.append(value2)
+        test3 = str(ystockquote.get_change('AIR.PA'))
+        value3 = wx.StaticText(self.BoxStock,-1,test3,pos=(450,50))
+        changeValue3 = self.getChange.append(value3)
+        test4 = str(ystockquote.get_change('EN.PA'))
+        value4 = wx.StaticText(self.BoxStock,-1,test4,pos=(750,50))
+        changeValue4 = self.getChange.append(value4)
+        test5 = ystockquote.get_change('CAP.PA')
+        value5 = wx.StaticText(self.BoxStock,-1,test5,pos=(150,290))
+        changeValue5 = self.getChange.append(value5)
+        test6 = str(ystockquote.get_change('UG.PA'))
+        value6 = wx.StaticText(self.BoxStock,-1,test6,pos=(450,290))
+        changeValue6 = self.getChange.append(value6)
+        test7 = str(ystockquote.get_change('ORA.PA'))
+        value7 = wx.StaticText(self.BoxStock,-1,test7,pos=(750,290))
+        changeValue7 = self.getChange.append(value7)
+        #changing the color of labels depending on the change
+        if test2.find('-')!=-1:
+            value2.SetForegroundColour(wx.Colour(255,0,0))
+        elif test2.find('+')!=-1:
+            value2.SetForegroundColour(wx.Colour(0,150,0))
+        if test3.find('-')!=-1:
+            value3.SetForegroundColour(wx.Colour(255,0,0))
+        elif test3.find('+')!=-1:
+            value3.SetForegroundColour(wx.Colour(0,150,0))
+        if test4.find('-')!=-1:
+            value4.SetForegroundColour(wx.Colour(255,0,0))
+        elif test4.find('+')!=-1:
+            value4.SetForegroundColour(wx.Colour(0,150,0))
+        if test5.find('-')!=-1:
+            value5.SetForegroundColour(wx.Colour(255,0,0))
+        elif test5.find('+')!=-1:
+            value5.SetForegroundColour(wx.Colour(0,150,0))
+        if test6.find('-')!=-1:
+            value6.SetForegroundColour(wx.Colour(255,0,0))
+        elif test6.find('+')!=-1:
+            value6.SetForegroundColour(wx.Colour(0,150,0))
+        if test7.find('-')!=-1:
+            value7.SetForegroundColour(wx.Colour(255,0,0))
+        elif test7.find('+')!=-1:
+            value7.SetForegroundColour(wx.Colour(0,150,0))
+        value2.SetFont(font)
+        value3.SetFont(font)
+        value4.SetFont(font)
+        value5.SetFont(font)
+        value6.SetFont(font)
+        value7.SetFont(font) 
         wx.CallLater(5000, self.stock)
 
     def buttonStockDemo_Click(self, event):
@@ -754,19 +830,25 @@ class WuwPanel(wx.Panel):
             self.buttonStockDemo.Label = "Stop Stock"
             self.BoxStock.threadTime = self.ThreadTime("time", 1, self.BoxStock)
             self.BoxStock.threadTime.start()
-            #self.BoxStock.SetBackgroundColour('#ffffff')
-
+            stockLabel1 = 'Accor S.A.'
             stockLabel2 = 'AIRBUS GROUP'
             stockLabel3 = 'Legrand SA'
-
-            #get the the stock value from ystockquote app
-            #stockValue1 = ystockquote.get_last_trade_price('AC.PA')
-            #self.labelStock = wx.StaticText(self.BoxStock,label=stockValue1,pos=(50,25))
-
+            stockLabel4 = 'Cap Gemini S.A.'
+            stockLabel5 = 'Peugeot S.A.'
+            stockLabel6 = 'Orange'
+            # set a box that will contain the first stock values
+            stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(290, 230))
             stockBox2 = wx.StaticBox(self.BoxStock,-1,stockLabel2, (305, 5), size=(290, 230))
-
             stockBox3 = wx.StaticBox(self.BoxStock,-1,stockLabel3, (605, 5), size=(290, 230))
-
+            stockBox4 = wx.StaticBox(self.BoxStock,-1,stockLabel4, (5, 240), size=(290, 230))
+            stockBox5 = wx.StaticBox(self.BoxStock,-1,stockLabel5, (305, 240), size=(290, 230))
+            stockBox6 = wx.StaticBox(self.BoxStock,-1,stockLabel6, (605, 240), size=(290, 230))
+            stockBox1.SetForegroundColour(wx.Colour(0,0,0))
+            stockBox2.SetForegroundColour(wx.Colour(0,0,0))
+            stockBox3.SetForegroundColour(wx.Colour(0,0,0))
+            stockBox4.SetForegroundColour(wx.Colour(0,0,0))
+            stockBox5.SetForegroundColour(wx.Colour(0,0,0))
+            stockBox6.SetForegroundColour(wx.Colour(0,0,0))
             self.BoxStock.Show()
             self.stock()
 
