@@ -285,7 +285,9 @@ class WuwPanel(wx.Panel):
         self.StockDemo = False
         self.learnDemo = False
         self.trying = []
-
+        self.__drawingGesture = False
+        self.__drawingStart = None
+        self.__drawingPoints = []
 
 
         ###Load
@@ -296,7 +298,7 @@ class WuwPanel(wx.Panel):
         self.threadCapture = self.ThreadCapture("Capture", 0.03, self.pictureBoxDisplay, self.__touchlessMgr.CurrentCamera, self)
         self.threadCapture.setDaemon(True)
         self.threadCapture.start()
-        self.threadMarker = self.ThreadMarker("Marker", 0.2, self.__touchlessMgr)
+        self.threadMarker = self.ThreadMarker("Marker", 0.2, self.__touchlessMgr, self)
         self.threadMarker.setDaemon(True)
         self.threadMarker.start()
         self.gestureLoad()
@@ -405,12 +407,13 @@ class WuwPanel(wx.Panel):
 
     #线程——追踪标记物
     class ThreadMarker(threading.Thread):
-        def __init__(self, threadname, times, mgr):
+        def __init__(self, threadname, times, mgr, panel):
             if DEBUG: print "ThreadMarker.__init__"
             threading.Thread.__init__(self, name=threadname)
             self.__times = times
             self.__mgr = mgr
             self.__stop = False
+            self.__panel = panel
         def run(self):
             if DEBUG: print "ThreadMarker.run"
             while not self.__stop:
@@ -421,7 +424,35 @@ class WuwPanel(wx.Panel):
             if DEBUG: print "ThreadMarker.stop"
             self.__stop = True
         def draw(self):
-            self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.img_cv)
+            self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
+            self.__panel.AnalyzeMarkers()
+
+    def StartDrawing(self):
+        self.__drawingGesture = True
+        self.__drawingStart = time.time()
+        self.__drawingPoints = []
+        print("START DRAWING")
+
+    def EndDrawing(self):
+        self.__drawingGesture = False
+        result = self.__rec.Recognize(self.__drawingPoints)
+        print("END DRAWING")
+        print(result.Name)
+
+    def AnalyzeMarkers(self):
+        red = self.__touchlessMgr.markers_dict["Red"]
+        green = self.__touchlessMgr.markers_dict["Green"]
+
+        if red.CurrData.Present and green.CurrData.Present:
+            dist = ((red.CurrData.X - green.CurrData.X)**2 + (red.CurrData.Y - green.CurrData.Y)**2)**0.5
+            isTouching = dist < 100
+            if isTouching and not self.__drawingGesture:
+                self.StartDrawing()
+            elif not isTouching and self.__drawingGesture:
+                self.EndDrawing()
+        elif not red.CurrData.Present and not green.CurrData.Present:
+            if self.__drawingGesture:
+                self.EndDrawing()
 
     #线程——时间显示
     class ThreadTime(threading.Thread):
