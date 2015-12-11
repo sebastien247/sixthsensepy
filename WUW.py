@@ -771,7 +771,6 @@ class WuwPanel(wx.Panel):
 
                 elif self.__rec.NumGestures > 0:
                     result = self.__rec.Recognize(self.__points)
-                    print result
                     self.lblResult.Label = str.format("{0}: {1} ({2}px, {3}",
                                                  result.Name,
                                                  round(result.Score,2),
