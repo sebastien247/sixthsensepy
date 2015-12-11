@@ -454,6 +454,19 @@ class WuwPanel(wx.Panel):
             if self.__drawingGesture:
                 self.EndDrawing()
 
+        if self.__drawingGesture:
+            if green.CurrData.Present and red.CurrData.Present:
+                # On utilise la moyenne des deux points détectés
+                point_x = (green.CurrData.X + red.CurrData.X) / 2
+                point_y = (green.CurrData.Y + red.CurrData.Y) / 2
+            else:
+                # On utilise le seul point détecté
+                point = green if green.CurrData.Present else red
+                point_x = point.CurrData.X
+                point_y = point.CurrData.Y
+            self.__drawingPoints.append(PointR(point_x, point_y,time.clock()*1000))
+
+
     #线程——时间显示
     class ThreadTime(threading.Thread):
         def __init__(self, threadname, times, box):
