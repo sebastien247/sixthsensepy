@@ -864,8 +864,35 @@ class WuwPanel(wx.Panel):
             i.Destroy()
         self.trying = []
         sizer = wx.GridBagSizer()
-        weather_com_result = pywapi.get_weather_from_weather_com('10001')
-        yahoo_result = pywapi.get_weather_from_yahoo('10001')
+        #this will give you a dictionary of all cities in the world with this city's name Be specific (city, country)!
+        import Image
+
+        #opens an image:
+        im = Image.open("image.jpg")
+        #creates a new empty image, RGB mode, and size 400 by 400.
+        new_im = Image.new('RGB', (400,400))
+
+        #Here Iresize my opened image, so it is no bigger than 100,100
+        im.thumbnail((100,100))
+        #Iterate through a 4 by 4 grid with 100 spacing, to place my image
+
+        #I change brightness of the images, just to emphasise they are unique copies.
+        im=Image.eval(im,lambda x: x+(100+100)/30)
+        #paste the image at location i,j:
+        new_im.paste(im, (100,100))
+
+
+        city='limoges'
+        lookup = pywapi.get_location_ids(city)
+ 
+        #workaround to access last item of dictionary
+        for i in lookup:
+            location_id = i
+
+        weather_com_result = pywapi.get_weather_from_weather_com(location_id)
+ 
+        #weather_com_result = pywapi.get_weather_from_weather_com('10001')
+        #yahoo_result = pywapi.get_weather_from_yahoo('10001')
         weather1 = self.trying.append(wx.StaticText(self.BoxStock,-1,str("Yahoo says: It is " + string.lower(yahoo_result['condition']['text']) + " and " +
         yahoo_result['condition']['temp'] + " C now "),pos=(50,50)))
         # labelStock = wx.StaticText(self.BoxStock,-1,label=weather1,pos=(30,30))
