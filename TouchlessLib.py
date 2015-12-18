@@ -227,7 +227,7 @@ class Marker:
         self.RepresentativeColor = None
         self.hsvFreq = {}
         self.OnChange = None
-        self.ranges = []
+        self.ranges = [] # Used to define mask range for cv2.inRange()
 
 
     def ToString(self):
