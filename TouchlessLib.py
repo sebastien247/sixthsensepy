@@ -47,11 +47,10 @@ class Camera:
 
     def ImageCaptured(self):
         self.__imgLock.acquire()
-        #img = cv.QueryFrame(self.__cam)
         _, img = self.__cam.read()
-        #cv.CvtColor(img, img, cv.CV_BGR2RGB)
-        #self.__img = Image.fromstring("RGB", (self.CaptureWidth, self.CaptureHeight), img.tostring())
-        self.__img = img
+        cv2.cvtColor(img, cv2.cv.CV_BGR2RGB, img)
+        self.img_cv = img
+        self.__img = Image.fromstring("RGB", (self.CaptureWidth, self.CaptureHeight), img.tostring())
         self.__imgLock.release()
 
     def GetCurrentImage(self):
@@ -59,9 +58,7 @@ class Camera:
         if self.__img == None:
             img = None
         else:
-          #  img = self.__img.copy()
             img = self.__img
-          #  img = self.__img.transpose(Image.FLIP_LEFT_RIGHT)
         self.__imgLock.release()
         return img
 
@@ -72,13 +69,10 @@ class Camera:
 
 #Image To Bitmap
 def ImageToBitmap(img):
-    # img2 = wx.EmptyImage(np.size(img, 0), np.size(img, 1))
-    # img2.SetData(img.tostring())
-    # bitmap = wx.BitmapFromImage(img2)
-    img2 = cv2.cvtColor(np.uint8(img), cv2.cv.CV_BGR2RGB) 
-    h, w = img.shape[:2]
-    wxbmp = wx.BitmapFromBuffer(w, h, img2)
-    return wxbmp
+    img2 = wx.EmptyImage(img.size[0], img.size[1])
+    img2.SetData(img.tostring())
+    bitmap = wx.BitmapFromImage(img2)
+    return bitmap
 
 
 #HSV类定义
