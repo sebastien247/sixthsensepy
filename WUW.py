@@ -26,6 +26,7 @@ from classes.NBestList import NBestList
 
 
 DEBUG = False
+AUTO_LOAD_DEFAULT = True
 
 class WuwPanel(wx.Panel):
     Width = Value.WuwWidth
@@ -271,6 +272,9 @@ class WuwPanel(wx.Panel):
         # self.comboBoxCameras.SetSelection(0)
         # print self.comboBoxCameras.GetCurrentSelection()
 
+        if AUTO_LOAD_DEFAULT:
+            self.__addedMarkerCount = 4
+            self.__touchlessMgr.SetDefaultMarkers()
 
         self.nameMarkers()
 
