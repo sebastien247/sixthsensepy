@@ -118,6 +118,9 @@ class WuwPanel(wx.Panel):
         self.buttonMarkerLoad=wx.Button(self.tabPageTokens,label="Load M",
                                       pos=(52*self.Grid,0),
                                       size=(6*self.Grid,2*self.Grid))
+        self.buttonMarkerLoadDefault=wx.Button(self.tabPageTokens,label="Load Default\n     Markers",
+                                      pos=(45*self.Grid,25),
+                                      size=(6*self.Grid*2.17,4*self.Grid))
         self.lblMarkerControl=wx.StaticText(self.tabPageTokens,label="No Marker Selected",
                                           pos=(0,3*self.Grid),
                                           size=(58*self.Grid,2*self.Grid))
@@ -248,6 +251,7 @@ class WuwPanel(wx.Panel):
         self.buttonMarkerRemove.Bind(wx.EVT_BUTTON, self.buttonMarkerRemove_Click)
         self.buttonMarkerSave.Bind(wx.EVT_BUTTON, self.buttonMarkerSave_Click)
         self.buttonMarkerLoad.Bind(wx.EVT_BUTTON, self.buttonMarkerLoad_Click)
+        self.buttonMarkerLoadDefault.Bind(wx.EVT_BUTTON, self.buttonMarkerLoadDefault_Click)
         self.Bind(wx.EVT_LEFT_DOWN, self.WUW_MouseDown)
         self.Bind(wx.EVT_MOTION, self.WUW_MouseMove)
         self.Bind(wx.EVT_LEFT_UP, self.WUW_MouseUp)
@@ -267,8 +271,6 @@ class WuwPanel(wx.Panel):
         # self.comboBoxCameras.SetSelection(0)
         # print self.comboBoxCameras.GetCurrentSelection()
 
-        self.__addedMarkerCount += 4
-        self.__touchlessMgr.SetDefaultMarkers()
 
         self.nameMarkers()
 
@@ -483,6 +485,18 @@ class WuwPanel(wx.Panel):
     def buttonMarkerLoad_Click(self, event):
         if DEBUG: print "buttonMarkerLoad_Click"
         pass
+
+    def buttonMarkerLoadDefault_Click(self, event):
+        self.m = None
+        self.p = None
+        self.o = None
+        self.n = None
+        self.__points = []
+        self.__markerCenter = None
+        self.__markerRadius = 0
+        self.__addedMarkerCount = 4
+        self.__touchlessMgr.SetDefaultMarkers()
+        self.nameMarkers()
 
     ##Display Interaction
     def pictureBoxDisplay_MouseDown(self, event):
