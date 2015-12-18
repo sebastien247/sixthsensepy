@@ -400,6 +400,7 @@ class TouchlessMgr:
 
 
     def SetDefaultMarkers(self):
+        self.__markers = []
         red = self.AddMarker(str.format("Red", 0), None, None, 0)
         green = self.AddMarker(str.format("Green", 1), None, None, 0)
         blue = self.AddMarker(str.format("Blue", 2), None, None, 0)
