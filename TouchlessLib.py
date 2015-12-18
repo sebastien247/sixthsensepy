@@ -626,16 +626,18 @@ class TouchlessMgr:
 
             
     def UpdateMarkers(self, img):
+        if img is None:
+            return
+
         self.lock.acquire()
 
         array = self.__markers
-
-        im_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        im_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
         width, height, _ = img.shape
+
         for marker in array:
             self.preProcessMarker(marker, width, height)
-
             searchMinX = marker.searchMinX.coordinate
             searchMaxX = marker.searchMaxX.coordinate
             searchMinY = marker.searchMinY.coordinate
