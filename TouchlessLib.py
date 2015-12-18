@@ -275,6 +275,13 @@ class Marker:
         self.RepresentativeColor = HSV.ConvertToColor(HSV(num3,num4,num5))
         return True
 
+    def SetMarkerAppearance_v2(self, rawHsvFreq):
+        h, s, v = rawHsvFreq
+        lower = np.array([max(0, h - 10),125,125])
+        upper = np.array([min(180, h + 10),255,255])
+        self.ranges.append([lower, upper])
+        return True
+
     def FireMarkerEventData(self):
         if not self.OnChange == None:
             self.OnChange(self.CurrData)
@@ -354,7 +361,12 @@ class TouchlessMgr:
 
     def AddMarker(self, name, img, center, radius):
         item = Marker(name)
-        # item.SetMarkerAppearance(self.GetMarkerAppearance(img, center, radius))
+        self.__markers.append(item)
+        return item
+
+    def AddSelectedMarker(self, name, img, center, radius):
+        item = Marker(name)
+        item.SetMarkerAppearance_v2(self.GetMarkerAppearance_v2(img, center, radius))
         self.__markers.append(item)
         return item
 
@@ -373,25 +385,24 @@ class TouchlessMgr:
             self.CurrentCamera.ImageCaptured()
             self.UpdateMarkers(self.CurrentCamera.img_cv)
 
-    # def GetMarkerAppearance(self, img, center, radius, binCounts=HSV(40,20,10)):
-    #     height = img.size[1]
-    #     width = img.size[0]
-    #     hue = sat = val = 0
-    #     n = 0
-    #     for i in range(height):
-    #         for j in range(width):
-    #             num = j - center.x
-    #             num2 = i - center.y
-    #             flag = math.sqrt(num*num+num2*num2) < radius
-    #             if flag:
-    #                 data = img.getpixel((j,i))
-    #                 hsv = RGB.ConvertToHSV(RGB(data[0],data[1],data[2]))
-    #                 hue += hsv.Hue
-    #                 sat += hsv.Sat
-    #                 val += hsv.Val
-    #                 n += 1
-    #     print (hue / n, sat / n, val / n)
-    #     return (hue / n, sat / n, val / n)
+    def GetMarkerAppearance_v2(self, img, center, radius, binCounts=HSV(40,20,10)):
+        height = img.size[1]
+        width = img.size[0]
+        hue = sat = val = 0
+        n = 0
+        for i in range(height):
+            for j in range(width):
+                num = j - center.x
+                num2 = i - center.y
+                flag = math.sqrt(num*num+num2*num2) < radius
+                if flag:
+                    data = img.getpixel((j,i))
+                    hsv = RGB.ConvertToHSV(RGB(data[0],data[1],data[2]))
+                    hue += hsv.Hue
+                    sat += hsv.Sat
+                    val += hsv.Val
+                    n += 1
+        return (hue / n, sat / n, val / n)
 
 
     def SetDefaultMarkers(self):
