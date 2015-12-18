@@ -21,6 +21,7 @@ class Camera:
         self.CaptureHeight = 480
         self.CaptureWidth = 640
         self.__img = None
+        self.img_cv = None
         self.__imgLock = threading.RLock()
         self.Fps = 30
         self.__cam = None
@@ -370,7 +371,7 @@ class TouchlessMgr:
     def CaptureCallbackProc(self):
         if not self.CurrentCamera == None:
             self.CurrentCamera.ImageCaptured()
-            self.UpdateMarkers(self.CurrentCamera.GetCurrentImage())
+            self.UpdateMarkers(self.CurrentCamera.img_cv)
 
     # def GetMarkerAppearance(self, img, center, radius, binCounts=HSV(40,20,10)):
     #     height = img.size[1]

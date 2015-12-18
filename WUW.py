@@ -343,7 +343,7 @@ class WuwPanel(wx.Panel):
             if DEBUG: print "ThreadMarker.stop"
             self.__stop = True
         def draw(self):
-            self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
+            self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.img_cv)
 
     #线程——时间显示
     class ThreadTime(threading.Thread):
