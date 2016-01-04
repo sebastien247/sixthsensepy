@@ -152,6 +152,8 @@ class WuwPanel(wx.Panel):
                                          size=(8*self.Grid,2*self.Grid))
         self.buttonLearnDemo=wx.Button(self.tabPageApps,label="Learn",pos=(11*self.Grid,4*self.Grid),
                                          size=(8*self.Grid,2*self.Grid))
+        self.buttonBookDemo=wx.Button(self.tabPageApps,label="Book",pos=(10*self.Grid,1*self.Grid),
+                                         size=(8*self.Grid,2*self.Grid))
 
         #构建Label组
         self.labelM=wx.StaticText(self, label=" M", pos=(4*self.Grid,self.Grid),
@@ -175,7 +177,9 @@ class WuwPanel(wx.Panel):
         self.BoxClock=wx.StaticBox(self,pos=(10*self.Grid,30*self.Grid),
                                     size=(20*self.Grid,20*self.Grid))
         self.BoxStock=wx.StaticBox(self,pos=(5*self.Grid,25*self.Grid),
-                                    size=(90*self.Grid,50*self.Grid))
+                                     size=(90*self.Grid,50*self.Grid))
+        self.BoxBook=wx.StaticBox(self,pos=(4*self.Grid,20*self.Grid),
+                                     size=(40*self.Grid,50*self.Grid))
         self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
                                     size=(20*self.Grid,40*self.Grid))
         #self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
@@ -186,6 +190,7 @@ class WuwPanel(wx.Panel):
         self.BoxClock.SetBackgroundColour(wx.Colour(0,0,0))
         self.BoxClock.threadTime=None
         self.BoxStock.threadTime=None
+        self.BoxBook.threadTime=None
 
         #####################
         ### Learn Display ###
@@ -282,6 +287,7 @@ class WuwPanel(wx.Panel):
         self.weatherDemo = False
         self.StockDemo = False
         self.learnDemo = False
+        self.BookDemo = False
         self.trying = []
 
 
@@ -305,6 +311,7 @@ class WuwPanel(wx.Panel):
         #self.BoxLearn.Hide()
         # self.BoxPhoto.Hide()
         self.BoxPhotoBitmap.Hide()
+        self.BoxBook.Hide()
         self.ResetEnvironment()
 
         ###事件响应
@@ -337,10 +344,12 @@ class WuwPanel(wx.Panel):
         self.buttonStockDemo.Bind(wx.EVT_BUTTON, self.buttonStockDemo_Click)
         self.buttonLearnDemo.Bind(wx.EVT_BUTTON, self.buttonLearnDemo_Click)
 
+        self.buttonBookDemo.Bind(wx.EVT_BUTTON, self.buttonBookDemo_Click)
         self.BoxClock.Bind(wx.EVT_PAINT, self.ShowTime)
         # self.BoxPhoto.Bind(wx.EVT_PAINT, self.drawPhoto)
         self.BoxPhotoBitmap.Bind(wx.EVT_PAINT, self.drawPhoto)
         self.BoxStock.Bind(wx.EVT_PAINT, self.showStock)
+        self.BoxBook.Bind(wx.EVT_PAINT, self.showBook)
 
         # print self.comboBoxCameras.GetCurrentSelection()
         # print self.threadCapture
@@ -484,6 +493,8 @@ class WuwPanel(wx.Panel):
             self.BoxClock.threadTime.stop()
         if not self.BoxStock.threadTime == None:
             self.BoxStock.threadTime.stop()
+        if not self.BoxBook.threadTime == None:
+            self.BoxBook.threadTime.stop()
 
     def WUW_Paint(self, event):
         if DEBUG: print "WUW_Paint"
@@ -828,6 +839,10 @@ class WuwPanel(wx.Panel):
         # TO FINISH
         """ Function to show the values of the stocks in real time """
 
+    def showBook(self, event):
+        # TO FINISH
+        """ Function to manage the book app """
+
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
         if DEBUG: print "buttonWeatherDemo_Click"
@@ -978,6 +993,25 @@ class WuwPanel(wx.Panel):
             stockBox6.SetForegroundColour(wx.Colour(0,0,0))
             self.BoxStock.Show()
             self.stock()
+
+    def buttonBookDemo_Click(self, event):
+        print "buttonBookDemo_Click"
+        if self.BookDemo:
+            self.BookDemo = False
+            self.labelDemoName.Label = "WUW"
+            self.buttonBookDemo.Label = "Book"
+            self.BoxBook.threadTime.stop()
+            self.BoxBook.threadTime=None
+            self.BoxBook.Hide()
+            self.ResetEnvironment()
+        else: 
+            self.StopOtherApps(event)
+            self.BookDemo = True
+            self.labelDemoName.Label = "Book"
+            self.buttonBookDemo.Label = "Stop Book"
+            self.BoxBook.threadTime = self.ThreadTime("time", 1, self.BoxBook)
+            self.BoxBook.threadTime.start()
+            self.BoxBook.Show()
 
 def main():
     app = wx.App(False)
