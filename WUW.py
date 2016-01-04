@@ -25,6 +25,13 @@ from classes.GeometricRecognizer import GeometricRecognizer
 from classes.NBestList import NBestList
 
 
+import pygame
+from pygame.locals import *
+from rally.voiture import *
+from rally.Constantes import *
+from rally.direction import *
+
+
 DEBUG = False
 AUTO_LOAD_DEFAULT = True
 
@@ -155,6 +162,8 @@ class WuwPanel(wx.Panel):
                                          size=(8*self.Grid,2*self.Grid))
         self.buttonStockDemo=wx.Button(self.tabPageApps,label="Stock",pos=(1*self.Grid,10*self.Grid),
                                          size=(8*self.Grid,2*self.Grid))
+        self.buttonRallyDemo=wx.Button(self.tabPageApps,label="Rally",pos=(1*self.Grid,13*self.Grid),
+                                         size=(8*self.Grid,2*self.Grid))
 
         #构建Label组
         self.labelM=wx.StaticText(self, label=" M", pos=(4*self.Grid,self.Grid),
@@ -214,7 +223,15 @@ class WuwPanel(wx.Panel):
         self.weatherDemo = False
         self.StockDemo = False
         self.trying = []
-
+        
+        # VAriables  du petit jeux 
+        self._Rally= False
+        self.Premier = False
+        self.fenetre = None
+        self.icone = None
+        self.fond = None
+        self.voiture1 = None
+        self.manager = None
 
         ###Load
         self.__touchlessMgr = TouchlessLib.TouchlessMgr()
@@ -262,6 +279,7 @@ class WuwPanel(wx.Panel):
         self.buttonPhotoDemo.Bind(wx.EVT_BUTTON, self.buttonPhotoDemo_Click)
         self.buttonWeatherDemo.Bind(wx.EVT_BUTTON, self.buttonWeatherDemo_Click)
         self.buttonStockDemo.Bind(wx.EVT_BUTTON, self.buttonStockDemo_Click)
+        self.buttonRallyDemo.Bind(wx.EVT_BUTTON, self.Rally_demo)
         self.BoxClock.Bind(wx.EVT_PAINT, self.ShowTime)
         self.BoxPhoto.Bind(wx.EVT_PAINT, self.drawPhoto)
         self.BoxStock.Bind(wx.EVT_PAINT, self.showStock)
@@ -674,6 +692,70 @@ class WuwPanel(wx.Panel):
 
 
     ###Demo Mode
+    ### Rally demo
+    def Rally(self):
+        if self.Premier : 
+            self.Premier = False
+            os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (0,0)
+            os.environ['SDL_VIDEO_CENTERED'] = '0'
+            pygame.init()
+
+            #Ouverture de la fenetre Pygame (carre : largeur = hauteur)
+            self.fenetre = pygame.display.set_mode((450, 450))
+            #Icone
+            self.icone = pygame.image.load(image_icone)
+            pygame.display.set_icon(self.icone)
+            #Titre
+            pygame.display.set_caption(titre_fenetre)
+
+            #boucle princale
+            self.fond = pygame.image.load(image_fond).convert()
+            self.voiture1 = voiture(image_voiture)
+            self.manager = Mgr_direction()
+
+        if self._Rally :             
+            print "MY = ", self.m.CurrData.Y
+            print "OY = ", self.o.CurrData.Y
+
+            self.fenetre.blit(self.fond, (0,0))
+            self.voiture1.afficher(self.fenetre)
+            pygame.display.flip()
+            
+            pygame.time.Clock().tick(30)
+            
+
+            self.manager.recup_dG(self.m.CurrData.Y)
+            self.manager.recup_dD(self.o.CurrData.Y)
+            print "difference", self.manager.delta()
+
+            if self.manager.gauche:
+                print "gauche"
+                self.voiture1.gauche(5)
+            elif self.manager.droite:
+                print "droite"
+                self.voiture1.droite(5)
+            pygame.display.flip()
+            wx.CallLater(10,self.Rally)
+
+
+
+    def Rally_demo(self, event):
+        ### correspond a l'appli en arret c'est a dire le code pour arreter l'application   
+        if  self._Rally: 
+            self._Rally = False
+            print "application Rally  arreter"
+            self.buttonRallyDemo.Label = "Rally"
+
+       ### correspond au fonctionnement de l'appli car la variable est defini au de but a false     
+        else:
+            self._Rally = True
+            self.Premier = True
+            self.buttonRallyDemo.Label = "stop Rally"
+            print "Rally demo en fonction"
+            self.Rally()
+
+
+
     ##Clock Demo
     def buttonClockDemo_Click(self, event):
         if DEBUG: print "buttonClockDemo_Click"
