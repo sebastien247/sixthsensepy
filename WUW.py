@@ -750,12 +750,12 @@ class WuwPanel(wx.Panel):
             i.Destroy()
         self.trying = []
         # values to get from the actual stock exchange
-        text2 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_book_value('AC.PA')),pos=(50,50))
-        text3 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_book_value('AIR.PA')),pos=(350,50))
-        text4 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_book_value('EN.PA')),pos=(650,50))
-        text5 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_book_value('CAP.PA')),pos=(50,290))
-        text6 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_book_value('UG.PA')),pos=(350,290))
-        text7 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_book_value('ORA.PA')),pos=(650,290))
+        text2 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('AC.PA')),pos=(50,50))
+        text3 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('AIR.PA')),pos=(350,50))
+        text4 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('EN.PA')),pos=(650,50))
+        text5 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('CAP.PA')),pos=(50,290))
+        text6 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('UG.PA')),pos=(350,290))
+        text7 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('ORA.PA')),pos=(650,290))
         text2.SetForegroundColour(wx.Colour(0,0,0))
         text3.SetForegroundColour(wx.Colour(0,0,0))
         text4.SetForegroundColour(wx.Colour(0,0,0))
