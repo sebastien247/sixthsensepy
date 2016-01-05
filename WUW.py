@@ -193,8 +193,12 @@ class WuwPanel(wx.Panel):
         self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
                                      size=(20*self.Grid,40*self.Grid))
 
-        self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
+        self.BoxPhoto=wx.StaticBox(self,pos=(0*self.Grid,16*self.Grid),
                                    size=(64*self.Grid,48*self.Grid))
+
+
+        self.BoxRally=wx.StaticBox(self,pos=(0*self.Grid,16*self.Grid),
+                                   size=(35*self.Grid,38*self.Grid))
 
         ###Global Variables
         self.__touchlessMgr = None
@@ -251,6 +255,7 @@ class WuwPanel(wx.Panel):
         self.BoxStock.Hide()
         self.BoxPhoto.Hide()
         self.ResetEnvironment()
+        self.BoxRally.Hide()
 
         ###事件响应
         self.Bind(wx.EVT_WINDOW_DESTROY, self.WUW_Destroy)
@@ -695,34 +700,19 @@ class WuwPanel(wx.Panel):
     ### Rally demo
     def Rally(self):
         if self.Premier : 
-            self.Premier = False
-            os.environ['SDL_VIDEO_WINDOW_POS'] = '%i,%i' % (0,0)
-            os.environ['SDL_VIDEO_CENTERED'] = '0'
-            pygame.init()
-
-            #Ouverture de la fenetre Pygame (carre : largeur = hauteur)
-            self.fenetre = pygame.display.set_mode((450, 450))
-            #Icone
-            self.icone = pygame.image.load(image_icone)
-            pygame.display.set_icon(self.icone)
-            #Titre
-            pygame.display.set_caption(titre_fenetre)
-
-            #boucle princale
-            self.fond = pygame.image.load(image_fond).convert()
-            self.voiture1 = voiture(image_voiture)
+            bmp1 = wx.Image(image_voiture, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+            self.voiture1 = voiture(bmp1)
+            self.voiture1.afficher(self.BoxRally)
             self.manager = Mgr_direction()
 
-        if self._Rally :             
+        if self._Rally :
+            self.Premier = False             
             print "MY = ", self.m.CurrData.Y
             print "OY = ", self.o.CurrData.Y
 
-            self.fenetre.blit(self.fond, (0,0))
-            self.voiture1.afficher(self.fenetre)
-            pygame.display.flip()
+            self.voiture1.afficher(self.BoxRally)
             
             pygame.time.Clock().tick(30)
-            
 
             self.manager.recup_dG(self.m.CurrData.Y)
             self.manager.recup_dD(self.o.CurrData.Y)
@@ -734,7 +724,6 @@ class WuwPanel(wx.Panel):
             elif self.manager.droite:
                 print "droite"
                 self.voiture1.droite(5)
-            pygame.display.flip()
             wx.CallLater(10,self.Rally)
 
 
@@ -744,6 +733,7 @@ class WuwPanel(wx.Panel):
         if  self._Rally: 
             self._Rally = False
             print "application Rally  arreter"
+            self.BoxRally.Hide()
             self.buttonRallyDemo.Label = "Rally"
 
        ### correspond au fonctionnement de l'appli car la variable est defini au de but a false     
@@ -752,6 +742,7 @@ class WuwPanel(wx.Panel):
             self.Premier = True
             self.buttonRallyDemo.Label = "stop Rally"
             print "Rally demo en fonction"
+            self.BoxRally.Show()
             self.Rally()
 
 

@@ -1,13 +1,14 @@
 
 
-import pygame
+import wx
 
 
 class voiture:
-	def __init__(self, fichier):
-		self.image = fichier
-		self.x = 200
-		self.y = 200
+	def __init__(self, image):
+		self.image = image
+		self.x = 150
+		self.y = 150
+		self.car_img = None
 
 	def gauche (self, pixels):
 #		print "gauche"
@@ -18,6 +19,8 @@ class voiture:
 #		print "droite"
 		self.x = self.x - pixels
 
-	def afficher(self, fenetre):
-		affich = pygame.image.load(self.image).convert()
-		fenetre.blit(affich, (self.x,self.y))
+	def afficher(self, BoxRally):
+		if not self.car_img:
+			self.car_img=wx.StaticBitmap(BoxRally , -1, self.image, (self.x, self.y))
+		else:
+			self.car_img.SetPosition(wx.Point(self.x, self.y))
