@@ -38,7 +38,7 @@ class WuwPanel(wx.Panel):
         self.Grid = self.Width / 100
         wx.Panel.__init__(self, parent)
 
-        self.SetBackgroundColour(wx.Colour(0, 0, 0))
+        self.SetBackgroundColour(wx.Colour(100, 100, 100))
         self.SetForegroundColour(wx.Colour(255, 255, 255))
 
         #Stock app
@@ -832,13 +832,15 @@ class WuwPanel(wx.Panel):
 
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
-        if DEBUG: print "buttonWeatherDemo_Click"
         if self.weatherDemo:
             self.weatherDemo = False
             self.labelDemoName.Label = "WUW"
             self.buttonWeatherDemo.Label = "weather"
             self.BoxWeather.Hide()
             self.ResetEnvironment()
+
+           
+            
         else:
             self.StopOtherApps(event)
             self.weatherDemo = True
@@ -849,13 +851,15 @@ class WuwPanel(wx.Panel):
             self.trying=[]
             style = wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE
             self.text = wx.StaticText(panel, style=style)
-            sizer = wx.BoxSizer(wx.VERTICAL)
+            sizer = wx.BoxSizer(wx.HORIZONTAL)
             sizer.AddStretchSpacer(1)
             sizer.Add(self.text, 0, wx.EXPAND)
-            self.BoxStock=wx.StaticBox(self,pos=(30,35),
+            self.BoxStock=wx.StaticBox(self,pos=(30,200),
+                                     size=(300,100))
+            self.BoxStockimg=wx.StaticBox(self,pos=(30,300),
                                      size=(300,300))
-            sizer.AddStretchSpacer(1)
             panel.SetSizer(sizer)
+            stockBox.SetForegroundColour(wx.Colour(0,0,0))
             self.Weather()
             #self.BoxPhoto.Refresh()
 
@@ -864,23 +868,6 @@ class WuwPanel(wx.Panel):
             i.Destroy()
         self.trying = []
         sizer = wx.GridBagSizer()
-        #this will give you a dictionary of all cities in the world with this city's name Be specific (city, country)!
-        import Image
-
-        #opens an image:
-        im = Image.open("image.jpg")
-        #creates a new empty image, RGB mode, and size 400 by 400.
-        new_im = Image.new('RGB', (400,400))
-
-        #Here Iresize my opened image, so it is no bigger than 100,100
-        im.thumbnail((100,100))
-        #Iterate through a 4 by 4 grid with 100 spacing, to place my image
-
-        #I change brightness of the images, just to emphasise they are unique copies.
-        im=Image.eval(im,lambda x: x+(100+100)/30)
-        #paste the image at location i,j:
-        new_im.paste(im, (100,100))
-
 
         city='limoges'
         lookup = pywapi.get_location_ids(city)
@@ -888,18 +875,42 @@ class WuwPanel(wx.Panel):
         #workaround to access last item of dictionary
         for i in lookup:
             location_id = i
-
+        
         weather_com_result = pywapi.get_weather_from_weather_com(location_id)
+        yahoo_result = pywapi.get_weather_from_yahoo(location_id)
  
-        #weather_com_result = pywapi.get_weather_from_weather_com('10001')
-        #yahoo_result = pywapi.get_weather_from_yahoo('10001')
         weather1 = self.trying.append(wx.StaticText(self.BoxStock,-1,str("Yahoo says: It is " + string.lower(yahoo_result['condition']['text']) + " and " +
-        yahoo_result['condition']['temp'] + " C now "),pos=(50,50)))
-        # labelStock = wx.StaticText(self.BoxStock,-1,label=weather1,pos=(30,30))
-        #self.text.SetLabel(str(labelStock))
-        #weather2 = "Weather.com says: It is " + string.lower(weather_com_result['current_conditions']['text']) + " and " + weather_com_result['current_conditions']['temperature'] + " C now "
-        #labelStock = wx.StaticText(self.BoxStock,label=weather2,pos=(30,80))
-        #self.text.SetLabel(str(labelStock))
+        yahoo_result['condition']['temp'] + " C now \n in " + city),pos=(20,50)))
+       
+        import Image
+
+        if  'swon' in string.lower(yahoo_result['condition']['text']):
+            pass
+            img= wx.Image(os.path.realpath('image/nuage-ensoleillé.png.png'),wx.BITMAP_TYPE_PNG)
+            bmp= wx.BitmapFromImage(img)
+            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(50,350))
+            
+        elif  'cloudy' in string.lower(yahoo_result['condition']['text']):
+            pass
+            img= wx.Image(os.path.realpath('image/nuage.png'),wx.BITMAP_TYPE_PNG)
+            bmp= wx.BitmapFromImage(img)
+            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(50,350))
+           
+            
+        elif 'rain' in string.lower(yahoo_result['condition']['text']):
+            pass
+            img= wx.Image(os.path.realpath('image/pluie.png'),wx.BITMAP_TYPE_PNG)
+            bmp= wx.BitmapFromImage(img)
+            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(50,350))
+            
+        elif  'sun' in string.lower(yahoo_result['condition']['text']):
+            pass
+            img= wx.Image(os.path.realpath('image/sun.jpeg'),wx.BITMAP_TYPE_JPEG)
+            bmp= wx.BitmapFromImage(img)
+            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(50,350))
+            
+            
+
         wx.CallLater(10000,self.Weather)
 
     def buttonLearnDemo_Click(self, event):
