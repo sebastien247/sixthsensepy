@@ -147,6 +147,8 @@ class WuwPanel(wx.Panel):
                                          size=(8*self.Grid,2*self.Grid))
         self.buttonStockDemo=wx.Button(self.tabPageApps,label="Stock",pos=(1*self.Grid,10*self.Grid),
                                          size=(8*self.Grid,2*self.Grid))
+        self.buttonApprentissageDemo=wx.Button(self.tabPageApps,label="Apprentissage",pos=(11*self.Grid,4*self.Grid),
+                                         size=(8*self.Grid,2*self.Grid))
 
         #构建Label组
         self.labelM=wx.StaticText(self, label=" M", pos=(4*self.Grid,self.Grid),
