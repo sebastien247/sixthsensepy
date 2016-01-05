@@ -147,7 +147,7 @@ class WuwPanel(wx.Panel):
                                          size=(8*self.Grid,2*self.Grid))
         self.buttonStockDemo=wx.Button(self.tabPageApps,label="Stock",pos=(1*self.Grid,10*self.Grid),
                                          size=(8*self.Grid,2*self.Grid))
-        self.buttonApprentissageDemo=wx.Button(self.tabPageApps,label="Apprentissage",pos=(11*self.Grid,4*self.Grid),
+        self.buttonLearnDemo=wx.Button(self.tabPageApps,label="Learn",pos=(11*self.Grid,4*self.Grid),
                                          size=(8*self.Grid,2*self.Grid))
 
         #构建Label组
@@ -256,6 +256,8 @@ class WuwPanel(wx.Panel):
         self.buttonPhotoDemo.Bind(wx.EVT_BUTTON, self.buttonPhotoDemo_Click)
         self.buttonWeatherDemo.Bind(wx.EVT_BUTTON, self.buttonWeatherDemo_Click)
         self.buttonStockDemo.Bind(wx.EVT_BUTTON, self.buttonStockDemo_Click)
+        self.buttonLearnDemo.Bind(wx.EVT_BUTTON, self.buttonLearnDemo_Click)
+
         self.BoxClock.Bind(wx.EVT_PAINT, self.ShowTime)
         self.BoxPhoto.Bind(wx.EVT_PAINT, self.drawPhoto)
         self.BoxStock.Bind(wx.EVT_PAINT, self.showStock)
@@ -736,6 +738,9 @@ class WuwPanel(wx.Panel):
     def buttonWeatherDemo_Click(self, event):
         if DEBUG: print "buttonWeatherDemo_Click"
         pass
+
+    def buttonLearnDemo_Click(self, event):
+        print "learn"
 
     ##Stock Demo
     def stock(self):
