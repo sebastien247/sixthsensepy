@@ -759,7 +759,7 @@ class WuwPanel(wx.Panel):
 
     def closeApp(self):
         self.gesturesActions.pop()
-        
+
 
     def WUW_MouseUp(self, event):
         if DEBUG: print "WUW_MouseUp"
@@ -783,7 +783,7 @@ class WuwPanel(wx.Panel):
                                                  round(result.Angle,2))
 
                     actions = self.gesturesActions[-1]
-                    action = actions.get(result.Name, lambda: None)
+                    action = actions.get(result.Name, lambda e: None)
                     new_actions = action(event) # Starting a new app should return a new dict of accepted gestures -> action
                     if new_actions:
                         new_actions["close"] = self.closeApp
