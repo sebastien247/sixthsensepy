@@ -30,6 +30,7 @@ from classes.NBestList import NBestList
 DEBUG = False
 AUTO_LOAD_DEFAULT = True
 
+
 class WuwPanel(wx.Panel):
     Width = Value.WuwWidth
     Height = Value.WuwHeight
@@ -756,6 +757,10 @@ class WuwPanel(wx.Panel):
             self.__points.append(PointR(event.GetX(),event.GetY(),time.clock()*1000))
             self.Refresh(True, wx.Rect(event.GetX()-2,event.GetY()-2,4,4))
 
+    def closeApp(self):
+        self.gesturesActions.pop()
+        
+
     def WUW_MouseUp(self, event):
         if DEBUG: print "WUW_MouseUp"
         if self.__inBoxArea:
@@ -777,21 +782,12 @@ class WuwPanel(wx.Panel):
                                                  round(result.Distance,2),
                                                  round(result.Angle,2))
 
-                    dic={
-                        "clock1":self.buttonClockDemo_Click,
-                        "clock2":self.buttonClockDemo_Click,
-                        "photo1":self.buttonPhotoDemo_Click,
-                        "photo2":self.buttonPhotoDemo_Click,
-                        "photo3":self.buttonPhotoDemo_Click,
-                        "photo4":self.buttonPhotoDemo_Click,
-                        "photo5":self.buttonPhotoDemo_Click,
-                        "photo6":self.buttonPhotoDemo_Click,
-                        "weather1":self.buttonWeatherDemo_Click,
-                        "weather2":self.buttonWeatherDemo_Click,
-                        "stock1":self.buttonStockDemo_Click,
-                        "stock2":self.buttonStockDemo_Click,
-                        }
-                    dic[result.Name](event)
+                    actions = self.gesturesActions[-1]
+                    action = actions.get(result.Name, lambda: None)
+                    new_actions = action(event) # Starting a new app should return a new dict of accepted gestures -> action
+                    if new_actions:
+                        new_actions["close"] = self.closeApp
+                        self.gesturesActions.append(new_actions)
 
 
     ###Demo Mode
