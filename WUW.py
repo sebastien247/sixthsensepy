@@ -19,6 +19,7 @@ import math
 import TouchlessLib
 import ystockquote
 import wx.lib.plot as plot
+from pymouse import PyMouseEvent
 from classes.Value import Value
 from classes.PointR import PointR
 from classes.GeometricRecognizer import GeometricRecognizer
@@ -994,6 +995,27 @@ class WuwPanel(wx.Panel):
             self.BoxStock.Show()
             self.stock()
 
+    #Book demo
+    class OpeningPdf(PyMouseEvent):
+        def __init__(self):
+            PyMouseEvent.__init__(self)
+
+        def click(self, x, y, button, press):
+            '''Open the pdf when the middle button of the mouse is pressed. To stop whhen the pdf is openned, just close it.'''
+            if button == 3:
+                if press:
+                    os.system("evince tests/Charte\ de\ projet\ 2014-2015.pdf")
+                    self.BoxBook.threadTime.stop()
+                    self.ResetEnvironment()
+            else:
+                self.BoxBook.threadTime.stop()
+                self.ResetEnvironment()
+
+    def book(self):
+        """Display the pdf when the middle button of the mouse is pressed"""
+        pdf = self.OpeningPdf()
+        pdf.run()
+
     def buttonBookDemo_Click(self, event):
         print "buttonBookDemo_Click"
         if self.BookDemo:
@@ -1011,6 +1033,7 @@ class WuwPanel(wx.Panel):
             self.buttonBookDemo.Label = "Stop Book"
             self.BoxBook.threadTime = self.ThreadTime("time", 1, self.BoxBook)
             self.BoxBook.threadTime.start()
+            self.book()
             self.BoxBook.Show()
 
 def main():
