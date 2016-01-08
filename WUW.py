@@ -576,11 +576,14 @@ class WuwPanel(wx.Panel):
     ##Marker Buttons
     def buttonMarkerAdd_Click(self, event):
         if DEBUG: print "buttonMarkerAdd_Click"
-        self.__fAddingMarker = not self.__fAddingMarker
-        if self.__fAddingMarker:
+
+        if not self.__fAddingMarker:
             self.buttonMarkerAdd.SetLabel("Cancel Adding Marker")
+            wx.MessageBox('Please, add markers in the following order:\n\n- Right thumb\n- Right index\n- Left thumb\n- Left index', 'Info', wx.OK | wx.ICON_INFORMATION)
+            self.__fAddingMarker = True
         else:
             self.buttonMarkerAdd.SetLabel("Add A New Marker")
+            self.__fAddingMarker = False
 
     def comboBoxMarkers_DropDown(self, event):
         if DEBUG: print "comboBoxMarkers_DropDown"
