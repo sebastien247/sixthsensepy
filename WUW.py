@@ -1007,6 +1007,9 @@ class WuwPanel(wx.Panel):
                     os.system("evince tests/Charte\ de\ projet\ 2014-2015.pdf")
                     self.BoxBook.threadTime.stop()
                     self.ResetEnvironment()
+                    #TO ADD when the gesture is made
+                    # if gesture_event_killing:
+                    #     os.system("ps aux | grep -i firefox | awk {'print $2'} | xargs kill -9") 
             else:
                 self.BoxBook.threadTime.stop()
                 self.ResetEnvironment()
