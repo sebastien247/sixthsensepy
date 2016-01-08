@@ -38,7 +38,7 @@ class WuwPanel(wx.Panel):
         self.Grid = self.Width / 100
         wx.Panel.__init__(self, parent)
 
-        self.SetBackgroundColour(wx.Colour(100, 100, 100))
+        self.SetBackgroundColour(wx.Colour(0, 0, 0))
         self.SetForegroundColour(wx.Colour(255, 255, 255))
 
         #Stock app
@@ -847,6 +847,7 @@ class WuwPanel(wx.Panel):
             self.labelDemoName.Label = "weather"
             self.buttonWeatherDemo.Label = "Stop weather"
             self.BoxWeather.Show()
+            self.ResetEnvironment()
             panel = wx.Panel(self,-1)
             self.trying=[]
             style = wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE
@@ -854,12 +855,9 @@ class WuwPanel(wx.Panel):
             sizer = wx.BoxSizer(wx.HORIZONTAL)
             sizer.AddStretchSpacer(1)
             sizer.Add(self.text, 0, wx.EXPAND)
-            self.BoxStock=wx.StaticBox(self,pos=(30,200),
-                                     size=(300,100))
-            self.BoxStockimg=wx.StaticBox(self,pos=(30,300),
-                                     size=(300,300))
+            self.BoxStock=wx.StaticBox(self,pos=(30,200))
             panel.SetSizer(sizer)
-            stockBox.SetForegroundColour(wx.Colour(0,0,0))
+            #stockBox.SetForegroundColour(wx.Colour(0,0,0))
             self.Weather()
             #self.BoxPhoto.Refresh()
 
@@ -878,10 +876,14 @@ class WuwPanel(wx.Panel):
         
         weather_com_result = pywapi.get_weather_from_weather_com(location_id)
         yahoo_result = pywapi.get_weather_from_yahoo(location_id)
- 
-        weather1 = self.trying.append(wx.StaticText(self.BoxStock,-1,str("Yahoo says: It is " + string.lower(yahoo_result['condition']['text']) + " and " +
-        yahoo_result['condition']['temp'] + " C now \n in " + city),pos=(20,50)))
+        
+        self.BoxStock.SetForegroundColour(wx.Colour(0, 0, 0))
+
+        weather1 = self.trying.append(wx.StaticText(self,-1,str(" It is " + string.lower(yahoo_result['condition']['text']) + " and " +
+        yahoo_result['condition']['temp'] + " C now \n                 in  " + city),pos=(40,200)))
+
        
+
         import Image
 
         if  'swon' in string.lower(yahoo_result['condition']['text']):
