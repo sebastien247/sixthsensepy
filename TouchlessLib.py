@@ -363,13 +363,14 @@ class TouchlessMgr:
     def AddMarker(self, name, img, center, radius):
         item = Marker(name)
         self.__markers.append(item)
+        self.markers_dict[name] = item
         return item
 
     def AddSelectedMarker(self, name, img, center, radius):
         item = Marker(name)
         item.SetMarkerAppearance_v2(self.GetMarkerAppearance_v2(img, center, radius))
         self.__markers.append(item)
-        self.markers_dict[name] = item;
+        self.markers_dict[name] = item
         return item
 
     def CleanupCameras(self):

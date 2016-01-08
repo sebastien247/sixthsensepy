@@ -425,7 +425,7 @@ class WuwPanel(wx.Panel):
             if DEBUG: print "ThreadMarker.stop"
             self.__stop = True
         def draw(self):
-            self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.GetCurrentImage())
+            self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.img_cv)
             self.__panel.AnalyzeMarkers()
 
     def StartDrawing(self):
