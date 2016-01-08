@@ -769,8 +769,6 @@ class WuwPanel(wx.Panel):
         if self.__isDown:
             self.__isDown = False
             if len(self.__points) >= 5: # require 5 points for a valid gesture
-                print self.__recording
-                print self.__rec.NumGestures
                 if self.__recording:
                     pass
 
