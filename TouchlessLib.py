@@ -298,7 +298,6 @@ class TouchlessMgr:
         self.__camHeight = 0
         self.__camWidth = 0
         self.CurrentCamera = None
-        self.markers_dict = {}
         self.lock = threading.RLock()
 
 
@@ -363,14 +362,12 @@ class TouchlessMgr:
     def AddMarker(self, name, img, center, radius):
         item = Marker(name)
         self.__markers.append(item)
-        self.markers_dict[name] = item
         return item
 
     def AddSelectedMarker(self, name, img, center, radius):
         item = Marker(name)
         item.SetMarkerAppearance_v2(self.GetMarkerAppearance_v2(img, center, radius))
         self.__markers.append(item)
-        self.markers_dict[name] = item
         return item
 
     def CleanupCameras(self):
@@ -411,8 +408,8 @@ class TouchlessMgr:
     def SetDefaultMarkers(self):
         self.__markers = []
         red = self.AddMarker(str.format("Red", 0), None, None, 0)
-        green = self.AddMarker(str.format("Green", 1), None, None, 0)
         blue = self.AddMarker(str.format("Blue", 2), None, None, 0)
+        green = self.AddMarker(str.format("Green", 1), None, None, 0)
         yellow = self.AddMarker(str.format("Yellow ", 3), None, None, 0)
         
         ############################################

@@ -441,28 +441,30 @@ class WuwPanel(wx.Panel):
         print(result.Name)
 
     def AnalyzeMarkers(self):
-        red = self.__touchlessMgr.markers_dict["Red"]
-        green = self.__touchlessMgr.markers_dict["Green"]
+        if self.__touchlessMgr.MarkersCount < 2:
+            return
+        m = self.__touchlessMgr.Markers[0]
+        n = self.__touchlessMgr.Markers[1]
 
-        if red.CurrData.Present and green.CurrData.Present:
-            dist = ((red.CurrData.X - green.CurrData.X)**2 + (red.CurrData.Y - green.CurrData.Y)**2)**0.5
+        if m.CurrData.Present and n.CurrData.Present:
+            dist = ((m.CurrData.X - n.CurrData.X)**2 + (m.CurrData.Y - n.CurrData.Y)**2)**0.5
             isTouching = dist < 100
             if isTouching and not self.__drawingGesture:
                 self.StartDrawing()
             elif not isTouching and self.__drawingGesture:
                 self.EndDrawing()
-        elif not red.CurrData.Present and not green.CurrData.Present:
+        elif not m.CurrData.Present and not n.CurrData.Present:
             if self.__drawingGesture:
                 self.EndDrawing()
 
         if self.__drawingGesture:
-            if green.CurrData.Present and red.CurrData.Present:
+            if n.CurrData.Present and m.CurrData.Present:
                 # On utilise la moyenne des deux points détectés
-                point_x = (green.CurrData.X + red.CurrData.X) / 2
-                point_y = (green.CurrData.Y + red.CurrData.Y) / 2
+                point_x = (n.CurrData.X + m.CurrData.X) / 2
+                point_y = (n.CurrData.Y + m.CurrData.Y) / 2
             else:
                 # On utilise le seul point détecté
-                point = green if green.CurrData.Present else red
+                point = n if n.CurrData.Present else m
                 point_x = point.CurrData.X
                 point_y = point.CurrData.Y
             self.__drawingPoints.append(PointR(point_x, point_y,time.clock()*1000))
