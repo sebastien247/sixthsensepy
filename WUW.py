@@ -854,12 +854,12 @@ class WuwPanel(wx.Panel):
             stockLabel5 = 'Peugeot S.A.'
             stockLabel6 = 'Orange'
             # set a box that will contain the first stock values
-            stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(290, 230))
-            stockBox2 = wx.StaticBox(self.BoxStock,-1,stockLabel2, (305, 5), size=(290, 230))
-            stockBox3 = wx.StaticBox(self.BoxStock,-1,stockLabel3, (605, 5), size=(290, 230))
-            stockBox4 = wx.StaticBox(self.BoxStock,-1,stockLabel4, (5, 240), size=(290, 230))
-            stockBox5 = wx.StaticBox(self.BoxStock,-1,stockLabel5, (305, 240), size=(290, 230))
-            stockBox6 = wx.StaticBox(self.BoxStock,-1,stockLabel6, (605, 240), size=(290, 230))
+            stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (5, 5), size=(self.Grid*29, self.Grid*23))
+            stockBox2 = wx.StaticBox(self.BoxStock,-1,stockLabel2, (305, 5), size=(self.Grid*29, self.Grid*23))
+            stockBox3 = wx.StaticBox(self.BoxStock,-1,stockLabel3, (605, 5), size=(self.Grid*29, self.Grid*23))
+            stockBox4 = wx.StaticBox(self.BoxStock,-1,stockLabel4, (5, 240), size=(self.Grid*29, self.Grid*23))
+            stockBox5 = wx.StaticBox(self.BoxStock,-1,stockLabel5, (305, 240), size=(self.Grid*29, self.Grid*23))
+            stockBox6 = wx.StaticBox(self.BoxStock,-1,stockLabel6, (605, 240), size=(self.Grid*29, self.Grid*23))
             stockBox1.SetForegroundColour(wx.Colour(0,0,0))
             stockBox2.SetForegroundColour(wx.Colour(0,0,0))
             stockBox3.SetForegroundColour(wx.Colour(0,0,0))
