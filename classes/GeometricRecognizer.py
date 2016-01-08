@@ -26,6 +26,12 @@ class GeometricRecognizer:
         p = Utils.ScaleTo(p, Value.ResampleScale)
         p = Utils.TranslateCentroidTo(p, Value.ResampleOrigin)
 
+        # print '<?xml version="1.0" encoding="utf-8" standalone="yes"?>"'
+        # print '<Gesture Name="close" NumPts="%d" Millseconds="%d" AppName="WUW01" AppVer="1.0.0.0" Date="Wenesday, January 08, 2016" TimeOfDay="14:56:51 PM">' % (len(p), points[-1].T - points[0].T);
+        # for k in p:
+        #     print '  <Point X="%d" Y="%d" T="%d" />' % (k.X, k.Y, k.T)
+        # print '</Gesture>'
+
         nBest = NBestList()
         for pp in self.__gestures:
             best = self.GoldenSectionSearch(p, pp.Points, Utils.DegToRad(-45.0), Utils.DegToRad(+45.0), Utils.DegToRad(2.0))
