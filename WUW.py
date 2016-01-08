@@ -856,7 +856,7 @@ class WuwPanel(wx.Panel):
             sizer.AddStretchSpacer(1)
             sizer.Add(self.text, 0, wx.EXPAND)
             self.BoxStock=wx.StaticBox(self,pos=(30,200))
-            panel.SetSizer(sizer)
+            #panel.SetSizer(sizer)
             #stockBox.SetForegroundColour(wx.Colour(0,0,0))
             self.Weather()
             #self.BoxPhoto.Refresh()
@@ -880,7 +880,7 @@ class WuwPanel(wx.Panel):
         self.BoxStock.SetForegroundColour(wx.Colour(0, 0, 0))
 
         weather1 = self.trying.append(wx.StaticText(self,-1,str(" It is " + string.lower(yahoo_result['condition']['text']) + " and " +
-        yahoo_result['condition']['temp'] + " C now \n                 in  " + city),pos=(40,200)))
+        yahoo_result['condition']['temp'] + " C now \n                 in  " + city),pos=(90,300)))
 
        
 
