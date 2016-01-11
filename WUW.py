@@ -175,10 +175,11 @@ class WuwPanel(wx.Panel):
                                     size=(90*self.Grid,50*self.Grid))
         self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
                                     size=(20*self.Grid,40*self.Grid))
-        self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
-                                    size=(64*self.Grid,48*self.Grid))
+        #self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
+        #                            size=(64*self.Grid,48*self.Grid))
         # self.BoxLearn=wx.StaticBox(self,pos=(0*self.Grid,0*self.Grid),
         #                             size=(100*self.Grid,100*self.Grid))
+        self.BoxPhotoBitmap = wx.StaticBitmap(self, wx.ID_ANY, pos=(18*self.Grid,16*self.Grid), size=(64*self.Grid,48*self.Grid))
         self.BoxClock.threadTime=None
         self.BoxStock.threadTime=None
 
@@ -250,7 +251,6 @@ class WuwPanel(wx.Panel):
         ### Fin Learn Display ###
         #########################
 
-        self.BoxPhotoBitmap = wx.StaticBitmap(self, wx.ID_ANY, pos=(18*self.Grid,16*self.Grid), size=(64*self.Grid,48*self.Grid))
         ###Global Variables
         self.__touchlessMgr = None
         self.__fAddingMarker = False
