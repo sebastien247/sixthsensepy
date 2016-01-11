@@ -40,16 +40,8 @@ class WuwPanel(wx.Panel):
         self.SetForegroundColour(wx.Colour(255, 255, 255))
 
         #Stock app
-        panel = wx.Panel(self)
         self.trying=[]
         self.getChange=[]
-        style = wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE
-        self.text = wx.StaticText(panel, style=style)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.AddStretchSpacer(1)
-        sizer.Add(self.text, 0, wx.EXPAND)
-        sizer.AddStretchSpacer(1)
-        panel.SetSizer(sizer)
 
         ###构建界面
         #构建TabPage构件组
