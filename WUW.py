@@ -18,6 +18,7 @@ import os
 import math
 import TouchlessLib
 import ystockquote
+from pykeyboard import PyKeyboard
 import wx.lib.plot as plot
 from pymouse import PyMouseEvent
 from classes.Value import Value
@@ -996,28 +997,42 @@ class WuwPanel(wx.Panel):
             self.stock()
 
     #Book demo
-    class OpeningPdf(PyMouseEvent):
-        def __init__(self):
-            PyMouseEvent.__init__(self)
+    # class OpeningPdf(PyMouseEvent):
+    #     def __init__(self):
+    #         PyMouseEvent.__init__(self)
 
-        def click(self, x, y, button, press):
-            '''Open the pdf when the middle button of the mouse is pressed. To stop whhen the pdf is openned, just close it.'''
-            if button == 3:
-                if press:
-                    os.system("evince tests/test.pdf")
-                    self.BoxBook.threadTime.stop()
-                    self.ResetEnvironment()
-                    #TO ADD when the gesture is made
-                    # if gesture_event_killing:
-                    #     os.system("ps aux | grep -i firefox | awk {'print $2'} | xargs kill -9") 
-            else:
-                self.BoxBook.threadTime.stop()
-                self.ResetEnvironment()
+    #     def click(self, x, y, button, press):
+    #         '''Open the pdf when the middle button of the mouse is pressed. To stop whhen the pdf is openned, just close it.'''
+    #         if button == 3:
+    #             if press:
+    #                 os.system("evince tests/test.pdf")
+    #                 self.BoxBook.threadTime.stop()
+    #                 self.ResetEnvironment()
+    #                 #TO ADD when the gesture is made
+    #                 # if gesture_event_killing:
+    #                 #     os.system("ps aux | grep -i firefox | awk {'print $2'} | xargs kill -9") 
+    #         else:
+    #             self.BoxBook.threadTime.stop()
+    #             self.ResetEnvironment()
+
+    class PdfThread(threading.Thread):
+        def __init__(self):
+            threading.Thread.__init__(self)
+
+        def run(self):
+            os.system("evince tests/test.pdf")
 
     def book(self):
         """Display the pdf when the middle button of the mouse is pressed"""
-        pdf = self.OpeningPdf()
-        pdf.run()
+        pdf = self.PdfThread()
+        pdf.start()
+        k = PyKeyboard()
+        print "1"
+        time.sleep(2)
+        print "2"
+        k.press_key(k.control_l_key)
+        k.tap_key(k.page_down_key)
+        k.release_key(k.control_l_key)
 
     def buttonBookDemo_Click(self, event):
         print "buttonBookDemo_Click"
@@ -1037,7 +1052,7 @@ class WuwPanel(wx.Panel):
             self.BoxBook.threadTime = self.ThreadTime("time", 1, self.BoxBook)
             self.BoxBook.threadTime.start()
             self.book()
-            self.BoxBook.Show()
+            #self.BoxBook.Show()
 
 def main():
     app = wx.App(False)
