@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Gesture Name="close" NumPts="64" Millseconds="482" AppName="WUW01" AppVer="1.0.0.0" Date="Wenesday, January 08, 2016" TimeOfDay="14:56:51 PM">
   <Point X="137" Y="0" T="0" />
   <Point X="126" Y="3" T="0" />

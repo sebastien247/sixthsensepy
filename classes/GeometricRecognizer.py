@@ -26,7 +26,8 @@ class GeometricRecognizer:
         p = Utils.ScaleTo(p, Value.ResampleScale)
         p = Utils.TranslateCentroidTo(p, Value.ResampleOrigin)
 
-        # print '<?xml version="1.0" encoding="utf-8" standalone="yes"?>"'
+        # # Décommenter ces lignes pour ajouter de nouveaux gestes (et changer Name !)
+        # print '<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
         # print '<Gesture Name="close" NumPts="%d" Millseconds="%d" AppName="WUW01" AppVer="1.0.0.0" Date="Wenesday, January 08, 2016" TimeOfDay="14:56:51 PM">' % (len(p), points[-1].T - points[0].T);
         # for k in p:
         #     print '  <Point X="%d" Y="%d" T="%d" />' % (k.X, k.Y, k.T)
@@ -163,6 +164,7 @@ class GeometricRecognizer:
             qt = string.atoi(p.get("T"))
             q = PointR(qx,qy,qt)
             points.append(q)
+        print(name)
         return Gesture(name, points)
 
     def LoadGesture(self, filename):
@@ -179,6 +181,7 @@ class GeometricRecognizer:
                     break
             self.__gestures.append(p)
         except Exception as e:
+            print("!!", e)
             success = False
         return success
     
