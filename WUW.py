@@ -188,6 +188,73 @@ class WuwPanel(wx.Panel):
 
         self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
                                    size=(64*self.Grid,48*self.Grid))
+        #####################
+        ### Learn Display ###
+        #####################
+        # Parametres general
+        learnFont = wx.Font(18, wx.DEFAULT, wx.NORMAL, wx.NORMAL)
+
+        # self.BoxLearn.screenOne=wx.StaticBox(self, pos=(18*self.Grid,16*self.Grid), size=(64*self.Grid,48*self.Grid))
+        # self.BoxLearn.SetBackgroundColour("green")
+
+        # - Premiere ecrans - Demande lancement horloge
+        path_circle = os.path.realpath('images/circle2.png')
+        img_circle = wx.Image(path_circle,wx.BITMAP_TYPE_PNG)
+        bmp_circle = wx.BitmapFromImage(img_circle)
+        print bmp_circle.Size
+        staticBmpCircle = wx.StaticBitmap(self,wx.ID_ANY,bmp_circle,pos=((self.Width/2) - bmp_circle.Size[0]/2, (self.Height/2) - bmp_circle.Size[1]/2))
+
+        screenOneChar = "Bienvenue dans l'apprentissage de sixthsense.\nPour lancer votre premiere application reproduiser le rond visible\ndevant vous a l'aide de votre doight."
+        screenOne_text = wx.StaticText(self, -1, screenOneChar, pos=(self.Width/2, self.Height-5), style=wx.ALIGN_CENTRE, size=(self.Width,self.Height))
+        screenOne_text.SetFont(learnFont)
+        sTextOneSizer = screenOne_text.GetTextExtent(screenOneChar)
+        screenOne_text.SetPosition(((self.Width/2)-sTextOneSizer[0]/2, self.Height-5-sTextOneSizer[1]))
+        screenOne_text.SetForegroundColour(wx.Colour(255,255,255))
+        
+        staticBmpCircle.Hide()
+        screenOne_text.Hide()
+
+        # - Deuxieme ecrans - Confirmation lancement horloge
+        screenTwoChar = "Felicitation, vous venez de lancer votre premiere application.\nMaintenant fermez la en reproduisant le meme geste que precedement."
+        screenTwo_text = wx.StaticText(self, -1, screenTwoChar, pos=(self.Width/2, self.Height-5), style=wx.ALIGN_CENTRE, size=(self.Width,self.Height))
+        screenTwo_text.SetFont(learnFont)
+        sTextTwoSizer = screenTwo_text.GetTextExtent(screenTwoChar)
+        screenTwo_text.SetPosition(((self.Width/2)-sTextTwoSizer[0]/2, self.Height-5-sTextTwoSizer[1]))
+        screenTwo_text.SetForegroundColour(wx.Colour(255,255,255))
+        
+        screenTwo_text.Hide()
+
+        # - Troisieme ecrans - Demande lancement photo
+        path_triangle = os.path.realpath('images/triangle.png')
+        img_triangle = wx.Image(path_triangle,wx.BITMAP_TYPE_PNG)
+        bmp_triangle = wx.BitmapFromImage(img_triangle)
+        print bmp_triangle.Size
+        staticBmptriangle = wx.StaticBitmap(self,wx.ID_ANY,bmp_triangle,pos=((self.Width/2) - bmp_triangle.Size[0]/2, (self.Height/2) - bmp_triangle.Size[1]/2))
+
+        screenThreeChar = "Maintenant vous allez lancer l'application photo en reproduissant cette forme."
+        screenThree_text = wx.StaticText(self, -1, screenThreeChar, pos=(self.Width/2, self.Height-5), style=wx.ALIGN_CENTRE, size=(self.Width,self.Height))
+        screenThree_text.SetFont(learnFont)
+        sTextThreeSizer = screenThree_text.GetTextExtent(screenThreeChar)
+        screenThree_text.SetPosition(((self.Width/2)-sTextThreeSizer[0]/2, self.Height-5-sTextThreeSizer[1]))
+        screenThree_text.SetForegroundColour(wx.Colour(255,255,255))
+        
+        staticBmptriangle.Hide()
+        screenThree_text.Hide()
+
+        # - Quatrieme ecran - Fermeture de l'apprentissage
+        screenThreeChar = "Felicitation vous venez de lancer votre seconde application.\nL'apprentissage est maintenant terminé. Vous pouvez quitter l'application photo\nen reproduisant la meme forme que precedement."
+        screenThree_text = wx.StaticText(self, -1, screenThreeChar, pos=(self.Width/2, self.Height-5), style=wx.ALIGN_CENTRE, size=(self.Width,self.Height))
+        screenThree_text.SetFont(learnFont)
+        sTextThreeSizer = screenThree_text.GetTextExtent(screenThreeChar)
+        screenThree_text.SetPosition(((self.Width/2)-sTextThreeSizer[0]/2, self.Height-5-sTextThreeSizer[1]))
+        screenThree_text.SetForegroundColour(wx.Colour(255,255,255))
+        
+        staticBmptriangle.Hide()
+        screenThree_text.Hide()
+
+        #########################
+        ### Fin Learn Display ###
+        #########################
 
         ###Global Variables
         self.__touchlessMgr = None
@@ -215,7 +282,9 @@ class WuwPanel(wx.Panel):
         self.photoDemo = False
         self.weatherDemo = False
         self.StockDemo = False
+        self.learnDemo = False
         self.trying = []
+
 
 
         ###Load
@@ -235,6 +304,7 @@ class WuwPanel(wx.Panel):
         self.BoxWeather.Hide()
         self.BoxStock.Hide()
         self.BoxPhoto.Hide()
+        #self.BoxLearn.Hide()
         self.ResetEnvironment()
 
         ###事件响应
@@ -748,7 +818,24 @@ class WuwPanel(wx.Panel):
         pass
 
     def buttonLearnDemo_Click(self, event):
-        print "learn"
+        if self.learnDemo: # Fermeture de l'app
+            self.learnDemo = False
+            self.labelDemoName.Label = "WUW"
+            self.buttonLearnDemo.Label = "Learn"
+            self.BoxLearn.threadTime.stop()
+            self.BoxLearn.threadTime=None
+            self.BoxLearn.Hide()
+            self.ResetEnvironment()
+        else: # Ouverture de l'app
+            self.ResetEnvironment()
+            self.StopOtherApps(event)
+            self.learnDemo = True
+            self.labelDemoName.Label = "Learn"
+            self.buttonLearnDemo.Label = "Stop Learn"
+            self.BoxLearn.threadTime = self.ThreadTime("time", 1, self.BoxLearn)
+            self.BoxLearn.threadTime.start()
+            self.BoxLearn.Show()
+
 
     ##Stock Demo
     def stock(self):
