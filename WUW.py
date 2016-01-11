@@ -174,20 +174,22 @@ class WuwPanel(wx.Panel):
         self.labelDemoName=wx.StaticText(self, label="WUW", pos=(7*self.Grid,self.Grid),
                                        size=(4*self.Grid,2*self.Grid))
         self.lblResult=wx.StaticText(self, label="Test", pos=(12*self.Grid,self.Grid),
-                                   size=(12*self.Grid,2*self.Grid))
+                                    size=(12*self.Grid,2*self.Grid))
 
         #构建DemoBox
         self.BoxClock=wx.StaticBox(self,pos=(40*self.Grid,30*self.Grid),
-                                   size=(20*self.Grid,20*self.Grid))
+                                    size=(20*self.Grid,20*self.Grid))
         self.BoxStock=wx.StaticBox(self,pos=(5*self.Grid,25*self.Grid),
-                                     size=(90*self.Grid,50*self.Grid))
+                                    size=(90*self.Grid,50*self.Grid))
+        self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
+                                    size=(20*self.Grid,40*self.Grid))
+        self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
+                                    size=(64*self.Grid,48*self.Grid))
+        # self.BoxLearn=wx.StaticBox(self,pos=(0*self.Grid,0*self.Grid),
+        #                             size=(100*self.Grid,100*self.Grid))
         self.BoxClock.threadTime=None
         self.BoxStock.threadTime=None
-        self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
-                                     size=(20*self.Grid,40*self.Grid))
 
-        self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
-                                   size=(64*self.Grid,48*self.Grid))
         #####################
         ### Learn Display ###
         #####################
