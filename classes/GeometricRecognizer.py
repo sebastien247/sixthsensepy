@@ -164,7 +164,7 @@ class GeometricRecognizer:
             qt = string.atoi(p.get("T"))
             q = PointR(qx,qy,qt)
             points.append(q)
-        print(name)
+
         return Gesture(name, points)
 
     def LoadGesture(self, filename):
@@ -175,13 +175,13 @@ class GeometricRecognizer:
             p = self.ReadGesture(root)
             
             counts = self.NumGestures
-            for i in range(counts):
-                if self.__gestures[i].Name == p.Name:
-                    del self.__gesture[i]
-                    break
+            # for i in range(counts):
+            #     if self.__gestures[i].Name == p.Name:
+            #         del self.__gesture[i]
+            #         break
             self.__gestures.append(p)
         except Exception as e:
-            print("!!", e)
+            print(e)
             success = False
         return success
     
