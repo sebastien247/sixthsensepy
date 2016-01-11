@@ -250,6 +250,7 @@ class WuwPanel(wx.Panel):
         ### Fin Learn Display ###
         #########################
 
+        self.BoxPhotoBitmap = wx.StaticBitmap(self, wx.ID_ANY, pos=(18*self.Grid,16*self.Grid), size=(64*self.Grid,48*self.Grid))
         ###Global Variables
         self.__touchlessMgr = None
         self.__fAddingMarker = False
@@ -297,8 +298,9 @@ class WuwPanel(wx.Panel):
         self.BoxClock.Hide()
         self.BoxWeather.Hide()
         self.BoxStock.Hide()
-        self.BoxPhoto.Hide()
         #self.BoxLearn.Hide()
+        # self.BoxPhoto.Hide()
+        self.BoxPhotoBitmap.Hide()
         self.ResetEnvironment()
 
         ###事件响应
@@ -331,7 +333,8 @@ class WuwPanel(wx.Panel):
         self.buttonLearnDemo.Bind(wx.EVT_BUTTON, self.buttonLearnDemo_Click)
 
         self.BoxClock.Bind(wx.EVT_PAINT, self.ShowTime)
-        self.BoxPhoto.Bind(wx.EVT_PAINT, self.drawPhoto)
+        # self.BoxPhoto.Bind(wx.EVT_PAINT, self.drawPhoto)
+        self.BoxPhotoBitmap.Bind(wx.EVT_PAINT, self.drawPhoto)
         self.BoxStock.Bind(wx.EVT_PAINT, self.showStock)
 
         # print self.comboBoxCameras.GetCurrentSelection()
@@ -776,20 +779,23 @@ class WuwPanel(wx.Panel):
             self.photoDemo = False
             self.labelDemoName.Label = "WUW"
             self.buttonPhotoDemo.Label = "Photo"
-            self.BoxPhoto.Hide()
+            self.BoxPhotoBitmap.Hide()
             self.ResetEnvironment()
         else:
             self.StopOtherApps(event)
             self.photoDemo = True
             self.labelDemoName.Label = "Photo"
             self.buttonPhotoDemo.Label = "Stop Photo"
-            self.BoxPhoto.Show()
-            #self.BoxPhoto.Refresh()
             # self.BoxPhoto.Show()
+            # self.BoxPhoto.Refresh()
+            self.BoxPhotoBitmap.Show()
+
             img = self.__touchlessMgr.CurrentCamera.GetCurrentImage()
             bmp = TouchlessLib.ImageToBitmap(img)
-            dc = wx.ClientDC(self.BoxPhoto)
-            # dc.DrawBitmap(bmp,0,0)
+            self.BoxPhotoBitmap.SetBitmap(bmp)
+            #self.BoxPhoto = wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(18*self.Grid,16*self.Grid))
+            #dc = wx.ClientDC(self.BoxPhoto)
+            #dc.DrawBitmap(bmp,18*self.Grid,16*self.Grid)
 
 
     def drawPhoto(self, event):
