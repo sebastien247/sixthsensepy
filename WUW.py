@@ -165,20 +165,12 @@ class WuwPanel(wx.Panel):
                                     size=(12*self.Grid,2*self.Grid))
 
         #构建DemoBox
-        self.BoxClock=wx.StaticBox(self,pos=(10*self.Grid,30*self.Grid),
-                                    size=(20*self.Grid,20*self.Grid))
-        self.BoxStock=wx.StaticBox(self,pos=(5*self.Grid,25*self.Grid),
-                                    size=(90*self.Grid,50*self.Grid))
         self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
                                     size=(20*self.Grid,40*self.Grid))
         #self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
         #                            size=(64*self.Grid,48*self.Grid))
         # self.BoxLearn=wx.StaticBox(self,pos=(0*self.Grid,0*self.Grid),
         #                             size=(100*self.Grid,100*self.Grid))
-        self.BoxPhotoBitmap = wx.StaticBitmap(self, wx.ID_ANY, pos=(18*self.Grid,16*self.Grid), size=(64*self.Grid,48*self.Grid))
-        self.BoxClock.SetBackgroundColour(wx.Colour(0,0,0))
-        self.BoxClock.threadTime=None
-        self.BoxStock.threadTime=None
 
         #####################
         ### Learn Display ###
@@ -248,9 +240,6 @@ class WuwPanel(wx.Panel):
         ### Fin Learn Display ###
         #########################
 
-        
-        self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
-                                     size=(20*self.Grid,40*self.Grid))
 
         ###Global Variables
         self.__touchlessMgr = None
@@ -325,7 +314,6 @@ class WuwPanel(wx.Panel):
         #self.Bind(wx.EVT_LEFT_DOWN , self.dragClock)
         self.btnExit.Bind(wx.EVT_BUTTON, self.btnExit_Click)
         self.btnShowHide.Bind(wx.EVT_BUTTON, self.btnShowHide_Click)
-        
         
         self.buttonWeatherDemo.Bind(wx.EVT_BUTTON, self.buttonWeatherDemo_Click)
 
