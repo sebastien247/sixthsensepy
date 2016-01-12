@@ -43,6 +43,9 @@ class WuwPanel(wx.Panel):
         self.trying=[]
         self.getChange=[]
 
+        #Clock app
+        self.timeUpdating=[]
+
         ###构建界面
         #构建TabPage构件组
         self.btnShowHide=wx.Button(self,pos=(self.Width-self.Grid*5,self.Grid),
@@ -169,7 +172,7 @@ class WuwPanel(wx.Panel):
                                     size=(12*self.Grid,2*self.Grid))
 
         #构建DemoBox
-        self.BoxClock=wx.StaticBox(self,pos=(40*self.Grid,30*self.Grid),
+        self.BoxClock=wx.StaticBox(self,pos=(10*self.Grid,30*self.Grid),
                                     size=(20*self.Grid,20*self.Grid))
         self.BoxStock=wx.StaticBox(self,pos=(5*self.Grid,25*self.Grid),
                                     size=(90*self.Grid,50*self.Grid))
@@ -180,6 +183,7 @@ class WuwPanel(wx.Panel):
         # self.BoxLearn=wx.StaticBox(self,pos=(0*self.Grid,0*self.Grid),
         #                             size=(100*self.Grid,100*self.Grid))
         self.BoxPhotoBitmap = wx.StaticBitmap(self, wx.ID_ANY, pos=(18*self.Grid,16*self.Grid), size=(64*self.Grid,48*self.Grid))
+        self.BoxClock.SetBackgroundColour(wx.Colour(0,0,0))
         self.BoxClock.threadTime=None
         self.BoxStock.threadTime=None
 
@@ -324,6 +328,7 @@ class WuwPanel(wx.Panel):
         self.Bind(wx.EVT_LEFT_DOWN, self.WUW_MouseDown)
         self.Bind(wx.EVT_MOTION, self.WUW_MouseMove)
         self.Bind(wx.EVT_LEFT_UP, self.WUW_MouseUp)
+        #self.Bind(wx.EVT_LEFT_DOWN , self.dragClock)
         self.btnExit.Bind(wx.EVT_BUTTON, self.btnExit_Click)
         self.btnShowHide.Bind(wx.EVT_BUTTON, self.btnShowHide_Click)
         self.buttonClockDemo.Bind(wx.EVT_BUTTON, self.buttonClockDemo_Click)
@@ -747,7 +752,6 @@ class WuwPanel(wx.Panel):
     ###Demo Mode
     ##Clock Demo
     def buttonClockDemo_Click(self, event):
-        if DEBUG: print "buttonClockDemo_Click"
         if self.clockDemo:
             self.clockDemo = False
             self.labelDemoName.Label = "WUW"
@@ -764,13 +768,25 @@ class WuwPanel(wx.Panel):
             self.BoxClock.threadTime = self.ThreadTime("time", 1, self.BoxClock)
             self.BoxClock.threadTime.start()
             self.BoxClock.Show()
+            self.ShowTime()
+            #self.dragClock(event)
 
-    def ShowTime(self, event):
-        if DEBUG: print "ShowTime"
-        dc = wx.PaintDC(self.BoxClock)
-        dc.Clear()
-        dc.DrawText(time.strftime("%H:%M:%S", time.localtime(time.time())),
-                    8*self.Grid,8*self.Grid)
+    def ShowTime(self):
+        for i in self.timeUpdating:
+            i.Destroy()
+        self.timeUpdating = []
+        font = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
+        self.clock = wx.StaticText(self.BoxClock,-1, str(time.strftime("%H:%M:%S", time.localtime(time.time()))),pos=(self.Grid*50/10,self.Grid*80/10))
+        self.clock.SetFont(font)
+        self.clock.SetForegroundColour(wx.Colour(255,255,255))
+        timeValue = self.timeUpdating.append(self.clock)
+        wx.CallLater(1000, self.ShowTime)
+
+    # def dragClock(self, event):
+    #     x = event.GetX()
+    #     y = event.GetY()
+    #     if event.LeftDown():
+    #         self.clock.SetPosition(x,y)
 
     ##Photo Demo
     def buttonPhotoDemo_Click(self, event):
