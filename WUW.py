@@ -874,52 +874,52 @@ class WuwPanel(wx.Panel):
         #workaround to access last item of dictionary
         for i in lookup:
             location_id = i
-        
+
         weather_com_result = pywapi.get_weather_from_weather_com(location_id)
         yahoo_result = pywapi.get_weather_from_yahoo(location_id)
         
-
         self.BoxStock.SetForegroundColour(wx.Colour(0, 0, 0))
 
         txt_temperature = u"%s°C" % (yahoo_result['condition']['temp'])
-        text = wx.StaticText(self,-1,txt_temperature,pos=(90,300))
+        text = wx.StaticText(self,-1,txt_temperature,pos=(0,0), style=wx.ALIGN_CENTRE, size=(self.Width,self.Height))
         font1 = wx.Font(38, wx.NORMAL, wx.NORMAL, wx.NORMAL)
         text.SetFont(font1)
-
-        
-
+        text_align = text.GetTextExtent(txt_temperature)
+        text.SetSize(text_align[0],text_align[1])
+        text.SetPosition(((self.Width/2)-text_align[0]/2, self.Height/2-text_align[1]/2))
 
         weather1 = self.trying.append(text)
 
         #weather1.SetFont(font1)
        
-
         import Image
+
+        pos_img_weather = (self.Width/2-225/2, self.Height/2-225-text_align[1])
 
         if  'swon' in string.lower(yahoo_result['condition']['text']):
             pass
-            img= wx.Image(os.path.realpath('image/nuage-ensoleillé.png.png'),wx.BITMAP_TYPE_PNG)
+            img= wx.Image(os.path.realpath('images/nuage-ensoleillé.png.png'),wx.BITMAP_TYPE_PNG)
             bmp= wx.BitmapFromImage(img)
-            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(350,50))
+            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=pos_img_weather)
             
         elif  'cloudy' in string.lower(yahoo_result['condition']['text']):
             pass
-            img= wx.Image(os.path.realpath('image/nuage.png'),wx.BITMAP_TYPE_PNG)
+            img= wx.Image(os.path.realpath('images/nuage.png'),wx.BITMAP_TYPE_PNG)
             bmp= wx.BitmapFromImage(img)
-            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(350,50))
+            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=pos_img_weather)
            
             
         elif 'rain' in string.lower(yahoo_result['condition']['text']):
             pass
-            img= wx.Image(os.path.realpath('image/pluie.png'),wx.BITMAP_TYPE_PNG)
+            img= wx.Image(os.path.realpath('images/pluie.png'),wx.BITMAP_TYPE_PNG)
             bmp= wx.BitmapFromImage(img)
-            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(350,50))
+            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=pos_img_weather)
             
         elif  'sun' in string.lower(yahoo_result['condition']['text']):
             pass
-            img= wx.Image(os.path.realpath('image/sun.jpeg'),wx.BITMAP_TYPE_JPEG)
+            img= wx.Image(os.path.realpath('images/sun.jpeg'),wx.BITMAP_TYPE_JPEG)
             bmp= wx.BitmapFromImage(img)
-            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(350,50))
+            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=pos_img_weather)
             
             
 
