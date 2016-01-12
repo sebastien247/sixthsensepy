@@ -26,6 +26,11 @@ from classes.PointR import PointR
 from classes.GeometricRecognizer import GeometricRecognizer
 from classes.NBestList import NBestList
 
+from Apps.AppBase import AppBase
+
+from Apps.AppClock import AppClock
+from Apps.AppPhoto import AppPhoto
+from Apps.AppStock import AppStock
 
 DEBUG = False
 AUTO_LOAD_DEFAULT = True
@@ -35,19 +40,11 @@ class WuwPanel(wx.Panel):
     Width = Value.WuwWidth
     Height = Value.WuwHeight
     def __init__(self, parent):
-        if DEBUG: print "WuwPanel.__init__"
         self.Grid = self.Width / 100
         wx.Panel.__init__(self, parent)
 
         self.SetBackgroundColour(wx.Colour(0, 0, 0))
         self.SetForegroundColour(wx.Colour(255, 255, 255))
-
-        #Stock app
-        self.trying=[]
-        self.getChange=[]
-
-        #Clock app
-        self.timeUpdating=[]
 
         ###构建界面
         #构建TabPage构件组
@@ -145,15 +142,8 @@ class WuwPanel(wx.Panel):
         self.labelDemoInstructions=wx.TextCtrl(self.tabPageApps,pos=(44*self.Grid,0),
                                              size=(16*self.Grid,16*self.Grid))
         self.labelDemoInstructions.SetEditable(False)
-        self.buttonClockDemo=wx.Button(self.tabPageApps,label="Clock",pos=(1*self.Grid,1*self.Grid),
-                                       size=(8*self.Grid,2*self.Grid))
-        self.buttonPhotoDemo=wx.Button(self.tabPageApps,label="Photo",pos=(1*self.Grid,4*self.Grid),
-                                       size=(8*self.Grid,2*self.Grid))
+        
         self.buttonWeatherDemo=wx.Button(self.tabPageApps,label="Weather",pos=(1*self.Grid,7*self.Grid),
-                                         size=(8*self.Grid,2*self.Grid))
-        self.buttonStockDemo=wx.Button(self.tabPageApps,label="Stock",pos=(1*self.Grid,10*self.Grid),
-                                         size=(8*self.Grid,2*self.Grid))
-        self.buttonLearnDemo=wx.Button(self.tabPageApps,label="Learn",pos=(11*self.Grid,4*self.Grid),
                                          size=(8*self.Grid,2*self.Grid))
 
         #构建Label组
@@ -258,6 +248,10 @@ class WuwPanel(wx.Panel):
         ### Fin Learn Display ###
         #########################
 
+        
+        self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
+                                     size=(20*self.Grid,40*self.Grid))
+
         ###Global Variables
         self.__touchlessMgr = None
         self.__fAddingMarker = False
@@ -280,16 +274,14 @@ class WuwPanel(wx.Panel):
         self.__latestFrameTimeSegment = False
         self.__ratioScreenCameraHeight = 0
         self.__ratioScreenCameraWidth = 0
-        self.clockDemo = False
-        self.photoDemo = False
         self.weatherDemo = False
-        self.StockDemo = False
-        self.learnDemo = False
         self.trying = []
         self.__drawingGesture = False
         self.__drawingStart = None
         self.__drawingPoints = []
 
+
+        self.apps = []
 
         ###Load
         self.__touchlessMgr = TouchlessLib.TouchlessMgr()
@@ -304,12 +296,9 @@ class WuwPanel(wx.Panel):
         self.threadMarker.start()
         self.gestureLoad()
         time.clock()
-        self.BoxClock.Hide()
+        
         self.BoxWeather.Hide()
-        self.BoxStock.Hide()
-        #self.BoxLearn.Hide()
-        # self.BoxPhoto.Hide()
-        self.BoxPhotoBitmap.Hide()
+
         self.ResetEnvironment()
 
         ###事件响应
@@ -336,16 +325,9 @@ class WuwPanel(wx.Panel):
         #self.Bind(wx.EVT_LEFT_DOWN , self.dragClock)
         self.btnExit.Bind(wx.EVT_BUTTON, self.btnExit_Click)
         self.btnShowHide.Bind(wx.EVT_BUTTON, self.btnShowHide_Click)
-        self.buttonClockDemo.Bind(wx.EVT_BUTTON, self.buttonClockDemo_Click)
-        self.buttonPhotoDemo.Bind(wx.EVT_BUTTON, self.buttonPhotoDemo_Click)
+        
+        
         self.buttonWeatherDemo.Bind(wx.EVT_BUTTON, self.buttonWeatherDemo_Click)
-        self.buttonStockDemo.Bind(wx.EVT_BUTTON, self.buttonStockDemo_Click)
-        self.buttonLearnDemo.Bind(wx.EVT_BUTTON, self.buttonLearnDemo_Click)
-
-        self.BoxClock.Bind(wx.EVT_PAINT, self.ShowTime)
-        # self.BoxPhoto.Bind(wx.EVT_PAINT, self.drawPhoto)
-        self.BoxPhotoBitmap.Bind(wx.EVT_PAINT, self.drawPhoto)
-        self.BoxStock.Bind(wx.EVT_PAINT, self.showStock)
 
         # print self.comboBoxCameras.GetCurrentSelection()
         # print self.threadCapture
@@ -362,7 +344,6 @@ class WuwPanel(wx.Panel):
     #线程——捕获某帧图像 
     class ThreadCapture(threading.Thread):
         def __init__(self, threadname, times, box, cam, panel):
-            if DEBUG: print "ThreadCapture.__init__"
             threading.Thread.__init__(self, name=threadname)
             self.__times = times
             self.__stop = False
@@ -370,7 +351,6 @@ class WuwPanel(wx.Panel):
             self.__cam = cam
             self.__panel = panel
         def run(self):
-            if DEBUG: print "ThreadCapture.run"
             while not self.__stop:
                 self.__cam.ImageCaptured()
                 self.__panel.UpdateLatestFrame()
@@ -378,7 +358,6 @@ class WuwPanel(wx.Panel):
                     wx.CallAfter(self.draw)
                 time.sleep(self.__times)
         def stop(self):
-            if DEBUG: print "ThreadCapture.stop"
             self.__stop = True
 
         def draw(self):
@@ -393,7 +372,6 @@ class WuwPanel(wx.Panel):
         dc.DrawBitmap(bmp,0,0)
 
     def UpdateLatestFrame(self):
-        if DEBUG: print "UpdateLatestFrame"
         if not self.__fAddingMarker:
             self.__latestFrame = self.__touchlessMgr.CurrentCamera.GetCurrentImage()
             self.__latestFrameTime = time.time()
@@ -409,21 +387,18 @@ class WuwPanel(wx.Panel):
     #线程——追踪标记物
     class ThreadMarker(threading.Thread):
         def __init__(self, threadname, times, mgr, panel):
-            if DEBUG: print "ThreadMarker.__init__"
             threading.Thread.__init__(self, name=threadname)
             self.__times = times
             self.__mgr = mgr
             self.__stop = False
             self.__panel = panel
         def run(self):
-            if DEBUG: print "ThreadMarker.run"
             while not self.__stop:
                 #if self.__mgr.MarkersCount == 4:
                 wx.CallAfter(self.draw) # Si jamais ça bug: décommenter cette ligne et supprimer celle suivante
                 #self.draw()
                 time.sleep(self.__times)
         def stop(self):
-            if DEBUG: print "ThreadMarker.stop"
             self.__stop = True
         def draw(self):
             self.__mgr.UpdateMarkers(self.__mgr.CurrentCamera.img_cv)
@@ -474,24 +449,33 @@ class WuwPanel(wx.Panel):
     #线程——时间显示
     class ThreadTime(threading.Thread):
         def __init__(self, threadname, times, box):
-            if DEBUG: print "ThreadTime.__init__"
             threading.Thread.__init__(self, name=threadname)
             self.__times = times
             self.__box = box
             self.__stop = False
         def run(self):
-            if DEBUG: print "ThreadTime.run"
             while not self.__stop:
                 self.__box.Refresh(True)
                 time.sleep(self.__times)
         def stop(self):
-            print "ThreadTime.stop"
+            self.__stop = True
+
+    ## Les actions de toutes les apps s'éxécutent dans ce thread
+    class ThreadApps(threading.Thread):
+        def __init__(self, threadname, times):
+            threading.Thread.__init__(self, name=threadname)
+            self.__stop = False
+
+        def run(self):
+            while not self.__stop:
+                pass
+
+        def stop(self):
             self.__stop = True
 
 
     ###Environmenmt
     def btnExit_Click(self, event):
-        if DEBUG: print "btnExit_Click"
         if self.__touchlessMgr.MarkersCount >= 4:
             self.m = None
             self.n = None
@@ -500,7 +484,6 @@ class WuwPanel(wx.Panel):
         self.GetParent().Close()
 
     def btnShowHide_Click(self, event):
-        if DEBUG: print "btnShowHide_Click"
         if self.__show_settings:
             self.tabSettings.Hide()
             self.pictureBoxDisplay.Hide()
@@ -514,29 +497,23 @@ class WuwPanel(wx.Panel):
             self.__show_settings = True
 
     def ResetEnvironment(self):
-        if DEBUG: print "ResetEnvironment"
         self.__show_settings = False
         self.tabSettings.Hide()
         self.pictureBoxDisplay.Hide()
         self.btnExit.Hide()
 
     def StopOtherApps(self, event):
-        if DEBUG: print "StopOtherApps"
         pass
 
     ###WUW Management
     def WUW_Destroy(self, event):
-        if DEBUG: print "WUW_Destroy"
         self.threadCapture.stop()
         self.threadMarker.stop()
         self.__touchlessMgr.CleanupCameras()
-        if not self.BoxClock.threadTime == None:
-            self.BoxClock.threadTime.stop()
-        if not self.BoxStock.threadTime == None:
-            self.BoxStock.threadTime.stop()
+        # /!\ FERMER LES THREADS /!\
+
 
     def WUW_Paint(self, event):
-        if DEBUG: print "WUW_Paint"
         if len(self.__points) > 0:
             dc = wx.PaintDC(self)
             if self.__recording:
@@ -552,7 +529,6 @@ class WuwPanel(wx.Panel):
 
     ###Touchless Event Handling
     def drawLatestImage(self, event=None):
-        if DEBUG: print "drawLatestImage"
         if self.__touchlessMgr.CurrentCamera == None or not self.__show_settings:
             return
         if not self.__latestFrame == None:
@@ -576,7 +552,6 @@ class WuwPanel(wx.Panel):
 
     ##Marker Buttons
     def buttonMarkerAdd_Click(self, event):
-        if DEBUG: print "buttonMarkerAdd_Click"
 
         if not self.__fAddingMarker:
             self.buttonMarkerAdd.SetLabel("Cancel Adding Marker")
@@ -587,36 +562,28 @@ class WuwPanel(wx.Panel):
             self.__fAddingMarker = False
 
     def comboBoxMarkers_DropDown(self, event):
-        if DEBUG: print "comboBoxMarkers_DropDown"
         pass
 
     def comboBoxMarkers_SelectedIndexChanged(self, event):
-        if DEBUG: print "comboBoxMarkers_SelectedIndexChanged"
         pass
 
     ##UI Marker Editing
     def checkBoxMarkerHighlight_CheckedChanged(self, event):
-        if DEBUG: print "checkBoxMarkerHighlight_CheckedChanged"
         pass
 
     def checkBoxMarkerSmoothing_CheckedChanged(self, event):
-        if DEBUG: print "checkBoxMarkerSmoothing_CheckedChanged"
         pass
 
     def MarkerThresh_ValueChanged(self, event):
-        if DEBUG: print "MarkerThresh_ValueChanged"
         pass
 
     def buttonMarkerRemove_Click(self, event):
-        if DEBUG: print "buttonMarkerRemove_Click"
         pass
 
     def buttonMarkerSave_Click(self, event):
-        if DEBUG: print "buttonMarkerSave_Click"
         pass
 
     def buttonMarkerLoad_Click(self, event):
-        if DEBUG: print "buttonMarkerLoad_Click"
         pass
 
     def buttonMarkerLoadDefault_Click(self, event):
@@ -633,7 +600,6 @@ class WuwPanel(wx.Panel):
 
     ##Display Interaction
     def pictureBoxDisplay_MouseDown(self, event):
-        if DEBUG: print "pictureBoxDisplay_MouseDown"
         if not self.__fAddingMarker:
             return
         if not self.__touchlessMgr.CurrentCamera.isOn():
@@ -643,7 +609,6 @@ class WuwPanel(wx.Panel):
         self.__drawSelectionAdornment = True
 
     def pictureBoxDisplay_MouseMove(self, event):
-        if DEBUG: print "pictureBoxDisplay_MouseMove"
         if not self.__fAddingMarker:
             return
         if not self.__markerCenter == None:
@@ -654,7 +619,6 @@ class WuwPanel(wx.Panel):
             self.pictureBoxDisplay.Refresh()
 
     def pictureBoxDisplay_MouseUp(self, event):
-        if DEBUG: print "pictureBoxDisplay_MouseUp"
         if not self.__fAddingMarker:
             self.__inBoxArea = False
             return
@@ -687,7 +651,6 @@ class WuwPanel(wx.Panel):
 
     ##Marker Initial Functions
     def nameMarkers(self):
-        if DEBUG: print "nameMarkers"
         if self.__touchlessMgr.MarkersCount == 4:
             self.m = self.__touchlessMgr.Markers[0]
             self.n = self.__touchlessMgr.Markers[1]
@@ -704,19 +667,15 @@ class WuwPanel(wx.Panel):
 
     ##Marker_OnChange
     def m_OnChange(self, event):
-        if DEBUG: print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
         self.labelM.SetPosition(wx.Point((int)(event.X * self.__ratioScreenCameraWidth), (int)(event.Y * self.__ratioScreenCameraHeight)))
 
     def n_OnChange(self, event):
-        if DEBUG: print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
         self.labelN.SetPosition(wx.Point((int)(event.X * self.__ratioScreenCameraWidth), (int)(event.Y * self.__ratioScreenCameraHeight)))
 
     def o_OnChange(self, event):
-        if DEBUG: print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
         self.labelO.SetPosition(wx.Point((int)(event.X * self.__ratioScreenCameraWidth), (int)(event.Y * self.__ratioScreenCameraHeight)))
 
     def p_OnChange(self, event):
-        if DEBUG: print event.X, (int)(event.X * self.__ratioScreenCameraWidth), event.Y, (int)(event.Y * self.__ratioScreenCameraHeight)
         self.labelP.SetPosition(wx.Point((int)(event.X * self.__ratioScreenCameraWidth), (int)(event.Y * self.__ratioScreenCameraHeight)))
 
     ##Marker Helper Functions
@@ -728,7 +687,6 @@ class WuwPanel(wx.Panel):
 
     ###Gesture Functions
     def gestureLoad(self):
-        if DEBUG: print "gestureLoad"
         folderName = "Gestures"
         filePath = os.listdir(folderName)
         for fileName in filePath:
@@ -740,7 +698,6 @@ class WuwPanel(wx.Panel):
 
     ###Gesture Mouse Events
     def WUW_MouseDown(self, event):
-        if DEBUG: print "WUW_MouseDown"
         if self.__show_settings:
             point = event.GetPosition()
             rect = self.pictureBoxDisplay.GetRect()
@@ -755,7 +712,6 @@ class WuwPanel(wx.Panel):
         self.Refresh()
 
     def WUW_MouseMove(self, event):
-        if DEBUG: print "WUW_MouseMove"
         if self.__inBoxArea:
             self.pictureBoxDisplay_MouseMove(event)
             return
@@ -768,7 +724,6 @@ class WuwPanel(wx.Panel):
 
 
     def WUW_MouseUp(self, event):
-        if DEBUG: print "WUW_MouseUp"
         if self.__inBoxArea:
             self.pictureBoxDisplay_MouseUp(event)
             return
@@ -786,92 +741,14 @@ class WuwPanel(wx.Panel):
                                                  round(result.Distance,2),
                                                  round(result.Angle,2))
 
-                    actions = self.gesturesActions[-1]
-                    action = actions.get(result.Name, lambda e: None)
-                    new_actions = action(event) # Starting a new app should return a new dict of accepted gestures -> action
-                    if new_actions:
-                        new_actions["close"] = self.closeApp
-                        self.gesturesActions.append(new_actions)
+                    if result.Name == "close":
+                        if len(self.apps) > 1:
+                            self.apps[-1].End()
+                    else:
+                        actions = self.apps[-1].actions
+                        action = actions.get(result.Name, lambda: None)
+                        action()
 
-
-    ###Demo Mode
-    ##Clock Demo
-    def buttonClockDemo_Click(self, event):
-        if self.clockDemo:
-            self.clockDemo = False
-            self.labelDemoName.Label = "WUW"
-            self.buttonClockDemo.Label = "Clock"
-            self.BoxClock.threadTime.stop()
-            self.BoxClock.threadTime=None
-            self.BoxClock.Hide()
-            self.ResetEnvironment()
-        else:
-            self.StopOtherApps(event)
-            self.clockDemo = True
-            self.labelDemoName.Label = "Clock"
-            self.buttonClockDemo.Label = "Stop Clock"
-            self.BoxClock.threadTime = self.ThreadTime("time", 1, self.BoxClock)
-            self.BoxClock.threadTime.start()
-            self.BoxClock.Show()
-            self.ShowTime()
-            #self.dragClock(event)
-
-    def ShowTime(self):
-        for i in self.timeUpdating:
-            i.Destroy()
-        self.timeUpdating = []
-        font = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
-        self.clock = wx.StaticText(self.BoxClock,-1, str(time.strftime("%H:%M:%S", time.localtime(time.time()))),pos=(self.Grid*50/10,self.Grid*80/10))
-        self.clock.SetFont(font)
-        self.clock.SetForegroundColour(wx.Colour(255,255,255))
-        timeValue = self.timeUpdating.append(self.clock)
-        wx.CallLater(1000, self.ShowTime)
-
-    # def dragClock(self, event):
-    #     x = event.GetX()
-    #     y = event.GetY()
-    #     if event.LeftDown():
-    #         self.clock.SetPosition(x,y)
-
-    ##Photo Demo
-    def buttonPhotoDemo_Click(self, event):
-        if DEBUG: print "buttonPhotoDemo_Click"
-        if self.photoDemo:
-            self.photoDemo = False
-            self.labelDemoName.Label = "WUW"
-            self.buttonPhotoDemo.Label = "Photo"
-            self.BoxPhotoBitmap.Hide()
-            self.ResetEnvironment()
-        else:
-            self.StopOtherApps(event)
-            self.photoDemo = True
-            self.labelDemoName.Label = "Photo"
-            self.buttonPhotoDemo.Label = "Stop Photo"
-            # self.BoxPhoto.Show()
-            # self.BoxPhoto.Refresh()
-            self.BoxPhotoBitmap.Show()
-
-            img = self.__touchlessMgr.CurrentCamera.GetCurrentImage()
-            bmp = TouchlessLib.ImageToBitmap(img)
-            self.BoxPhotoBitmap.SetBitmap(bmp)
-            #self.BoxPhoto = wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=(18*self.Grid,16*self.Grid))
-            #dc = wx.ClientDC(self.BoxPhoto)
-            #dc.DrawBitmap(bmp,18*self.Grid,16*self.Grid)
-
-
-    def drawPhoto(self, event):
-        if DEBUG: print "drawPhoto"
-        if self.__latestFrame == None:
-            return
-        if self.__isDown:
-            return
-        bmp = TouchlessLib.ImageToBitmap(self.__latestFrame)
-        dc = wx.PaintDC(self.BoxPhoto)
-        dc.DrawBitmap(bmp,0,0)
-
-    def showStock(self, event):
-        # TO FINISH
-        """ Function to show the values of the stocks in real time """
 
     ##Weather Demo
     def buttonWeatherDemo_Click(self, event):
@@ -988,137 +865,34 @@ class WuwPanel(wx.Panel):
             self.BoxLearn.Show()
 
 
-    ##Stock Demo
-    def stock(self):
-        """Function that display different stocke's values """
-        for i in self.trying:
-            i.Destroy()
-        self.trying = []
-        # values to get from the actual stock exchange
-        text2 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('AC.PA')),pos=(self.Grid*50/10,self.Grid*50/10))
-        text3 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('AIR.PA')),pos=(self.Grid*350/10,self.Grid*50/10))
-        text4 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('EN.PA')),pos=(self.Grid*650/10,self.Grid*50/10))
-        text5 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('CAP.PA')),pos=(self.Grid*50/10,self.Grid*290/10))
-        text6 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('UG.PA')),pos=(self.Grid*350/10,self.Grid*290/10))
-        text7 = wx.StaticText(self.BoxStock,-1,str(ystockquote.get_volume('ORA.PA')),pos=(self.Grid*650/10,self.Grid*290/10))
-        text2.SetForegroundColour(wx.Colour(0,0,0))
-        text3.SetForegroundColour(wx.Colour(0,0,0))
-        text4.SetForegroundColour(wx.Colour(0,0,0))
-        text5.SetForegroundColour(wx.Colour(0,0,0))
-        text6.SetForegroundColour(wx.Colour(0,0,0))
-        text7.SetForegroundColour(wx.Colour(0,0,0))
-        font = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
-        text2.SetFont(font)
-        text3.SetFont(font)
-        text4.SetFont(font)
-        text5.SetFont(font)
-        text6.SetFont(font)
-        text7.SetFont(font)
-        stockValue2 = self.trying.append(text2)
-        stockValue3 = self.trying.append(text3)
-        stockValue4 = self.trying.append(text4)        
-        stockValue5 = self.trying.append(text5)
-        stockValue6 = self.trying.append(text6)
-        stockValue7 = self.trying.append(text7)
-        #getting the change figure of each value to display the right evolution
-        for j in self.getChange:
-            j.Destroy()
-        self.getChange = []
-        test2 = ystockquote.get_change('AC.PA')
-        value2 = wx.StaticText(self.BoxStock,-1,test2,pos=(self.Grid*150/10,self.Grid*50/10))
-        changeValue2 = self.getChange.append(value2)
-        test3 = str(ystockquote.get_change('AIR.PA'))
-        value3 = wx.StaticText(self.BoxStock,-1,test3,pos=(self.Grid*450/10,self.Grid*50/10))
-        changeValue3 = self.getChange.append(value3)
-        test4 = str(ystockquote.get_change('EN.PA'))
-        value4 = wx.StaticText(self.BoxStock,-1,test4,pos=(self.Grid*750/10,self.Grid*50/10))
-        changeValue4 = self.getChange.append(value4)
-        test5 = ystockquote.get_change('CAP.PA')
-        value5 = wx.StaticText(self.BoxStock,-1,test5,pos=(self.Grid*150/10,self.Grid*290/10))
-        changeValue5 = self.getChange.append(value5)
-        test6 = str(ystockquote.get_change('UG.PA'))
-        value6 = wx.StaticText(self.BoxStock,-1,test6,pos=(self.Grid*450/10,self.Grid*290/10))
-        changeValue6 = self.getChange.append(value6)
-        test7 = str(ystockquote.get_change('ORA.PA'))
-        value7 = wx.StaticText(self.BoxStock,-1,test7,pos=(self.Grid*750/10,self.Grid*290/10))
-        changeValue7 = self.getChange.append(value7)
-        #changing the color of labels depending on the change
-        if test2.find('-')!=-1:
-            value2.SetForegroundColour(wx.Colour(255,0,0))
-        elif test2.find('+')!=-1:
-            value2.SetForegroundColour(wx.Colour(0,150,0))
-        if test3.find('-')!=-1:
-            value3.SetForegroundColour(wx.Colour(255,0,0))
-        elif test3.find('+')!=-1:
-            value3.SetForegroundColour(wx.Colour(0,150,0))
-        if test4.find('-')!=-1:
-            value4.SetForegroundColour(wx.Colour(255,0,0))
-        elif test4.find('+')!=-1:
-            value4.SetForegroundColour(wx.Colour(0,150,0))
-        if test5.find('-')!=-1:
-            value5.SetForegroundColour(wx.Colour(255,0,0))
-        elif test5.find('+')!=-1:
-            value5.SetForegroundColour(wx.Colour(0,150,0))
-        if test6.find('-')!=-1:
-            value6.SetForegroundColour(wx.Colour(255,0,0))
-        elif test6.find('+')!=-1:
-            value6.SetForegroundColour(wx.Colour(0,150,0))
-        if test7.find('-')!=-1:
-            value7.SetForegroundColour(wx.Colour(255,0,0))
-        elif test7.find('+')!=-1:
-            value7.SetForegroundColour(wx.Colour(0,150,0))
-        value2.SetFont(font)
-        value3.SetFont(font)
-        value4.SetFont(font)
-        value5.SetFont(font)
-        value6.SetFont(font)
-        value7.SetFont(font) 
-        wx.CallLater(5000, self.stock)
+    def get_latestFrame(self):
+        return self.__latestFrame
 
-    def buttonStockDemo_Click(self, event):
-        print "buttonStockDemo_Click"
-        if self.StockDemo:
-            self.StockDemo = False
-            self.labelDemoName.Label = "WUW"
-            self.buttonStockDemo.Label = "Stock"
-            self.BoxStock.threadTime.stop()
-            self.BoxStock.threadTime=None
-            self.BoxStock.Hide()
-            self.ResetEnvironment()
-        else: 
-            self.StopOtherApps(event)
-            self.StockDemo = True
-            self.labelDemoName.Label = "Stock"
-            self.buttonStockDemo.Label = "Stop Stock"
-            self.BoxStock.threadTime = self.ThreadTime("time", 1, self.BoxStock)
-            self.BoxStock.threadTime.start()
-            stockLabel1 = 'Accor S.A.'
-            stockLabel2 = 'AIRBUS GROUP'
-            stockLabel3 = 'Legrand SA'
-            stockLabel4 = 'Cap Gemini S.A.'
-            stockLabel5 = 'Peugeot S.A.'
-            stockLabel6 = 'Orange'
-            # set a box that will contain the first stock values
-            stockBox1 = wx.StaticBox(self.BoxStock,-1,stockLabel1, (self.Grid*5/10, self.Grid*5/10), size=(self.Grid*29, self.Grid*23))
-            stockBox2 = wx.StaticBox(self.BoxStock,-1,stockLabel2, (self.Grid*305/10, self.Grid*5/10), size=(self.Grid*29, self.Grid*23))
-            stockBox3 = wx.StaticBox(self.BoxStock,-1,stockLabel3, (self.Grid*605/10, self.Grid*5/10), size=(self.Grid*29, self.Grid*23))
-            stockBox4 = wx.StaticBox(self.BoxStock,-1,stockLabel4, (self.Grid*5/10, self.Grid*240/10), size=(self.Grid*29, self.Grid*23))
-            stockBox5 = wx.StaticBox(self.BoxStock,-1,stockLabel5, (self.Grid*305/10, self.Grid*240/10), size=(self.Grid*29, self.Grid*23))
-            stockBox6 = wx.StaticBox(self.BoxStock,-1,stockLabel6, (self.Grid*605/10, self.Grid*240/10), size=(self.Grid*29, self.Grid*23))
-            stockBox1.SetForegroundColour(wx.Colour(0,0,0))
-            stockBox2.SetForegroundColour(wx.Colour(0,0,0))
-            stockBox3.SetForegroundColour(wx.Colour(0,0,0))
-            stockBox4.SetForegroundColour(wx.Colour(0,0,0))
-            stockBox5.SetForegroundColour(wx.Colour(0,0,0))
-            stockBox6.SetForegroundColour(wx.Colour(0,0,0))
-            self.BoxStock.Show()
-            self.stock()
+    def get_isDown(self):
+        return self.__isDown
+
+    def get_touchlessMgr(self):
+        return self.__touchlessMgr
 
 def main():
     app = wx.App(False)
     frame = wx.Frame(None, wx.ID_ANY, "WUW", size=(WuwPanel.Width,WuwPanel.Height))
     frame.SetTitle("SixthSense Python")
     panel = WuwPanel(frame)
+
+    appClock = AppClock(panel)
+
+    appBase = AppBase(panel)
+    appPhoto = AppPhoto(panel)
+    appStock = AppStock(panel)
+
+    appBase.actions = {
+        "clock1": appClock.Start,
+        "photo6": appPhoto.Start,
+        }
+
+    panel.apps.append(appBase)
+
     frame.Show()
     app.MainLoop()
 
