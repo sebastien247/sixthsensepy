@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>"
-<Gesture Name="pdf_left_move1" NumPts="64" Millseconds="13" AppName="WUW01" AppVer="1.0.0.0" Date="Wenesday, January 08, 2016" TimeOfDay="14:56:51 PM">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Gesture Name="pdf_left_move" NumPts="64" Millseconds="13" AppName="WUW01" AppVer="1.0.0.0" Date="Wenesday, January 08, 2016" TimeOfDay="14:56:51 PM">
   <Point X="124" Y="0" T="0" />
   <Point X="120" Y="-17" T="0" />
   <Point X="117" Y="-57" T="0" />
