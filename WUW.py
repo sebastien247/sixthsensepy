@@ -419,8 +419,8 @@ class WuwPanel(wx.Panel):
             if DEBUG: print "ThreadMarker.run"
             while not self.__stop:
                 #if self.__mgr.MarkersCount == 4:
-                # wx.CallAfter(self.draw) # Si jamais ça bug: décommenter cette ligne et supprimer celle suivante
-                self.draw
+                wx.CallAfter(self.draw) # Si jamais ça bug: décommenter cette ligne et supprimer celle suivante
+                #self.draw()
                 time.sleep(self.__times)
         def stop(self):
             if DEBUG: print "ThreadMarker.stop"
