@@ -31,6 +31,7 @@ from Apps.AppBase import AppBase
 from Apps.AppClock import AppClock
 from Apps.AppPhoto import AppPhoto
 from Apps.AppStock import AppStock
+from Apps.AppBook import AppBook
 
 DEBUG = False
 AUTO_LOAD_DEFAULT = True
@@ -873,10 +874,12 @@ def main():
     appBase = AppBase(panel)
     appPhoto = AppPhoto(panel)
     appStock = AppStock(panel)
+    appBook = AppBook(panel)
 
     appBase.actions = {
         "clock1": appClock.Start,
         "photo6": appPhoto.Start,
+        "email": appBook.Start,
         }
 
     panel.apps.append(appBase)
