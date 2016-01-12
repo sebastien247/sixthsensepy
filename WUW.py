@@ -1027,9 +1027,7 @@ class WuwPanel(wx.Panel):
         pdf = self.PdfThread()
         pdf.start()
         k = PyKeyboard()
-        print "1"
         time.sleep(2)
-        print "2"
         k.press_key(k.control_l_key)
         k.tap_key(k.page_down_key)
         k.release_key(k.control_l_key)
