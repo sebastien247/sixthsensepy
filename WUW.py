@@ -758,6 +758,9 @@ class WuwPanel(wx.Panel):
                         "weather2":self.buttonWeatherDemo_Click,
                         "stock1":self.buttonStockDemo_Click,
                         "stock2":self.buttonStockDemo_Click,
+                        "pdf1":self.buttonBookDemo_Click,
+                        "pdf2":self.buttonBookDemo_Click,
+                        "pdf3":self.buttonBookDemo_Click,
                         }
                     dic[result.Name](event)
 
