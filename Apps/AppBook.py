@@ -41,7 +41,7 @@ class AppBook(App):
         pdf.start()
 
     def end(self):
-        os.system("ps aux | grep -i firefox | awk {'print $2'} | xargs kill -9")
+        os.system("ps aux | grep -i evince | awk {'print $2'} | xargs kill -9")
 
 
     class PdfThread(threading.Thread):
