@@ -8,6 +8,8 @@ class App:
         self.launched = False
         self.WuwPanel = self.wuw = WuwPanel
         self.link_wuw()
+        self.ResetEnvironmentOnStart = True
+        self.ResetEnvironmentOnEnd = True
         self.actions = {}
 
     def after_init(self):
@@ -34,7 +36,10 @@ class App:
 
     def Start(self):
         self.launched = True
-        self.ResetEnvironment()
+
+        if self.ResetEnvironmentOnStart:
+            self.ResetEnvironment()
+
         self.labelDemoName.Label = self.name.title()
         self.wuw.apps.append(self)
         if self.button:
@@ -44,7 +49,10 @@ class App:
 
     def End(self):
         self.end()
-        self.ResetEnvironment()
+
+        if self.ResetEnvironmentOnEnd:
+            self.ResetEnvironment()
+            
         self.labelDemoName.Label = "WUW"
 
         if self.button:
