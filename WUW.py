@@ -660,13 +660,17 @@ class WuwPanel(wx.Panel):
                                                  round(result.Distance,2),
                                                  round(result.Angle,2))
 
-                    if result.Name == "close":
-                        if len(self.apps) > 1:
-                            self.apps[-1].End()
-                    else:
-                        actions = self.apps[-1].actions
-                        action = actions.get(result.Name, lambda: None)
+                    actions = self.apps[-1].actions
+                    action = actions.get(result.Name, None)
+
+                    if action:
                         action()
+                    elif result.Name == "close":
+                        self.closeCurrentApp()
+
+    def closeCurrentApp(self):
+        if len(self.apps) > 1:
+            self.apps[-1].End()
 
     def buttonLearnDemo_Click(self, event):
         if self.learnDemo: # Fermeture de l'app
