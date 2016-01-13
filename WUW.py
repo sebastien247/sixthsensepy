@@ -32,11 +32,8 @@ from Apps.AppClock import AppClock
 from Apps.AppPhoto import AppPhoto
 from Apps.AppStock import AppStock
 from Apps.AppBook import AppBook
-<<<<<<< HEAD
 from Apps.AppWeather import AppWeather
-=======
 from Apps.AppLearn import AppLearn
->>>>>>> Add App Learn
 
 DEBUG = False
 AUTO_LOAD_DEFAULT = True
