@@ -23,25 +23,35 @@ class AppLearn(App):
         self.after_init()
 
     def screenTwo(self):
-        self.actions = {"close":self.screenThree}
         self.staticBmpCircle.Hide()
         self.screenOne_text.Hide()
         self.screenTwo_text.Show()
+        self.staticBmpClose.Show()
         self.appClock.Start()
+        self.appClock.actions = {"close": self.screenThree}
 
     def screenThree(self):
-        self.actions = {"photo6":self.screenThree}
+        self.WuwPanel.closeCurrentApp()
+        self.actions = {"photo6": self.screenFour}
+        self.staticBmpClose.Hide()
         self.screenTwo_text.Hide()
         self.staticBmptriangle.Show()
         self.screenThree_text.Show()
 
     def screenFour(self):
-        self.appClock.Start()
         self.staticBmptriangle.Hide()
         self.screenThree_text.Hide()
         self.screenFour_text.Show()
-        self.actions = {}
+        self.appPhoto.Start()
+        self.appPhoto.actions = {"close": self.screenFive}
 
+    def screenFive(self):
+        self.WuwPanel.closeCurrentApp()
+        self.actions = {}
+        self.staticBmptriangle.Hide()
+        self.screenFour_text.Hide()
+        self.staticBmpClose.Show()
+        self.screenFive_text.Show()
 
     def start(self):
         self.staticBmpCircle.Show()
@@ -54,6 +64,8 @@ class AppLearn(App):
         self.staticBmptriangle.Hide()
         self.screenThree_text.Hide()
         self.screenFour_text.Hide()
+        self.screenFive_text.Hide()
+        self.staticBmpClose.Hide()
 
     def graphics(self):
         # --- Parametres general
@@ -70,7 +82,7 @@ class AppLearn(App):
         self.pos_circle = ((self.WuwPanel.Width/2) - self.bmp_circle.Size[0]/2, (self.WuwPanel.Height/2) - self.bmp_circle.Size[1]/2)
         self.staticBmpCircle = wx.StaticBitmap(self.WuwPanel, wx.ID_ANY, self.bmp_circle, pos=self.pos_circle)
 
-        self.screenOneChar = "Bienvenue dans l'apprentissage de sixthsense.\nPour lancer votre premiere application reproduiser le rond visible\ndevant vous a l'aide de votre doight."
+        self.screenOneChar = "Bienvenue dans l'apprentissage de SixthSense.\nPour lancer votre première application, reproduisez le cercle \ndevant vous à l'aide de votre doigt."
         self.screenOne_text = wx.StaticText(self.WuwPanel, -1, self.screenOneChar, pos=(self.WuwPanel.Width/2, self.WuwPanel.Height-5), style=wx.ALIGN_CENTRE, size=(self.WuwPanel.Width,self.WuwPanel.Height))
         self.screenOne_text.SetFont(self.learnFont)
         self.sTextOneSizer = self.screenOne_text.GetTextExtent(self.screenOneChar)
@@ -81,13 +93,19 @@ class AppLearn(App):
         self.screenOne_text.Hide()
 
         # --- Deuxieme ecrans - Confirmation lancement horloge
-        self.screenTwoChar = "Felicitation, vous venez de lancer votre premiere application.\nMaintenant fermez la en reproduisant le meme geste que precedement."
+        self.path_close = os.path.realpath('images/close.png')
+        self.img_close = wx.Image(self.path_close, wx.BITMAP_TYPE_PNG)
+        self.bmp_close = wx.BitmapFromImage(self.img_close)
+        self.pos_close = ((self.WuwPanel.Width/2) - self.bmp_close.Size[0]/2, (self.WuwPanel.Height/2) - self.bmp_close.Size[1]/2)
+        self.staticBmpClose = wx.StaticBitmap(self.WuwPanel, wx.ID_ANY, self.bmp_close, pos=self.pos_close)
+        self.screenTwoChar = "Félicitations, vous venez de lancer votre première application.\nMaintenant, fermez-la en réalisant le geste de fermeture."
         self.screenTwo_text = wx.StaticText(self.WuwPanel, -1, self.screenTwoChar, pos=(self.WuwPanel.Width/2, self.WuwPanel.Height-5), style=wx.ALIGN_CENTRE, size=(self.WuwPanel.Width,self.WuwPanel.Height))
         self.screenTwo_text.SetFont(self.learnFont)
         self.sTextTwoSizer = self.screenTwo_text.GetTextExtent(self.screenTwoChar)
         self.screenTwo_text.SetPosition(((self.WuwPanel.Width/2)-self.sTextTwoSizer[0]/2, self.WuwPanel.Height-5-self.sTextTwoSizer[1]))
         self.screenTwo_text.SetForegroundColour(wx.Colour(255,255,255))
-        
+
+        self.staticBmpClose.Hide()
         self.screenTwo_text.Hide()
 
         # --- Troisieme ecrans - Demande lancement photo
@@ -96,7 +114,7 @@ class AppLearn(App):
         self.bmp_triangle = wx.BitmapFromImage(self.img_triangle)
         self.staticBmptriangle = wx.StaticBitmap(self.WuwPanel,wx.ID_ANY,self.bmp_triangle,pos=((self.WuwPanel.Width/2) - self.bmp_triangle.Size[0]/2, (self.WuwPanel.Height/2) - self.bmp_triangle.Size[1]/2))
 
-        self.screenThreeChar = "Maintenant vous allez lancer l'application photo en reproduissant cette forme."
+        self.screenThreeChar = "Cette fois, prenez une photo en reproduissant cette forme."
         self.screenThree_text = wx.StaticText(self.WuwPanel, -1, self.screenThreeChar, pos=(self.WuwPanel.Width/2, self.WuwPanel.Height-5), style=wx.ALIGN_CENTRE, size=(self.WuwPanel.Width,self.WuwPanel.Height))
         self.screenThree_text.SetFont(self.learnFont)
         sTextThreeSizer = self.screenThree_text.GetTextExtent(self.screenThreeChar)
@@ -106,8 +124,8 @@ class AppLearn(App):
         self.staticBmptriangle.Hide()
         self.screenThree_text.Hide()
 
-        # --- Quatrieme ecran - Fermeture de l'apprentissage
-        self.screenFourChar = "Felicitation vous venez de lancer votre seconde application.\nL'apprentissage est maintenant terminé. Vous pouvez quitter l'application photo\nen reproduisant la meme forme que precedement."
+        # --- Quatrieme ecran - Fermeture de l'app photo
+        self.screenFourChar = "Felicitations, vous venez de lancer votre seconde application.\nVous pouvez fermer l'application comme précédemment."
         self.screenFour_text = wx.StaticText(self.WuwPanel, -1, self.screenFourChar, pos=(self.WuwPanel.Width/2, self.WuwPanel.Height-5), style=wx.ALIGN_CENTRE, size=(self.WuwPanel.Width,self.WuwPanel.Height))
         self.screenFour_text.SetFont(self.learnFont)
         self.sTextFourSizer = self.screenFour_text.GetTextExtent(self.screenFourChar)
@@ -115,3 +133,13 @@ class AppLearn(App):
         self.screenFour_text.SetForegroundColour(wx.Colour(255,255,255))
         
         self.screenFour_text.Hide()
+
+        # --- Cinquième ecran - Fermeture de l'application Learn
+        self.screenFiveChar = "L'apprentissage est maintenant terminé.\nVous pouvez fermer le tutoriel et commencer à utiliser SixthSense."
+        self.screenFive_text = wx.StaticText(self.WuwPanel, -1, self.screenFiveChar, pos=(self.WuwPanel.Width/2, self.WuwPanel.Height-5), style=wx.ALIGN_CENTRE, size=(self.WuwPanel.Width,self.WuwPanel.Height))
+        self.screenFive_text.SetFont(self.learnFont)
+        self.sTextFiveSizer = self.screenFive_text.GetTextExtent(self.screenFiveChar)
+        self.screenFive_text.SetPosition(((self.WuwPanel.Width/2)-self.sTextFiveSizer[0]/2, self.WuwPanel.Height-5-self.sTextFiveSizer[1]))
+        self.screenFive_text.SetForegroundColour(wx.Colour(255,255,255))
+        
+        self.screenFive_text.Hide()
