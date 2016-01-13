@@ -30,6 +30,10 @@ from pygame.locals import *
 from rally.voiture import *
 from rally.Constantes import *
 from rally.direction import *
+from rally.voiture import *
+from rally.obstacle import *
+from rally.Mgr_Obstacle import *
+import random
 
 
 DEBUG = False
@@ -236,6 +240,12 @@ class WuwPanel(wx.Panel):
         self.fond = None
         self.voiture1 = None
         self.manager = None
+        self.manager_obs = None
+        self.decompte=0
+        self.compteur = 0
+        self.bmp3 = None
+        self.status = False
+
 
         ###Load
         self.__touchlessMgr = TouchlessLib.TouchlessMgr()
@@ -700,30 +710,65 @@ class WuwPanel(wx.Panel):
     ### Rally demo
     def Rally(self):
         if self.Premier : 
+            #initialisation des differentes images de l'application
             bmp1 = wx.Image(image_voiture, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+            bmp2 = wx.Image(image_obstacle, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+            self.bmp3 = wx.Image(image_explosion, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+
+            #creation des objets voitures, manager direction et manager obstacles
             self.voiture1 = voiture(bmp1)
             self.voiture1.afficher(self.BoxRally)
             self.manager = Mgr_direction()
+            self.manager_obs = Mgr_Obstacle(bmp2, self.BoxRally, 35*self.Grid, 38*self.Grid)
+            self.manager_obs.new_obstacle()
+            self.compteur = 0
+            self.decompte = 10 
 
-        if self._Rally :
-            self.Premier = False             
+
+
+        if self._Rally and self.status:
+            self.Premier = False 
             print "MY = ", self.m.CurrData.Y
             print "OY = ", self.o.CurrData.Y
 
-            self.voiture1.afficher(self.BoxRally)
-            
-            pygame.time.Clock().tick(30)
 
+            #gestion de la generation des obstacles au bout d'un certains temps
+            self.compteur += 1
+            if self.compteur ==  self.decompte : 
+                self.decompte = random.randint(20,90)
+                self.compteur = 0
+                self.manager_obs.new_obstacle() 
+
+            #detecteur de collision entre la voiture et un mur
+            if self.manager_obs.collision(self.voiture1) :
+                #self.voiture1.image = self.bmp3
+                print "collsion detecter"
+                self.text = wx.StaticText(self.BoxRally,-1,"Vous avez Perdu",pos=(60,150))
+                font = wx.Font(23, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+                self.status = False
+                self.text.SetFont(font)
+
+
+            # Gestion des differents affichages    
+            self.manager_obs.afficher()
+            self.manager_obs.destroy_obs()
+            self.manager_obs.descendre()
+            self.manager_obs.collision(self.voiture1)
+            self.voiture1.afficher(self.BoxRally)
+
+            #mise a jour des coordonées 
             self.manager.recup_dG(self.m.CurrData.Y)
             self.manager.recup_dD(self.o.CurrData.Y)
             print "difference", self.manager.delta()
 
             if self.manager.gauche:
                 print "gauche"
-                self.voiture1.gauche(5)
+                self.voiture1.gauche(3)
             elif self.manager.droite:
                 print "droite"
-                self.voiture1.droite(5)
+                self.voiture1.droite(3)
+
+            #rappel de la fonction elle meme
             wx.CallLater(10,self.Rally)
 
 
@@ -734,12 +779,16 @@ class WuwPanel(wx.Panel):
             self._Rally = False
             print "application Rally  arreter"
             self.BoxRally.Hide()
+            self.voiture1.car_img.SetPosition(wx.Point(1000,1000))
+            self.text.SetPosition(wx.Point(1000,1000))
+            self.manager_obs.self_destroy()
             self.buttonRallyDemo.Label = "Rally"
 
        ### correspond au fonctionnement de l'appli car la variable est defini au de but a false     
         else:
             self._Rally = True
             self.Premier = True
+            self.status = True
             self.buttonRallyDemo.Label = "stop Rally"
             print "Rally demo en fonction"
             self.BoxRally.Show()

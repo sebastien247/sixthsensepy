@@ -17,10 +17,10 @@ class Mgr_direction:
 
 	def delta(self):
 		self.diff = self.dG - self.dD
-		if self.diff < -3:
+		if self.diff < -15:
 			self.gauche= True
 			self.droite= False
-		elif self.diff > 3:
+		elif self.diff > 15:
 			self.droite = True
 			self.gauche= False
 		else:
