@@ -16,8 +16,6 @@ class AppLearn(App):
         self.appClock = AppClock(WuwPanel)
         self.appPhoto = AppPhoto(WuwPanel)
 
-        self.actions = {"clock":self.screenTwo}
-
         self.graphics()
 
         self.after_init()
@@ -54,6 +52,7 @@ class AppLearn(App):
         self.screenFive_text.Show()
 
     def start(self):
+        self.actions = {"clock":self.screenTwo}
         self.staticBmpCircle.Show()
         self.screenOne_text.Show()
 
