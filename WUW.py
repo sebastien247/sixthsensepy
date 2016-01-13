@@ -699,6 +699,7 @@ def main():
         "photo": appPhoto.Start,
         "email": appBook.Start,
         "weather": appWeather.Start,
+        "stock": appStock.Start,
         }
 
     panel.apps.append(appBase)

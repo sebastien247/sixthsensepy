@@ -18,7 +18,7 @@ class AppBook(App):
 
         
         self.actions = {"pdf_left_move":self.leftMove,
-                        "pdf_right_move3":self.rightMove
+                        "pdf_right_move":self.rightMove
                         }
 
         self.after_init()
