@@ -17,7 +17,7 @@ class GeometricRecognizer:
     def __init__(self):
         self.__gestures = []
         
-    def Recognize(self, points):
+    def Recognize(self, points, acceptedGesturesNames=None):
         p = Utils.Resample(points, Value.NumResamplePoints)
 
         radians = Utils.AngleInRadians(Utils.Centroid(p), p[0], False)
@@ -35,9 +35,10 @@ class GeometricRecognizer:
 
         nBest = NBestList()
         for pp in self.__gestures:
-            best = self.GoldenSectionSearch(p, pp.Points, Utils.DegToRad(-45.0), Utils.DegToRad(+45.0), Utils.DegToRad(2.0))
-            score = 1.0 - best[0] / Value.HalfDiagonal
-            nBest.AddResult(pp.Name, score, best[0], best[1])
+            if acceptedGesturesNames is None or pp.Name in acceptedGesturesNames or pp.Name == "close":
+                best = self.GoldenSectionSearch(p, pp.Points, Utils.DegToRad(-45.0), Utils.DegToRad(+45.0), Utils.DegToRad(2.0))
+                score = 1.0 - best[0] / Value.HalfDiagonal
+                nBest.AddResult(pp.Name, score, best[0], best[1])
         nBest.AddResult("Try Again", Value.tolerance, 0.0, 0.0)
         nBest.SortDescending()
         return nBest

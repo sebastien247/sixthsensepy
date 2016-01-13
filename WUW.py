@@ -716,9 +716,8 @@ class WuwPanel(wx.Panel):
             if len(self.__points) >= 5: # require 5 points for a valid gesture
                 if self.__recording:
                     pass
-
                 elif self.__rec.NumGestures > 0:
-                    result = self.__rec.Recognize(self.__points)
+                    result = self.__rec.Recognize(self.__points, self.apps[-1].actions.keys())
                     self.lblResult.Label = str.format("{0}: {1} ({2}px, {3}",
                                                  result.Name,
                                                  round(result.Score,2),
