@@ -70,6 +70,11 @@ class AppWeather(App):
             img= wx.Image(os.path.realpath('images/sun.jpeg'),wx.BITMAP_TYPE_JPEG)
             bmp= wx.BitmapFromImage(img)
             self.staticBmp= wx.StaticBitmap(self.wuw,wx.ID_ANY,bmp,pos=pos_img_weather)
+        elif  'fair' in str.lower(str(yahoo_result['condition']['text'])):
+            pass
+            img= wx.Image(os.path.realpath('images/nuage.png'),wx.BITMAP_TYPE_PNG)
+            bmp= wx.BitmapFromImage(img)
+            self.staticBmp= wx.StaticBitmap(self.wuw,wx.ID_ANY,bmp,pos=pos_img_weather)
         wx.CallLater(10000,self.Weather)
 
     def start(self):
