@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Gesture Name="clock2" NumPts="101" Millseconds="844" AppName="WUW01" AppVer="1.0.0.0" Date="Monday, October 27, 2008" TimeOfDay="11:35:09 PM">
+<Gesture Name="clock" NumPts="101" Millseconds="844" AppName="WUW01" AppVer="1.0.0.0" Date="Monday, October 27, 2008" TimeOfDay="11:35:09 PM">
   <Point X="407" Y="224" T="349515" />
   <Point X="408" Y="224" T="349562" />
   <Point X="411" Y="224" T="349578" />

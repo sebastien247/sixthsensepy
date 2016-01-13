@@ -690,8 +690,8 @@ def main():
     appLearn = AppLearn(panel)
 
     appBase.actions = {
-        "clock1": appClock.Start,
-        "photo6": appPhoto.Start,
+        "clock": appClock.Start,
+        "photo": appPhoto.Start,
         "email": appBook.Start,
         "weather": appWeather.Start,
         }

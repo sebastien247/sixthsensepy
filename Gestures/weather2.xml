@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Gesture Name="weather2" NumPts="166" Millseconds="1985" AppName="WUW01" AppVer="1.0.0.0" Date="Monday, October 27, 2008" TimeOfDay="6:39:53 PM">
+<Gesture Name="weather" NumPts="166" Millseconds="1985" AppName="WUW01" AppVer="1.0.0.0" Date="Monday, October 27, 2008" TimeOfDay="6:39:53 PM">
   <Point X="492" Y="242" T="3883265" />
   <Point X="493" Y="242" T="3883281" />
   <Point X="494" Y="242" T="3883281" />

@@ -16,7 +16,7 @@ class AppLearn(App):
         self.appClock = AppClock(WuwPanel)
         self.appPhoto = AppPhoto(WuwPanel)
 
-        self.actions = {"clock1":self.screenTwo}
+        self.actions = {"clock":self.screenTwo}
 
         self.graphics()
 
@@ -32,7 +32,7 @@ class AppLearn(App):
 
     def screenThree(self):
         self.WuwPanel.closeCurrentApp()
-        self.actions = {"photo6": self.screenFour}
+        self.actions = {"photo": self.screenFour}
         self.staticBmpClose.Hide()
         self.screenTwo_text.Hide()
         self.staticBmptriangle.Show()
