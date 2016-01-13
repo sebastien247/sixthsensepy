@@ -1,4 +1,4 @@
-Syxthsense
+Sixthsense
 =========
 
 
