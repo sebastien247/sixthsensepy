@@ -51,4 +51,5 @@ Dépendances
 
 #### <i class="icon-file"></i> Installation de PyUserInput
 
-	pip install python-xlib pyuserinput
+	sudo apt-get install python-xlib
+	pip install pyuserinput
