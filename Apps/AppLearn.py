@@ -11,7 +11,7 @@ class AppLearn(App):
         App.__init__(self, WuwPanel)
         self.name = "Learn"
 
-        self.button = wx.Button(self.tabPageApps, label="Learn", pos=(13*self.Grid,4*self.Grid), size=(8*self.Grid,2*self.Grid))
+        self.button = wx.Button(self.tabPageApps, label="Learn", pos=(10*self.Grid,4*self.Grid), size=(8*self.Grid,2*self.Grid))
 
         self.appClock = AppClock(WuwPanel)
         self.appPhoto = AppPhoto(WuwPanel)
