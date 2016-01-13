@@ -1,4 +1,4 @@
-from rally.obstacle import *
+from Apps.rally.obstacle import *
 import random
 
 class Mgr_Obstacle:
@@ -12,7 +12,6 @@ class Mgr_Obstacle:
 
 	def new_obstacle(self):
 		indice = random.randint(0,4)
-		print indice ," ", self.pos[indice]
 		self.liste.append(obstacle(self.bmp2,self.pos[indice]))
 
 	def afficher(self):
@@ -28,13 +27,6 @@ class Mgr_Obstacle:
 	def collision(self, voiture):
 		for obstacle in self.liste:
 			if  (((obstacle.y+10< voiture.y+10 and obstacle.y+10 > voiture.y-10) or (obstacle.y-10< voiture.y+10 and obstacle.y-10 > voiture.y-10)) and ((obstacle.x+10 >voiture.x-12 and obstacle.x+10 < voiture.x+12) or (obstacle.x-20 < voiture.x+19 and obstacle.x-20 >voiture.x-19))) :
-				print "collision"
-				print "obs y+5", obstacle.y+5
-				print "obs x", obstacle.x
-				print "voit y+5", voiture.y+5
-				print "voit y-5", voiture.y-5
-				print "voit x+5", voiture.x+5
-				print "voit x-5",voiture.x-5
 				return True 
 
 	def descendre(self):

@@ -11,12 +11,10 @@ class voiture:
 		self.car_img = None
 
 	def gauche (self, pixels):
-#		print "gauche"
 		self.x = self.x + pixels
 
 
 	def droite (self, pixels):
-#		print "droite"
 		self.x = self.x - pixels
 
 	def afficher(self, BoxRally):

@@ -28,7 +28,7 @@ class GeometricRecognizer:
 
         # # Uncomment these lines to add new gestures (and change Name !)
         # print '<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
-        # print '<Gesture Name="close" NumPts="%d" Millseconds="%d" AppName="WUW01" AppVer="1.0.0.0" Date="Wenesday, January 08, 2016" TimeOfDay="14:56:51 PM">' % (len(p), points[-1].T - points[0].T);
+        # print '<Gesture Name="name" NumPts="%d" Millseconds="%d" AppName="WUW01" AppVer="1.0.0.0" Date="Wenesday, January 08, 2016" TimeOfDay="14:56:51 PM">' % (len(p), points[-1].T - points[0].T);
         # for k in p:
         #     print '  <Point X="%d" Y="%d" T="%d" />' % (k.X, k.Y, k.T)
         # print '</Gesture>'

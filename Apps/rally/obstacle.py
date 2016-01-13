@@ -17,6 +17,3 @@ class obstacle:
 			self.obs_img=wx.StaticBitmap(BoxRally , -1, self.image, (self.x, self.y))
 		else:
 			self.obs_img.SetPosition(wx.Point(self.x, self.y))
-
-	def __del__(self):
-		print "dans le destructeur"

@@ -34,6 +34,7 @@ from Apps.AppStock import AppStock
 from Apps.AppBook import AppBook
 from Apps.AppWeather import AppWeather
 from Apps.AppLearn import AppLearn
+from Apps.AppRally import AppRally
 
 DEBUG = False
 AUTO_LOAD_DEFAULT = True
@@ -693,6 +694,7 @@ def main():
     appBook = AppBook(panel)
     appWeather = AppWeather(panel)
     appLearn = AppLearn(panel)
+    appRally = AppRally(panel)
 
     appBase.actions = {
         "clock": appClock.Start,
@@ -700,6 +702,7 @@ def main():
         "email": appBook.Start,
         "weather": appWeather.Start,
         "stock": appStock.Start,
+        "rally": appRally.Start,
         }
 
     panel.apps.append(appBase)
