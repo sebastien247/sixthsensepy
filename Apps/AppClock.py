@@ -9,36 +9,30 @@ class AppClock(App):
         self.timeUpdating = []
 
         self.name = "clock"
-        self.button = wx.Button(self.tabPageApps,label="Clock",pos=(1*self.Grid,1*self.Grid),
-                                       size=(8*self.Grid,2*self.Grid))
+        self.button = wx.Button(self.tabPageApps,label="Clock",pos=(1*self.Grid,1*self.Grid), size=(8*self.Grid,2*self.Grid))
+        self.graphics()
 
-        self.box = wx.StaticBox(self.wuw,pos=(40*self.Grid,30*self.Grid),
-                                   size=(20*self.Grid,20*self.Grid))
-
-        self.box.threadTime=None
-        self.box.Hide()
-        self.box.Bind(wx.EVT_PAINT, self.show_time)
+        self.clock.Hide()
         
         self.after_init()
 
-    def show_time(self):
-        for i in self.timeUpdating:
-            i.Destroy()
-        self.timeUpdating = []
-        font = wx.Font(18, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
-        self.clock = wx.StaticText(self.box,-1, str(time.strftime("%H:%M:%S", time.localtime(time.time()))),pos=(self.Grid*50/10,self.Grid*80/10))
-        self.clock.SetFont(font)
+    def graphics(self):
+        self.fontClock = wx.Font(38, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
+        # self.box = wx.StaticBox(self.wuw,pos=(40*self.Grid,30*self.Grid), size=(20*self.Grid,20*self.Grid))
+        self.charClock = str(time.strftime("%H:%M:%S", time.localtime(time.time())))
+        self.clock = wx.StaticText(self.WuwPanel,-1, '', pos=((self.WuwPanel.Width/2,self.WuwPanel.Height/2)))
+        self.clock.SetFont(self.fontClock)
+        self.sizeClock = self.clock.GetTextExtent(self.charClock)
+        self.clock.SetPosition(((self.WuwPanel.Width/2-self.sizeClock[0]/2,self.WuwPanel.Height/2-self.sizeClock[1]/2)))
         self.clock.SetForegroundColour(wx.Colour(255,255,255))
-        timeValue = self.timeUpdating.append(self.clock)
-        wx.CallLater(1000, self.show_time)
+
+    def updateText(self):
+        self.clock.SetLabelText(str(time.strftime("%H:%M:%S", time.localtime(time.time()))))
+        wx.CallLater(1000, self.updateText)
 
     def start(self):
-        self.box.threadTime = self.wuw.ThreadTime("time", 1, self.box)
-        self.box.threadTime.start()
-        self.show_time()
-        self.box.Show()
+        self.updateText()
+        self.clock.Show()
 
     def end(self):
-        self.box.threadTime.stop()
-        self.box.threadTime=None
-        self.box.Hide()
+        self.clock.Hide()
