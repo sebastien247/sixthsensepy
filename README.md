@@ -12,7 +12,7 @@ Dépendances
 
 * python 2.7
 * wxPython (Phoenix)
-* openCV
+* OpenCV 2
 * ystockquote
 * pywapi
 * PyUserInput
