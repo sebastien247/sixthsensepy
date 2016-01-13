@@ -11,11 +11,9 @@ class AppStock(App):
         self.getChange = []
 
         self.name = "stock"
-        self.button = wx.Button(self.tabPageApps,label="Stock",pos=(1*self.Grid,10*self.Grid),
-                                         size=(8*self.Grid,2*self.Grid))
+        self.button = wx.Button(self.tabPageApps,label="Stock",pos=(1*self.Grid,10*self.Grid), size=(8*self.Grid,2*self.Grid))
 
-        self.box = wx.StaticBox(self.wuw,pos=(5*self.Grid,25*self.Grid),
-                                     size=(90*self.Grid,50*self.Grid))
+        self.box = wx.StaticBox(self.wuw,pos=(5*self.Grid,25*self.Grid), size=(90*self.Grid,50*self.Grid))
 
         self.box.threadTime=None
         self.box.Hide()

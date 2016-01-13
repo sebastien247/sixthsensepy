@@ -7,8 +7,7 @@ class AppPhoto(App):
         App.__init__(self, WuwPanel)
 
         self.name = "photo"
-        self.button = wx.Button(self.tabPageApps,label="Photo",pos=(1*self.Grid,4*self.Grid),
-                                       size=(8*self.Grid,2*self.Grid))
+        self.button = wx.Button(self.tabPageApps,label="Photo",pos=(1*self.Grid,4*self.Grid), size=(8*self.Grid,2*self.Grid))
 
         self.box = wx.StaticBitmap(self.wuw, wx.ID_ANY, pos=(18*self.Grid,16*self.Grid), size=(64*self.Grid,48*self.Grid))
 

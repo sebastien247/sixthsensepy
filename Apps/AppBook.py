@@ -13,8 +13,7 @@ class AppBook(App):
         self.ResetEnvironmentOnStart = False
         self.ResetEnvironmentOnEnd = False
 
-        self.button = wx.Button(self.tabPageApps,label="Book",pos=(10*self.Grid,1*self.Grid),
-                                       size=(8*self.Grid,2*self.Grid))
+        self.button = wx.Button(self.tabPageApps,label="Book",pos=(10*self.Grid,1*self.Grid), size=(8*self.Grid,2*self.Grid))
 
         
         self.actions = {"pdf_left_move":self.leftMove,
