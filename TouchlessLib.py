@@ -312,8 +312,8 @@ class TouchlessMgr:
 
         # Filter by Area.
         self.params.filterByArea = True
-        self.params.minArea = 1000
-        self.params.maxArea = 8000
+        self.params.minArea = 400
+        self.params.maxArea = 7000
 
         # Filter by Circularity
         self.params.filterByCircularity = True
@@ -416,11 +416,11 @@ class TouchlessMgr:
 
         # ---------- Red Mask ---------- #
         #- lower mask (0-10)
-        red_lower = np.array([0,50,50])
+        red_lower = np.array([0,125,125])
         red_upper = np.array([10,255,255])
         red.ranges.append([red_lower, red_upper])
         #- upper mask (170-180)
-        red_lower_2 = np.array([170,90,50])
+        red_lower_2 = np.array([170,125,125])
         red_upper_2 = np.array([180,255,255])
         red.ranges.append([red_lower_2, red_upper_2])
         # -------- End Red Mask -------- #

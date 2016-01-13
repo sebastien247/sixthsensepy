@@ -186,6 +186,8 @@ class WuwPanel(wx.Panel):
         self.n = None
         self.o = None
         self.p = None
+        self.toleranceMax = 20
+        self.tolerance = 0
         self.__isDown = False
         self.__recording = False
         self.__rec = GeometricRecognizer()
@@ -216,7 +218,7 @@ class WuwPanel(wx.Panel):
         self.threadCapture = self.ThreadCapture("Capture", 0.03, self.pictureBoxDisplay, self.__touchlessMgr.CurrentCamera, self)
         self.threadCapture.setDaemon(True)
         self.threadCapture.start()
-        self.threadMarker = self.ThreadMarker("Marker", 0.08, self.__touchlessMgr, self)
+        self.threadMarker = self.ThreadMarker("Marker", 0.03, self.__touchlessMgr, self)
         self.threadMarker.setDaemon(True)
         self.threadMarker.start()
         self.gestureLoad()
@@ -345,15 +347,27 @@ class WuwPanel(wx.Panel):
         m = self.__touchlessMgr.Markers[0]
         n = self.__touchlessMgr.Markers[1]
 
+        if not m.CurrData.Present and not n.CurrData.Present:
+            self.tolerance += 1
+        elif not m.CurrData.Present:
+            self.tolerance += 1
+        elif not n.CurrData.Present:
+            self.tolerance += 1
+
+
         if m.CurrData.Present and n.CurrData.Present:
             dist = ((m.CurrData.X - n.CurrData.X)**2 + (m.CurrData.Y - n.CurrData.Y)**2)**0.5
-            isTouching = dist < 100
+            print dist
+            isTouching = dist < 60
             if isTouching and not self.__drawingGesture:
+                self.tolerance = 0
                 self.StartDrawing()
             elif not isTouching and self.__drawingGesture:
+                self.tolerance = 0
                 self.EndDrawing()
-        elif not m.CurrData.Present and not n.CurrData.Present:
+        elif not m.CurrData.Present and not n.CurrData.Present and self.tolerance > self.toleranceMax:
             if self.__drawingGesture:
+                self.tolerance = 0
                 self.EndDrawing()
 
         if self.__drawingGesture:
@@ -703,6 +717,7 @@ def main():
         "weather": appWeather.Start,
         "stock": appStock.Start,
         "rally": appRally.Start,
+        "menu": lambda:None
         }
 
     panel.apps.append(appBase)
