@@ -1,6 +1,6 @@
 #coding=utf-8
 
-#共享变量定义
+#Shared variable definitions
 
 import SizeR
 import math

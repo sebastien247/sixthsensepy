@@ -1,7 +1,7 @@
 #coding=utf-8
 
-#TouchlessLib模块定义
-##标记物识别
+#TouchlessLib
+##Identification markers
 
 import threading
 import cv2.cv as cv
@@ -13,7 +13,7 @@ import time
 import cv2
 
 
-#摄像头类定义
+#Camera class definition
 class Camera:
     
     def __init__(self, name="camera"):
@@ -76,7 +76,7 @@ def ImageToBitmap(img):
     return bitmap
 
 
-#HSV类定义
+#HSV Class definition
 class HSV:
     def __init__(self, h=0,s=0,v=0):
         self.HSV_MAX_HUE = 360
@@ -125,7 +125,7 @@ class HSV:
         return HSV(h,s,v)
 
 
-#RGB类定义
+#RGB Class definition
 class RGB:
     def __init__(self, r=0,g=0,b=0):
         self.HSV_MAX_RED = 255
@@ -166,10 +166,10 @@ class RGB:
             hsv.Hue = (int)(60*(rgb.Red-rgb.Grn)/(max_-min_) + 240)
             return hsv
 
-#ScanCommand定义：True为addMarker,False为remMarker
+#ScanCommand definition：True for addMarker,False for remMarker
 
 
-#MarkerScanCommand类定义
+#MarkerScanCommand Class definition
 class MarkerScanCommand:
     def __init__(self, m, c, i):
         self.marker = m
@@ -177,7 +177,7 @@ class MarkerScanCommand:
         self.coordinate = i
 
 
-#MarkerEventData类定义
+#MarkerEventData Class definition
 class MarkerEventData:
     def __init__(self):
         self.X = 0
@@ -194,7 +194,7 @@ class MarkerEventData:
         self.left = 640
         self.right = 0
 
-#ColorKey类定义
+#ColorKey Class definition
 class ColorKey:
     def __init__(self, h=HSV()):
         self.hsv = h
@@ -204,7 +204,7 @@ class ColorKey:
         self.hsv = value
         self.key = (value.Hue+(value.Sat*value.HSV_MAX_HUE))+((value.Val*value.HSV_MAX_SAT)*value.HSV_MAX_HUE)
 
-#Marker类定义
+#Marker Class definition
 class Marker:
     def __init__(self, name):
         self.Name = name
@@ -286,7 +286,7 @@ class Marker:
         if not self.OnChange == None:
             self.OnChange(self.CurrData)
 
-#TouchlessMgr类定义
+#TouchlessMgr Class definition
 class TouchlessMgr:
     def __init__(self):
         self.__markers = []

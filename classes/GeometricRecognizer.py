@@ -9,8 +9,8 @@ from datetime import datetime
 from PointR import PointR
 import string
 
-#GeometricRecognizer类定义
-##用于识别所画手势
+#GeometricRecognizer class definition
+##Videos to identify gestures
 
 class GeometricRecognizer:
 
@@ -26,7 +26,7 @@ class GeometricRecognizer:
         p = Utils.ScaleTo(p, Value.ResampleScale)
         p = Utils.TranslateCentroidTo(p, Value.ResampleOrigin)
 
-        # # Décommenter ces lignes pour ajouter de nouveaux gestes (et changer Name !)
+        # # Uncomment these lines to add new gestures (and change Name !)
         # print '<?xml version="1.0" encoding="utf-8" standalone="yes"?>'
         # print '<Gesture Name="close" NumPts="%d" Millseconds="%d" AppName="WUW01" AppVer="1.0.0.0" Date="Wenesday, January 08, 2016" TimeOfDay="14:56:51 PM">' % (len(p), points[-1].T - points[0].T);
         # for k in p:
@@ -43,7 +43,7 @@ class GeometricRecognizer:
         nBest.SortDescending()
         return nBest
 
-    #黄金分割搜索
+    #Golden Search
     def GoldenSectionSearch(self, pts1, pts2, a, b, threshold):
         x1 = Value.Phi * a + (1 - Value.Phi) * b
         newPoints = Utils.RotateByRadians(pts1, x1)
@@ -72,7 +72,7 @@ class GeometricRecognizer:
             i += 1
         return [min(fx1, fx2), Utils.RadToDeg((b+a)/2.0), i]
 
-    #爬山法搜索
+    #Hill climbing search
     def HillClimbSearch(self, pts1, pts2, D, step):
         i = 0.0
         theta = 0.0
@@ -85,7 +85,7 @@ class GeometricRecognizer:
             i += 1
         return [D, theta - step, i]
 
-    #暴力法全搜索
+    #Full search
     def FullSearch(self, pts1, pts2):
         bestA = 0.0
         bestD = Utils.PathDistance(pts1, pts2)

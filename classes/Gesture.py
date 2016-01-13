@@ -5,11 +5,8 @@ from PointR import PointR
 from SizeR import SizeR
 from Value import Value
 
-#Gesture类定义
-##成员如下：
-###Name:如clock03
-###RawPoints:Gesture对应的完整点列
-###Points:Gesture对应的抽样点列，具体的比较均通过Points
+#Gesture
+###Points:Gesture Sampling points corresponding column through the comparison of specific points
 
 
 class Gesture:

@@ -1,7 +1,7 @@
 #coding=utf-8
 
-#NBestList类声明
-##返回与所画点列相近的手势列表
+#NBestList Class declaration
+##Returns drawn dot column for similar gesture list
 
 class NBestList:
     class NBestResult:

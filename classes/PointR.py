@@ -1,5 +1,5 @@
 #coding=utf-8
-#实点类，T表示绘制该点的时刻
+#Real point type , T represents the point in time to draw
 
 class PointR:
     def __init__(self, x = 0, y = 0, t = 0):

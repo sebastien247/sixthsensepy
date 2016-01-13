@@ -2,12 +2,8 @@
 
 from Gesture import Gesture
 
-#Category类定义
-##成员如下:
-###_name：如clock
-###_prototypes：属于该Category的手势集，如clock01,clock02,clock03
 
-class Category:
+class Category:
 
     def __init__(self, name, examples):
         self.__name = name

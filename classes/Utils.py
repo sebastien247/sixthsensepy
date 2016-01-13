@@ -10,7 +10,7 @@ class Utils:
 
     ##Lengths and Rects
     
-    #返回能包络points点列的最小矩形
+    #Returns the smallest rectangle that can envelope points dot column
     @staticmethod
     def FindBox(points):
         minX = float("inf")
@@ -30,14 +30,14 @@ class Utils:
                 
         return RectangleR(minX,minY,maxX-minX,maxY-minY)
 
-    #返回两点距离
+    #Returns the distance between two points
     @staticmethod
     def Distance(p1, p2):
         dx = p2.X - p1.X
         dy = p2.Y - p1.Y
         return math.sqrt(dx * dx + dy * dy)
 
-    #返回点列中心
+    #Returns the center point of the column
     @staticmethod
     def Centroid(points):
         xsum = 0.0
@@ -47,7 +47,7 @@ class Utils:
             ysum += p.Y
         return PointR(xsum / len(points), ysum / len(points))
 
-    #返回点列表示的路径长度
+    #Column represents the return point of the path length
     @staticmethod
     def PathLength(points):
         length = 0
@@ -61,17 +61,17 @@ class Utils:
 
     ##Angles and Rotations
 
-    #弧度转换为角度
+    #Radians to degrees
     @staticmethod
     def RadToDeg(rad):
         return rad * 180.0 / math.pi
 
-    #角度转换为弧度
+    #Degrees to radians
     @staticmethod
     def DegToRad(deg):
         return deg * math.pi / 180.0
 
-    #返回end点在以start为原点，水平向右为x轴正向，向下为y轴正向时所对的弧度
+    #Returns the end point to start at the origin, the horizontal x- axis positive right down to the positive y -axis of the arc
     @staticmethod
     def AngleInRadians(start, end, positiveOnly):
         radians = 0.0
@@ -86,13 +86,13 @@ class Utils:
             radians += math.pi * 2.0
         return radians
 
-    #返回end点在以start为原点，水平向右为x轴正向，向下为y轴正向时所对的角度
+    #Returns the end point to start at the origin, the horizontal x- axis positive right down to the y -axis of the forward angle
     @staticmethod
     def AngleInDegrees(start, end, positiveOnly):
         radians = Utils.AngleInRadians(start, end, positiveOnly)
         return Utils.RadToDeg(radians)
 
-    #绕中心点顺时针旋转radians弧度
+    #Radians clockwise rotation around the center
     @staticmethod
     def RotateByRadians(points, radians):
         newPoints = []
@@ -115,13 +115,13 @@ class Utils:
             newPoints.append(q)
         return newPoints
 
-    #绕中心点顺时针旋转degrees角度
+    #Degrees clockwise rotation around the center angle
     @staticmethod
     def RotateByDegrees(points, degrees):
         radians = Utils.DegToRad(degrees)
         return RotateByRadians(points, radians)
 
-    #返回p点绕c点顺时针旋转radians弧度后结果
+    #Return p point clockwise rotation around the c point radians radians results
     @staticmethod
     def RotatePoint(p, c, radians):
         q = PointR()
@@ -131,7 +131,7 @@ class Utils:
 
     ##Translations
 
-    #转换坐标，以toPt为左上角
+    #Converting coordinates for the upper left corner to toPt
     @staticmethod
     def TranslateBBoxTo(points, toPt):
         newPoints = []
@@ -144,7 +144,7 @@ class Utils:
             newPoints.append(p)
         return newPoints
 
-    #转换坐标，以toPt为中心点
+    #Converting coordinates for the center to toPt
     @staticmethod
     def TranslateCentroidTo(points, toPt):
         newPoints = []
@@ -157,7 +157,7 @@ class Utils:
             newPoints.append(p)
         return newPoints
 
-    #平移
+    #Translation
     @staticmethod
     def TranslateBy(points, sz):
         newPoints = []
@@ -171,7 +171,7 @@ class Utils:
 
     ##Scaling
 
-    #根据原点进行放缩，使矩形变成sz大小
+    #Zooming along the origin , the rectangle becomes sz size
     @staticmethod
     def ScaleTo(points, sz):
         newPoints = []
@@ -186,7 +186,7 @@ class Utils:
             newPoints.append(p)
         return newPoints
 
-    #根据原点进行放缩，使矩形放大sz倍
+    #Zooming along the origin , the rectangle enlarge sz times
     @staticmethod
     def ScaleBy(points, sz):
         newPoints = []
@@ -225,7 +225,7 @@ class Utils:
 
     ##Path Sampling and Distance
 
-    #从点列中平均得选出n个
+    #From the point of the column was elected average of n
     @staticmethod
     def Resample(points, n):
         I = 1.0 * Utils.PathLength(points) / (n-1)
@@ -257,7 +257,7 @@ class Utils:
             dstPts.append(srcPts[len(srcPts) -1][:])
         return dstPts
 
-    #计算两条路径的平均距离
+    #The average distance calculation of the two paths
     @staticmethod
     def PathDistance(path1, path2):
         distance = 0
@@ -268,7 +268,7 @@ class Utils:
 
     ##Random Numbers
 
-    #产生num个不重复的low-high间的随机数
+    #Produce num will not repeat between the low-high random number 
     @staticmethod
     def Random(low, high, num):
         array = []
