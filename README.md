@@ -2,7 +2,7 @@ Syxthsense
 =========
 
 
-Dans le cadre d'un projet de fin d'année nous avons effectué le portage du projet [SixthSense](https://github.com/sixthsense/sixthsense/) créer par Pranav Mistry. Nous nous somme basé sur le travail effectué sur ce [repository](https://github.com/chendaxixi/sixthSense_).
+Dans le cadre d'un projet de fin d'année nous avons effectué le portage du projet [SixthSense](https://github.com/sixthsense/sixthsense/) créer par Pranav Mistry. Nous nous sommes basé sur le travail effectué sur ce [repository](https://github.com/chendaxixi/sixthSense_).
 
 ----------
 
@@ -10,12 +10,12 @@ Dans le cadre d'un projet de fin d'année nous avons effectué le portage du pro
 Dépendances
 ----------------
 
-python 2.7
-wxPython (Phoenix)
-openCV
-ystockquote
-pywapi
-PyUserInput
+* python 2.7
+* wxPython (Phoenix)
+* openCV
+* ystockquote
+* pywapi
+* PyUserInput
 
 ### <i class="icon-cog"></i>Installation Ubuntu :
 
