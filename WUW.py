@@ -146,8 +146,6 @@ class WuwPanel(wx.Panel):
                                              size=(16*self.Grid,16*self.Grid))
         self.labelDemoInstructions.SetEditable(False)
         
-        self.buttonWeatherDemo=wx.Button(self.tabPageApps,label="Weather",pos=(1*self.Grid,7*self.Grid),
-                                         size=(8*self.Grid,2*self.Grid))
 
         #构建Label组
         self.labelM=wx.StaticText(self, label=" M", pos=(4*self.Grid,self.Grid),
@@ -636,10 +634,6 @@ class WuwPanel(wx.Panel):
             self.__points.append(PointR(event.GetX(),event.GetY(),time.clock()*1000))
             self.Refresh(True, wx.Rect(event.GetX()-2,event.GetY()-2,4,4))
 
-    def closeApp(self):
-        self.gesturesActions.pop()
-
-
     def WUW_MouseUp(self, event):
         if self.__inBoxArea:
             self.pictureBoxDisplay_MouseUp(event)
@@ -670,26 +664,6 @@ class WuwPanel(wx.Panel):
         if len(self.apps) > 1:
             self.apps[-1].End()
 
-    def buttonLearnDemo_Click(self, event):
-        if self.learnDemo: # Fermeture de l'app
-            self.learnDemo = False
-            self.labelDemoName.Label = "WUW"
-            self.buttonLearnDemo.Label = "Learn"
-            self.BoxLearn.threadTime.stop()
-            self.BoxLearn.threadTime=None
-            self.BoxLearn.Hide()
-            self.ResetEnvironment()
-        else: # Ouverture de l'app
-            self.ResetEnvironment()
-            self.StopOtherApps(event)
-            self.learnDemo = True
-            self.labelDemoName.Label = "Learn"
-            self.buttonLearnDemo.Label = "Stop Learn"
-            self.BoxLearn.threadTime = self.ThreadTime("time", 1, self.BoxLearn)
-            self.BoxLearn.threadTime.start()
-            self.BoxLearn.Show()
-
-
     def get_latestFrame(self):
         return self.__latestFrame
 
@@ -705,9 +679,9 @@ def main():
     frame.SetTitle("SixthSense Python")
     panel = WuwPanel(frame)
 
-    appClock = AppClock(panel)
-
     appBase = AppBase(panel)
+
+    appClock = AppClock(panel)
     appPhoto = AppPhoto(panel)
     appStock = AppStock(panel)
     appBook = AppBook(panel)
