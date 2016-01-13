@@ -32,6 +32,7 @@ from Apps.AppClock import AppClock
 from Apps.AppPhoto import AppPhoto
 from Apps.AppStock import AppStock
 from Apps.AppBook import AppBook
+from Apps.AppWeather import AppWeather
 
 DEBUG = False
 AUTO_LOAD_DEFAULT = True
@@ -166,8 +167,6 @@ class WuwPanel(wx.Panel):
                                     size=(12*self.Grid,2*self.Grid))
 
         #构建DemoBox
-        self.BoxWeather=wx.StaticBox(self,pos=(40*self.Grid,20*self.Grid),
-                                    size=(20*self.Grid,40*self.Grid))
         #self.BoxPhoto=wx.StaticBox(self,pos=(18*self.Grid,16*self.Grid),
         #                            size=(64*self.Grid,48*self.Grid))
         # self.BoxLearn=wx.StaticBox(self,pos=(0*self.Grid,0*self.Grid),
@@ -264,7 +263,6 @@ class WuwPanel(wx.Panel):
         self.__latestFrameTimeSegment = False
         self.__ratioScreenCameraHeight = 0
         self.__ratioScreenCameraWidth = 0
-        self.weatherDemo = False
         self.trying = []
         self.__drawingGesture = False
         self.__drawingStart = None
@@ -287,7 +285,6 @@ class WuwPanel(wx.Panel):
         self.gestureLoad()
         time.clock()
         
-        self.BoxWeather.Hide()
 
         self.ResetEnvironment()
 
@@ -315,8 +312,6 @@ class WuwPanel(wx.Panel):
         #self.Bind(wx.EVT_LEFT_DOWN , self.dragClock)
         self.btnExit.Bind(wx.EVT_BUTTON, self.btnExit_Click)
         self.btnShowHide.Bind(wx.EVT_BUTTON, self.btnShowHide_Click)
-        
-        self.buttonWeatherDemo.Bind(wx.EVT_BUTTON, self.buttonWeatherDemo_Click)
 
         # print self.comboBoxCameras.GetCurrentSelection()
         # print self.threadCapture
@@ -738,102 +733,6 @@ class WuwPanel(wx.Panel):
                         action = actions.get(result.Name, lambda: None)
                         action()
 
-
-    ##Weather Demo
-    def buttonWeatherDemo_Click(self, event):
-        if self.weatherDemo:
-            self.weatherDemo = False
-            self.labelDemoName.Label = "WUW"
-            self.buttonWeatherDemo.Label = "weather"
-            self.BoxWeather.Hide()
-            self.ResetEnvironment()
-
-           
-            
-        else:
-            self.StopOtherApps(event)
-            self.weatherDemo = True
-            self.labelDemoName.Label = "weather"
-            self.buttonWeatherDemo.Label = "Stop weather"
-            #bself.BoxWeather.Show()
-            self.ResetEnvironment()
-            panel = wx.Panel(self,-1)
-            self.trying=[]
-            style = wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE
-            self.text = wx.StaticText(panel, style=style)
-            sizer = wx.BoxSizer(wx.HORIZONTAL)
-            sizer.AddStretchSpacer(1)
-            sizer.Add(self.text, 0, wx.EXPAND)
-            self.BoxStock=wx.StaticBox(self,pos=(50,200))
-            
-            #panel.SetSizer(sizer)
-            #stockBox.SetForegroundColour(wx.Colour(0,0,0))
-            self.Weather()
-            #self.BoxPhoto.Refresh()
-
-    def Weather(self):
-        for i in self.trying:
-            i.Destroy()
-        self.trying = []
-        sizer = wx.GridBagSizer()
-
-        city='limoges'
-        lookup = pywapi.get_location_ids(city)
- 
-        #workaround to access last item of dictionary
-        for i in lookup:
-            location_id = i
-
-        weather_com_result = pywapi.get_weather_from_weather_com(location_id)
-        yahoo_result = pywapi.get_weather_from_yahoo(location_id)
-        
-        self.BoxStock.SetForegroundColour(wx.Colour(0, 0, 0))
-
-        txt_temperature = u"%s°C" % (yahoo_result['condition']['temp'])
-        text = wx.StaticText(self,-1,txt_temperature,pos=(0,0), style=wx.ALIGN_CENTRE, size=(self.Width,self.Height))
-        font1 = wx.Font(38, wx.NORMAL, wx.NORMAL, wx.NORMAL)
-        text.SetFont(font1)
-        text_align = text.GetTextExtent(txt_temperature)
-        text.SetSize(text_align[0],text_align[1])
-        text.SetPosition(((self.Width/2)-text_align[0]/2, self.Height/2-text_align[1]/2))
-
-        weather1 = self.trying.append(text)
-
-        #weather1.SetFont(font1)
-       
-        import Image
-
-        pos_img_weather = (self.Width/2-225/2, self.Height/2-225-text_align[1])
-
-        if  'swon' in string.lower(yahoo_result['condition']['text']):
-            pass
-            img= wx.Image(os.path.realpath('images/nuage-ensoleillé.png.png'),wx.BITMAP_TYPE_PNG)
-            bmp= wx.BitmapFromImage(img)
-            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=pos_img_weather)
-            
-        elif  'cloudy' in string.lower(yahoo_result['condition']['text']):
-            pass
-            img= wx.Image(os.path.realpath('images/nuage.png'),wx.BITMAP_TYPE_PNG)
-            bmp= wx.BitmapFromImage(img)
-            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=pos_img_weather)
-           
-            
-        elif 'rain' in string.lower(yahoo_result['condition']['text']):
-            pass
-            img= wx.Image(os.path.realpath('images/pluie.png'),wx.BITMAP_TYPE_PNG)
-            bmp= wx.BitmapFromImage(img)
-            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=pos_img_weather)
-            
-        elif  'sun' in string.lower(yahoo_result['condition']['text']):
-            pass
-            img= wx.Image(os.path.realpath('images/sun.jpeg'),wx.BITMAP_TYPE_JPEG)
-            bmp= wx.BitmapFromImage(img)
-            staticBmp= wx.StaticBitmap(self,wx.ID_ANY,bmp,pos=pos_img_weather)
-            
-            
-
-        wx.CallLater(10000,self.Weather)
-
     def buttonLearnDemo_Click(self, event):
         if self.learnDemo: # Fermeture de l'app
             self.learnDemo = False
@@ -875,11 +774,13 @@ def main():
     appPhoto = AppPhoto(panel)
     appStock = AppStock(panel)
     appBook = AppBook(panel)
+    appWeather = AppWeather(panel)
 
     appBase.actions = {
         "clock1": appClock.Start,
         "photo6": appPhoto.Start,
         "email": appBook.Start,
+        "weather": appWeather.Start,
         }
 
     panel.apps.append(appBase)
