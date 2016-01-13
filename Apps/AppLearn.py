@@ -95,8 +95,9 @@ class AppLearn(App):
         self.path_close = os.path.realpath('images/close.png')
         self.img_close = wx.Image(self.path_close, wx.BITMAP_TYPE_PNG)
         self.bmp_close = wx.BitmapFromImage(self.img_close)
-        self.pos_close = ((self.WuwPanel.Width/2) - self.bmp_close.Size[0]/2, (self.WuwPanel.Height/2) - self.bmp_close.Size[1]/2)
+        self.pos_close = ((self.WuwPanel.Width/2) - self.bmp_close.Size[0]/2, (self.WuwPanel.Height/1.4) - self.bmp_close.Size[1]/2)
         self.staticBmpClose = wx.StaticBitmap(self.WuwPanel, wx.ID_ANY, self.bmp_close, pos=self.pos_close)
+
         self.screenTwoChar = "Félicitations, vous venez de lancer votre première application.\nMaintenant, fermez-la en réalisant le geste de fermeture."
         self.screenTwo_text = wx.StaticText(self.WuwPanel, -1, self.screenTwoChar, pos=(self.WuwPanel.Width/2, self.WuwPanel.Height-5), style=wx.ALIGN_CENTRE, size=(self.WuwPanel.Width,self.WuwPanel.Height))
         self.screenTwo_text.SetFont(self.learnFont)
