@@ -337,9 +337,8 @@ class WuwPanel(wx.Panel):
 
     def EndDrawing(self):
         self.__drawingGesture = False
-        result = self.__rec.Recognize(self.__drawingPoints)
         print("END DRAWING")
-        print(result.Name)
+        self.launchAnalyze(self.__drawingPoints)
 
     def AnalyzeMarkers(self):
         if self.__touchlessMgr.MarkersCount < 2:
@@ -661,24 +660,27 @@ class WuwPanel(wx.Panel):
             return
         if self.__isDown:
             self.__isDown = False
-            if len(self.__points) >= 5: # require 5 points for a valid gesture
-                if self.__recording:
-                    pass
-                elif self.__rec.NumGestures > 0:
-                    result = self.__rec.Recognize(self.__points, self.apps[-1].actions.keys())
-                    self.lblResult.Label = str.format("{0}: {1} ({2}px, {3}",
-                                                 result.Name,
-                                                 round(result.Score,2),
-                                                 round(result.Distance,2),
-                                                 round(result.Angle,2))
+            self.launchAnalyze(self.__points)
 
-                    actions = self.apps[-1].actions
-                    action = actions.get(result.Name, None)
+    def launchAnalyze(self, points):
+        if len(points) >= 5: # require 5 points for a valid gesture
+            if self.__recording:
+                pass
+            elif self.__rec.NumGestures > 0:
+                result = self.__rec.Recognize(points, self.apps[-1].actions.keys())
+                self.lblResult.Label = str.format("{0}: {1} ({2}px, {3}",
+                                             result.Name,
+                                             round(result.Score,2),
+                                             round(result.Distance,2),
+                                             round(result.Angle,2))
 
-                    if action:
-                        action()
-                    elif result.Name == "close":
-                        self.closeCurrentApp()
+                actions = self.apps[-1].actions
+                action = actions.get(result.Name, None)
+
+                if action:
+                    action()
+                elif result.Name == "close":
+                    self.closeCurrentApp()
 
     def closeCurrentApp(self):
         if len(self.apps) > 1:
