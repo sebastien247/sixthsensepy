@@ -338,7 +338,7 @@ class WuwPanel(wx.Panel):
     def EndDrawing(self):
         self.__drawingGesture = False
         print("END DRAWING")
-        self.launchAnalyze(self.__drawingPoints)
+        wx.CallAfter(lambda x:self.launchAnalyze(self.__drawingPoints), 10)
 
     def AnalyzeMarkers(self):
         if self.__touchlessMgr.MarkersCount < 2:
