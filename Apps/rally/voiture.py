@@ -11,11 +11,11 @@ class voiture:
 		self.car_img = None
 
 	def gauche (self, pixels):
-		self.x = self.x + pixels
+		self.x = min(300, self.x + pixels)
 
 
 	def droite (self, pixels):
-		self.x = self.x - pixels
+		self.x = max(0, self.x - pixels)
 
 	def afficher(self, BoxRally):
 		if not self.car_img:
