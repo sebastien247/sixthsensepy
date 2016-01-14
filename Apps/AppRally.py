@@ -90,16 +90,16 @@ class AppRally(App):
             self.manager_obs.collision(self.voiture1)
             self.voiture1.afficher(self.BoxRally)
 
-            #mise a jour des coordonées 
-            self.manager.recup_dG(self.wuw.m.CurrData.Y)
-            self.manager.recup_dD(self.wuw.o.CurrData.Y)
+            if self.wuw.m.CurrData.Present and self.wuw.n.CurrData.Present:
+                #mise a jour des coordonées 
+                self.manager.recup_dG(self.wuw.m.CurrData.Y)
+                self.manager.recup_dD(self.wuw.n.CurrData.Y)
 
-
-            self.manager.delta()
-            if self.manager.gauche:
-                self.voiture1.gauche(3)
-            elif self.manager.droite:
-                self.voiture1.droite(3)
+                self.manager.delta()
+                if self.manager.gauche:
+                    self.voiture1.gauche(3)
+                elif self.manager.droite:
+                    self.voiture1.droite(3)
 
             #rappel de la fonction elle meme
             wx.CallLater(10,self.Rally)

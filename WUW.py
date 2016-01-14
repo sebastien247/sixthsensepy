@@ -357,7 +357,6 @@ class WuwPanel(wx.Panel):
 
         if m.CurrData.Present and n.CurrData.Present:
             dist = ((m.CurrData.X - n.CurrData.X)**2 + (m.CurrData.Y - n.CurrData.Y)**2)**0.5
-            print dist
             isTouching = dist < 60
             if isTouching and not self.__drawingGesture:
                 self.tolerance = 0
