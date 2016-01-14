@@ -28,7 +28,8 @@ class AppClock(App):
 
     def updateText(self):
         self.clock.SetLabelText(str(time.strftime("%H:%M:%S", time.localtime(time.time()))))
-        wx.CallLater(1000, self.updateText)
+        if self.launched:
+            wx.CallLater(1000, self.updateText)
 
     def start(self):
         self.updateText()
