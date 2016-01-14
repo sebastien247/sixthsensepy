@@ -39,6 +39,10 @@ from Apps.AppRally import AppRally
 DEBUG = False
 AUTO_LOAD_DEFAULT = True
 
+# EVT_MARKER_START = None
+# EVT_MARKER_MOVE = None
+# EVT_MARKER_END = None
+
 
 class WuwPanel(wx.Panel):
     Width = Value.WuwWidth
@@ -249,6 +253,16 @@ class WuwPanel(wx.Panel):
         self.Bind(wx.EVT_MOTION, self.WUW_MouseMove)
         self.Bind(wx.EVT_LEFT_UP, self.WUW_MouseUp)
         #self.Bind(wx.EVT_LEFT_DOWN , self.dragClock)
+
+        self.EVT_MARKER_START = wx.PyEventBinder(wx.NewEventType(), 1)
+        self.EVT_MARKER_MOVE = wx.PyEventBinder(wx.NewEventType(), 1)
+        self.EVT_MARKER_END = wx.PyEventBinder(wx.NewEventType(), 1)
+
+        self.Bind(self.EVT_MARKER_START, self.WUW_MarkerDown)
+        self.Bind(self.EVT_MARKER_MOVE, self.WUW_MarkerMove)
+        self.Bind(self.EVT_MARKER_END, self.WUW_MarkerUp)
+
+
         self.btnExit.Bind(wx.EVT_BUTTON, self.btnExit_Click)
         self.btnShowHide.Bind(wx.EVT_BUTTON, self.btnShowHide_Click)
 
@@ -330,15 +344,24 @@ class WuwPanel(wx.Panel):
             self.__panel.AnalyzeMarkers()
 
     def StartDrawing(self):
+        eventStart = wx.PyCommandEvent(self.EVT_MARKER_START.typeId, self.GetId())
+        self.GetEventHandler().ProcessEvent(eventStart)
+
         self.__drawingGesture = True
         self.__drawingStart = time.time()
         self.__drawingPoints = []
         print("START DRAWING")
 
     def EndDrawing(self):
+        eventEnd = wx.PyCommandEvent(self.EVT_MARKER_END.typeId, self.GetId())
+        self.GetEventHandler().ProcessEvent(eventEnd)
         self.__drawingGesture = False
         print("END DRAWING")
-        wx.CallAfter(lambda x:self.launchAnalyze(self.__drawingPoints), 10)
+        #self.launchAnalyze(self.__drawingPoints)
+
+    def MoveDrawing(self):
+        eventMove = wx.PyCommandEvent(self.EVT_MARKER_MOVE.typeId, self.GetId())
+        self.GetEventHandler().ProcessEvent(eventMove)
 
     def AnalyzeMarkers(self):
         if self.__touchlessMgr.MarkersCount < 2:
@@ -369,6 +392,7 @@ class WuwPanel(wx.Panel):
                 self.EndDrawing()
 
         if self.__drawingGesture:
+            self.MoveDrawing()
             if n.CurrData.Present and m.CurrData.Present:
                 # On utilise la moyenne des deux points détectés
                 point_x = (n.CurrData.X + m.CurrData.X) / 2
@@ -654,6 +678,57 @@ class WuwPanel(wx.Panel):
             self.__points.append(PointR(event.GetX(),event.GetY(),time.clock()*1000))
             self.Refresh(True, wx.Rect(event.GetX()-2,event.GetY()-2,4,4))
 
+    def WUW_MarkerMove(self, event):
+        if self.__inBoxArea:
+            return
+        if self.__isDown:
+            print "move"
+            m = self.__touchlessMgr.Markers[0]
+            n = self.__touchlessMgr.Markers[1]
+            if n.CurrData.Present and m.CurrData.Present:
+                # On utilise la moyenne des deux points détectés
+                point_x = (n.CurrData.X + m.CurrData.X) / 2
+                point_y = (n.CurrData.Y + m.CurrData.Y) / 2
+            else:
+                # On utilise le seul point détecté
+                point = n if n.CurrData.Present else m
+                point_x = point.CurrData.X
+                point_y = point.CurrData.Y
+            self.__drawingPoints.append(PointR(point_x, point_y,time.clock()*1000))
+
+            #self.__points.append(PointR(self.GetX(),event.GetY(),time.clock()*1000))
+            #self.Refresh(True, wx.Rect(event.GetX()-2,event.GetY()-2,4,4))
+
+    def WUW_MarkerDown(self, event):
+        if self.__inBoxArea:
+            return
+        if self.__isDown:
+            m = self.__touchlessMgr.Markers[0]
+            n = self.__touchlessMgr.Markers[1]
+            if n.CurrData.Present and m.CurrData.Present:
+                # On utilise la moyenne des deux points détectés
+                point_x = (n.CurrData.X + m.CurrData.X) / 2
+                point_y = (n.CurrData.Y + m.CurrData.Y) / 2
+            else:
+                # On utilise le seul point détecté
+                point = n if n.CurrData.Present else m
+                point_x = point.CurrData.X
+                point_y = point.CurrData.Y
+        self.__isDown = True
+        self.__points = []
+        try:
+            self.__drawingPoints.append(PointR(point_x, point_y,time.clock()*1000))
+        except Exception, e:
+            print "except"
+
+    def WUW_MarkerUp(self, event):
+        print "0"
+        if self.__isDown:
+            print "1"
+            self.__isDown = False
+            self.launchAnalyze(self.__drawingPoints)
+
+
     def WUW_MouseUp(self, event):
         if self.__inBoxArea:
             self.pictureBoxDisplay_MouseUp(event)
@@ -663,6 +738,7 @@ class WuwPanel(wx.Panel):
             self.launchAnalyze(self.__points)
 
     def launchAnalyze(self, points):
+        print points
         if len(points) >= 5: # require 5 points for a valid gesture
             if self.__recording:
                 pass
@@ -673,7 +749,7 @@ class WuwPanel(wx.Panel):
                                              round(result.Score,2),
                                              round(result.Distance,2),
                                              round(result.Angle,2))
-
+                print result.Name
                 actions = self.apps[-1].actions
                 action = actions.get(result.Name, None)
 
